@@ -36,11 +36,11 @@ client.on(Events.InteractionCreate, async (interaction) => {
 });
 
 mongoose
-  .connect("mongodb://server:27017/kandora")
+  .connect(config.DB_PATH)
   .then(() => {
     console.log(`Connected to db`);
-    return client.login(config.DISCORD_TOKEN);
   })
+  .then(() => client.login(config.DISCORD_TOKEN))
   .then(() => {
     console.log(`Logged in`);
   });
