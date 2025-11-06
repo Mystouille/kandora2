@@ -8,7 +8,7 @@ const tiltedTileImgHeight = 91;
 const tiltedResourceFileWidth = tiltedTileImgWidth * 10;
 const tiltedResourceFileHeight = tiltedTileImgHeight * 4;
 
-const shrinkFactor = 3.0;
+const shrinkFactor = 1;
 const inputFileName = "tiles.png";
 const inputCalledFileName = "tilesCalled.png";
 const resourcesInputDirName = "./src/resources/tiles/base/";
@@ -77,8 +77,6 @@ export async function writeImage(hand: HandToDisplay) {
   const targetCanvas = createCanvas(targetWidth, targetHeight);
   const targetContext = targetCanvas.getContext("2d");
   const transform = new DOMMatrix();
-  transform.scaleSelf(1 / shrinkFactor, 1 / shrinkFactor);
-  targetContext.setTransform(transform);
 
   let targetX = 0;
   let targetY = 0;
@@ -90,70 +88,12 @@ export async function writeImage(hand: HandToDisplay) {
       tileArea.width,
       tileArea.height
     );
-    const blankTilePos = getBlankTileCorner(tile, true);
-    targetContext.putImageData(tileData, blankTilePos.x, blankTilePos.y);
+    targetContext.putImageData(tileData, targetX, targetY);
     targetX += tileArea.width;
   });
 
   const out = fs.createWriteStream(resourcesCacheDirName + "test.png");
   const stream = targetCanvas.createPNGStream();
-  stream.pipe(out);
-  out.on("finish", () => console.log("image written!"));
-}
-
-export async function generateTiltedTiles() {
-  const resImageTilted = await loadImage(
-    resourcesInputDirName + "tilesCalledOld.png"
-  );
-  const resImageBlank = await loadImage(
-    resourcesInputDirName + "tilesCalledBlank.png"
-  );
-
-  const closedTileList = splitTiles(
-    "0123456789s0123456789m0123456789p12345670z"
-  );
-
-  const sourceCanvasTilted = createCanvas(
-    resourceFileHeight,
-    resourceFileWidth
-  );
-  const sourceContextTilted = sourceCanvasTilted.getContext("2d");
-  sourceContextTilted.drawImage(resImageTilted, 0, 0);
-
-  const sourceCanvasBlank = createCanvas(
-    tiltedResourceFileWidth,
-    tiltedResourceFileHeight
-  );
-  const sourceContextBlank = sourceCanvasBlank.getContext("2d");
-  sourceContextBlank.drawImage(resImageBlank, 0, 0);
-
-  const oldMarginLeft = 21;
-  const oldMarginRight = 6;
-  const oldMarginTop = 4;
-  const oldMarginBot = 4;
-
-  const newMarginLeft = 5;
-  const newMarginTop = 17;
-
-  closedTileList.forEach((tile) => {
-    const tilePos = getTileArea(tile, true);
-
-    const tileSymbol = sourceContextTilted.getImageData(
-      tilePos.x + oldMarginLeft,
-      tilePos.y + oldMarginTop,
-      tilePos.width - oldMarginLeft - oldMarginRight,
-      tilePos.height - oldMarginTop - oldMarginBot
-    );
-    const blankTilePos = getBlankTileCorner(tile, true);
-    sourceContextBlank.putImageData(
-      tileSymbol,
-      blankTilePos.x + newMarginLeft,
-      blankTilePos.y + newMarginTop
-    );
-  });
-
-  const out = fs.createWriteStream(resourcesCacheDirName + "out.png");
-  const stream = sourceCanvasBlank.createPNGStream();
   stream.pipe(out);
   out.on("finish", () => console.log("image written!"));
 }
@@ -247,7 +187,7 @@ export async function load() {
     lastTileSeparated: false,
   };
   const handLastTile: HandToDisplay = {
-    closedTiles: "123p456m789s12345z",
+    closedTiles: "123p",
     melds: [],
     lastTileSeparated: true,
   };
@@ -270,4 +210,65 @@ export async function load() {
     lastTileSeparated: false,
   };
   await writeImage(handLastTile);
+}
+
+//=============
+//===  UTIL ===
+//=============
+
+export async function generateTiltedTiles() {
+  const resImageTilted = await loadImage(
+    resourcesInputDirName + "tilesCalledOld.png"
+  );
+  const resImageBlank = await loadImage(
+    resourcesInputDirName + "tilesCalledBlank.png"
+  );
+
+  const closedTileList = splitTiles(
+    "0123456789s0123456789m0123456789p12345670z"
+  );
+
+  const sourceCanvasTilted = createCanvas(
+    resourceFileHeight,
+    resourceFileWidth
+  );
+  const sourceContextTilted = sourceCanvasTilted.getContext("2d");
+  sourceContextTilted.drawImage(resImageTilted, 0, 0);
+
+  const sourceCanvasBlank = createCanvas(
+    tiltedResourceFileWidth,
+    tiltedResourceFileHeight
+  );
+  const sourceContextBlank = sourceCanvasBlank.getContext("2d");
+  sourceContextBlank.drawImage(resImageBlank, 0, 0);
+
+  const oldMarginLeft = 21;
+  const oldMarginRight = 6;
+  const oldMarginTop = 4;
+  const oldMarginBot = 4;
+
+  const newMarginLeft = 5;
+  const newMarginTop = 17;
+
+  closedTileList.forEach((tile) => {
+    const tilePos = getTileArea(tile, true);
+
+    const tileSymbol = sourceContextTilted.getImageData(
+      tilePos.x + oldMarginLeft,
+      tilePos.y + oldMarginTop,
+      tilePos.width - oldMarginLeft - oldMarginRight,
+      tilePos.height - oldMarginTop - oldMarginBot
+    );
+    const blankTilePos = getBlankTileCorner(tile, true);
+    sourceContextBlank.putImageData(
+      tileSymbol,
+      blankTilePos.x + newMarginLeft,
+      blankTilePos.y + newMarginTop
+    );
+  });
+
+  const out = fs.createWriteStream(resourcesCacheDirName + "out.png");
+  const stream = sourceCanvasBlank.createPNGStream();
+  stream.pipe(out);
+  out.on("finish", () => console.log("image written!"));
 }
