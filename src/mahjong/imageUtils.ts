@@ -13,7 +13,7 @@ const inputFileName = "tiles.png";
 const inputCalledFileName = "tilesCalled.png";
 const resourcesInputDirName = "./src/resources/tiles/base/";
 const resourcesCacheDirName = "./src/resources/tiles/generated/";
-import { loadImage, createCanvas } from "canvas";
+import { loadImage, createCanvas, Image, DOMMatrix } from "canvas";
 import { HandToDisplay, MeldSource, MeldType } from "./handTypes";
 import * as fs from "fs";
 import { splitTiles } from "./handParser";
@@ -76,6 +76,9 @@ export async function writeImage(hand: HandToDisplay) {
 
   const targetCanvas = createCanvas(targetWidth, targetHeight);
   const targetContext = targetCanvas.getContext("2d");
+  const transform = new DOMMatrix();
+  transform.scaleSelf(1 / shrinkFactor, 1 / shrinkFactor);
+  targetContext.setTransform(transform);
 
   let targetX = 0;
   let targetY = 0;
@@ -266,5 +269,5 @@ export async function load() {
     ],
     lastTileSeparated: false,
   };
-  await writeImage(simplestHand);
+  await writeImage(handLastTile);
 }
