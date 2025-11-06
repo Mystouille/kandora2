@@ -1,5 +1,3 @@
-import { Client, Emoji } from "discord.js";
-
 const SUIT_NAMES = ["p", "m", "s", "z"];
 
 function getEmojiCode(tileName: string): string {
@@ -54,7 +52,7 @@ export function compareTiles(A: string, B: string): number {
 export function getHandEmojiCodes(
   hand: string,
   sorted: boolean = false,
-  unique: boolean = false,
+  unique: boolean = false
 ): string {
   let tileList = splitTiles(hand);
 
