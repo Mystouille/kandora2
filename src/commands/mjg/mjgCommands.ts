@@ -27,25 +27,25 @@ export let data: any = new SlashCommandBuilder()
       .addStringOption((option) =>
         buildOptionNameAndDescription(
           option,
-          strings.commands.mjg.nanikiru.params.hand,
-        ).setRequired(true),
+          strings.commands.mjg.nanikiru.params.hand
+        ).setRequired(true)
       )
       .addStringOption((option) =>
         buildOptionNameAndDescription(
           option,
-          strings.commands.mjg.nanikiru.params.discards,
-        ),
+          strings.commands.mjg.nanikiru.params.discards
+        )
       )
       .addStringOption((option) =>
         buildOptionNameAndDescription(
           option,
-          strings.commands.mjg.nanikiru.params.doras,
-        ),
+          strings.commands.mjg.nanikiru.params.doras
+        )
       )
       .addStringOption((option) =>
         buildOptionNameAndDescription(
           option,
-          strings.commands.mjg.nanikiru.params.seat,
+          strings.commands.mjg.nanikiru.params.seat
         )
           .addChoices([
             {
@@ -65,24 +65,24 @@ export let data: any = new SlashCommandBuilder()
               value: SeatChoice.North,
             },
           ])
-          .setRequired(false),
+          .setRequired(false)
       )
       .addStringOption((option) =>
         buildOptionNameAndDescription(
           option,
-          strings.commands.mjg.nanikiru.params.round,
-        ),
+          strings.commands.mjg.nanikiru.params.round
+        )
       )
       .addStringOption((option) =>
         buildOptionNameAndDescription(
           option,
-          strings.commands.mjg.nanikiru.params.turn,
-        ),
+          strings.commands.mjg.nanikiru.params.turn
+        )
       )
       .addStringOption((option) =>
         buildOptionNameAndDescription(
           option,
-          strings.commands.mjg.nanikiru.params.ukeire,
+          strings.commands.mjg.nanikiru.params.ukeire
         )
           .addChoices([
             {
@@ -98,14 +98,14 @@ export let data: any = new SlashCommandBuilder()
               value: UkeireChoice.Full,
             },
           ])
-          .setRequired(false),
+          .setRequired(false)
       )
       .addBooleanOption((option) =>
         buildOptionNameAndDescription(
           option,
-          strings.commands.mjg.nanikiru.params.thread,
-        ),
-      ),
+          strings.commands.mjg.nanikiru.params.thread
+        )
+      )
   );
 
 export async function execute(interaction: ChatInputCommandInteraction) {

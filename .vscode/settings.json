@@ -1,0 +1,16 @@
+{
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true
+  },
+  "eslint.validate": ["javascript"],
+  "prettier.configPath": ".prettierrc.json",
+  "prettier.endOfLine": "auto",
+  "prettier.experimentalTernaries": true,
+  "prettier.prettierPath": "./node_modules/prettier",
+  "prettier.ignorePath": ".prettierignore"
+}

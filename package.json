@@ -4,17 +4,19 @@
     "canvas": "^3.2.0",
     "discord.js": "^14.24.2",
     "dotenv": "^17.2.3",
+    "fs": "^0.0.1-security",
     "lodash": "^4.17.21",
-    "mongoose": "^8.19.2"
+    "mongoose": "^8.19.2",
+    "prettier-eslint": "^16.4.2"
   },
   "devDependencies": {
     "@babel/preset-env": "^7.28.5",
-    "@eslint/js": "^9.39.0",
+    "@eslint/js": "^9.39.1",
     "@types/jest": "^30.0.0",
     "@types/node": "^24.9.2",
     "@typescript-eslint/eslint-plugin": "^8.46.2",
-    "@typescript-eslint/parser": "^8.46.2",
-    "eslint": "^9.39.0",
+    "@typescript-eslint/parser": "^8.46.3",
+    "eslint": "^9.39.1",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.4",
     "globals": "^16.5.0",
@@ -26,7 +28,7 @@
     "tsup": "^8.5.0",
     "tsx": "^4.20.6",
     "typescript": "^5.9.3",
-    "typescript-eslint": "^8.46.2"
+    "typescript-eslint": "^8.46.3"
   },
   "name": "kandora2",
   "version": "1.0.0",
@@ -36,7 +38,10 @@
     "dev": "tsx src/index.ts",
     "deploy": "tsx src/deployCommand.ts",
     "start": "node dist/index.js",
-    "build": "tsup src/index.ts --minify"
+    "build": "tsup src/index.ts --minify",
+    "prettier": "prettier --ignore-path .gitignore \"**/*.+(ts|tsx|js|jsx|json|css|md|mdx|html)\"",
+    "format": "npm run prettier -- --write",
+    "check-format": "npm run prettier -- --list-different"
   },
   "keywords": [],
   "author": "",
