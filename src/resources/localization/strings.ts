@@ -71,7 +71,7 @@ export const strings = {
           seat: "commands.mjg.nanikiru.reply.seat",
           round: "commands.mjg.nanikiru.reply.round",
           turn: "commands.mjg.nanikiru.reply.turn",
-          dora: "commands.mjg.nanikiru.reply.dora",
+          doras: "commands.mjg.nanikiru.reply.doras",
           wwyd: "commands.mjg.nanikiru.reply.wwyd",
           threadInfo: "commands.mjg.nanikiru.reply.threadInfo",
         },
@@ -82,6 +82,8 @@ export const strings = {
 
 export type StringResources = typeof strings;
 
+export const invariantLocale = Locale.EnglishUS;
+export const invariantResources = stringsEn;
 export const resourceMap: { [id in Locale]?: StringResources } = {
   [Locale.French]: stringsFr,
   [Locale.EnglishUS]: stringsEn,

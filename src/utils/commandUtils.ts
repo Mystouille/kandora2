@@ -1,8 +1,8 @@
-import * as ping from "../ping/ping";
-import * as createuser from "../createuser/createUser";
-import * as mjg from "../mjg/mjgCommands";
+import * as ping from "../commands/ping/ping";
+import * as createuser from "../commands/createuser/createUser";
+import * as mjg from "../commands/mjg/mjgCommands";
 import { REST, Routes } from "discord.js";
-import { config } from "../../config";
+import { config } from "../config";
 
 export const commands = {
   ping,

@@ -1,3 +1,10 @@
+import {
+  HandToDisplay,
+  MeldSource,
+  MeldToDisplay,
+  MeldType,
+} from "./handTypes";
+
 const SUIT_NAMES = ["p", "m", "s", "z"];
 
 function getEmojiCode(tileName: string): string {
@@ -26,7 +33,12 @@ export function splitTiles(hand: string) {
         }
         let called = "";
         if (isCalled(hand[j + 1])) {
-          called += "'";
+          if (isCalled(hand[j + 2])) {
+            called += "''";
+            j++;
+          } else {
+            called += "'";
+          }
           j++;
         }
         const tileToAdd = `${tileNumber}${called}${tileSuit}`;
@@ -66,4 +78,174 @@ export function getHandEmojiCodes(
   }
 
   return handEmojiList.join("");
+}
+
+/**
+ * Returns an object used to easily generate an image of the hand
+ * @param input - A loose-natural form of a hand
+ */
+export function toHandToDisplay(handStr: string): HandToDisplay {
+  const toDisplay: HandToDisplay = {
+    closedTiles: "",
+    lastTileSeparated: false,
+    melds: [],
+  };
+  var handAndMelds = handStr.split(" ");
+  if (handAndMelds.length === 0) {
+    return toDisplay;
+  }
+  const closedTilesList = splitTiles(handAndMelds[0]);
+  toDisplay.closedTiles = closedTilesList.join("");
+  handAndMelds = handAndMelds.reverse();
+  handAndMelds.pop();
+  const melds = handAndMelds.reverse().join("");
+  const meldList = splitTiles(melds);
+
+  let count = 0;
+  let sourceLookup = false;
+  let isCalled = false;
+  let blocks: MeldToDisplay[] = [];
+  let currentBlock: string[] = [];
+  let currentType: MeldType | undefined = undefined;
+  let currentSource: MeldSource | undefined = undefined;
+  meldList.forEach((tile) => {
+    if (count === 4) {
+      const meld = {
+        source:
+          currentSource === undefined
+            ? isCalled
+              ? MeldSource.Shimocha
+              : MeldSource.Self
+            : currentSource,
+        type:
+          currentType === undefined
+            ? isCalled
+              ? MeldType.Daiminkan
+              : MeldType.Ankan
+            : currentType,
+        tiles: currentBlock.join(""),
+      };
+      if (
+        meld.type === MeldType.Ankan &&
+        !currentBlock.find((x) => x === "8z")
+      ) {
+        meld.tiles = ["8z", currentBlock[0], currentBlock[0], "8z"].join("");
+      } else {
+        meld.tiles = currentBlock.join("");
+      }
+      blocks.push(meld);
+      count = 0;
+    }
+
+    if (count === 3) {
+      if (isCalled && tile !== currentBlock[0]) {
+        blocks.push({
+          source:
+            currentSource === undefined ? MeldSource.Shimocha : currentSource,
+          type: currentType === undefined ? MeldType.Pon : currentType,
+          tiles: currentBlock.join(""),
+        });
+        count = 0;
+      }
+    }
+
+    if (currentType === MeldType.Chii && count === 3) {
+      blocks.push({
+        source: MeldSource.Kamicha,
+        type: currentType,
+        tiles: currentBlock.join(""),
+      });
+      count = 0;
+    }
+
+    if (count === 0) {
+      currentBlock = [];
+      sourceLookup = false;
+      isCalled = false;
+      currentSource = undefined;
+      currentType = undefined;
+    }
+
+    if (sourceLookup) {
+      currentSource =
+        tile[0] === currentBlock[0][0]
+          ? MeldSource.Toimen
+          : MeldSource.Shimocha;
+      sourceLookup = false;
+    }
+
+    if (tile.includes("''")) {
+      currentType = MeldType.Shouminkan;
+      isCalled = true;
+    }
+    if (tile.includes("'")) {
+      isCalled = true;
+      sourceLookup = true;
+    }
+    if (isCalled && count === 0) {
+      currentSource = MeldSource.Kamicha;
+      sourceLookup = false;
+    }
+    if (isCalled && count === 2 && currentBlock[0][0] !== currentBlock[1][0]) {
+      currentType = MeldType.Chii;
+    }
+    if (tile === "8z") {
+      currentType = MeldType.Ankan;
+    }
+    if (currentSource === undefined && isCalled) {
+      currentSource =
+        count === 0
+          ? MeldSource.Kamicha
+          : count === 1
+            ? MeldSource.Toimen
+            : undefined;
+    }
+
+    currentBlock.push(tile[0] + tile[tile.length - 1]);
+
+    count++;
+  });
+
+  if (count === 4) {
+    const meld = {
+      source:
+        currentSource === undefined
+          ? isCalled
+            ? MeldSource.Shimocha
+            : MeldSource.Self
+          : currentSource,
+      type:
+        currentType === undefined
+          ? isCalled
+            ? MeldType.Daiminkan
+            : MeldType.Ankan
+          : currentType,
+      tiles: currentBlock.join(""),
+    };
+    if (meld.type === MeldType.Ankan && !currentBlock.find((x) => x === "8z")) {
+      const otherTile = currentBlock.find((x) => x !== "8z") || "8z";
+      meld.tiles = ["8z", otherTile, otherTile, "8z"].join("");
+    } else {
+      meld.tiles = currentBlock.join("");
+    }
+    blocks.push(meld);
+    count = 0;
+  }
+
+  if (count === 3) {
+    blocks.push({
+      source: currentSource === undefined ? MeldSource.Shimocha : currentSource,
+      type: currentType === undefined ? MeldType.Pon : currentType,
+      tiles: currentBlock.join(""),
+    });
+    count = 0;
+  }
+
+  toDisplay.melds = blocks;
+
+  if (closedTilesList.length % 3 === 2) {
+    toDisplay.lastTileSeparated = true;
+  }
+
+  return toDisplay;
 }

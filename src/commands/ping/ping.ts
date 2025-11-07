@@ -3,12 +3,14 @@ import {
   MessageFlags,
   SlashCommandBuilder,
 } from "discord.js";
-import { stringsEn } from "../../resources/localization/strings-en";
+import { invariantResources } from "../../resources/localization/strings";
 
 export const data = new SlashCommandBuilder()
-  .setDescription(stringsEn.commands.ping.desc)
-  .setName(stringsEn.commands.ping.name);
+  .setDescription(invariantResources.commands.ping.desc)
+  .setName(invariantResources.commands.ping.name);
 
-export async function execute(interaction: CommandInteraction) {
-  return interaction.reply({ content: "pong!", flags: MessageFlags.Ephemeral });
+export async function execute(itr: CommandInteraction) {
+  const a = itr.client.emojis.valueOf();
+  const b = itr.client.emojis.valueOf().get("refresh");
+  return itr.reply({ content: "pong!", flags: MessageFlags.Ephemeral });
 }
