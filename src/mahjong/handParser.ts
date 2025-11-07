@@ -56,28 +56,31 @@ export function splitTiles(hand: string) {
 export function compareTiles(A: string, B: string): number {
   const a = A[A.length - 1];
   const b = B[B.length - 1];
-  const x = A[0];
-  const y = B[0];
+  const x = A[0] === "0" ? 5 : A[0];
+  const y = B[0] === "0" ? 5 : B[0];
   return a > b ? 1 : a < b ? -1 : x > y ? 1 : x < y ? -1 : A.length - B.length;
 }
 
-export function getHandEmojiCodes(
-  hand: string,
-  sorted: boolean = false,
-  unique: boolean = false
-): string {
+export function getHandEmojiNames({
+  hand,
+  sorted,
+  unique,
+}: {
+  hand: string;
+  sorted?: boolean;
+  unique?: boolean;
+}): string[] {
   let tileList = splitTiles(hand);
 
   if (sorted) {
     tileList = tileList.sort(compareTiles);
   }
 
-  let handEmojiList = tileList.map((x) => getEmojiCode(x));
+  let handEmojiList = tileList;
   if (unique) {
     handEmojiList = [...new Set(handEmojiList)];
   }
-
-  return handEmojiList.join("");
+  return handEmojiList;
 }
 
 /**

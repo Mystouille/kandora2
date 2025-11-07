@@ -35,13 +35,10 @@
   "main": "index.js",
   "scripts": {
     "test": "jest",
-    "dev": "tsx src/index.ts",
-    "deploy": "tsx src/deployCommand.ts",
+    "deployCommands": "tsx src/deployCommand.ts",
+    "deployEmoji": "tsx src/deployCommand.ts",
     "start": "node dist/index.js",
-    "build": "tsup src/index.ts --minify",
-    "prettier": "prettier --ignore-path .gitignore \"**/*.+(ts|tsx|js|jsx|json|css|md|mdx|html)\"",
-    "format": "npm run prettier -- --write",
-    "check-format": "npm run prettier -- --list-different"
+    "build": "tsup src/index.ts --minify"
   },
   "keywords": [],
   "author": "",

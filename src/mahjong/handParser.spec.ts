@@ -1,6 +1,6 @@
 import {
   compareTiles,
-  getHandEmojiCodes,
+  getHandEmojiNames,
   splitTiles,
   toHandToDisplay,
 } from "./handParser";
@@ -20,15 +20,15 @@ describe("handParser.ts", () => {
   describe("getHandEmojiCodes", () => {
     it("returns correct emojis", () => {
       let hand = "321p465s123456m45z";
-      expect(getHandEmojiCodes(hand, false)).toBe(
+      expect(getHandEmojiNames(hand, false)).toBe(
         ":3p::2p::1p::4s::6s::5s::1m::2m::3m::4m::5m::6m::4z::5z:"
       );
-      expect(getHandEmojiCodes(hand, true)).toBe(
+      expect(getHandEmojiNames(hand, true)).toBe(
         ":1m::2m::3m::4m::5m::6m::1p::2p::3p::4s::5s::6s::4z::5z:"
       );
 
       hand = "333p465s123345m45z";
-      expect(getHandEmojiCodes(hand, true, true)).toBe(
+      expect(getHandEmojiNames(hand, true, true)).toBe(
         ":1m::2m::3m::4m::5m::3p::4s::5s::6s::4z::5z:"
       );
     });
