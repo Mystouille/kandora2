@@ -4,13 +4,15 @@ import {
   MessageFlags,
   SlashCommandBuilder,
 } from "discord.js";
-import { getLocProps } from "../utils/localizationUtils";
-import { strings } from "../../resources/localization/strings";
-import { stringsEn } from "../../resources/localization/strings-en";
+import {
+  invariantResources,
+  strings,
+} from "../../resources/localization/strings";
+import { getLocProps } from "../../utils/localizationUtils";
 
 export const data = new SlashCommandBuilder()
-  .setDescription(stringsEn.commands.createuser.desc)
-  .setName(stringsEn.commands.createuser.name)
+  .setDescription(invariantResources.commands.createuser.desc)
+  .setName(invariantResources.commands.createuser.name)
   .setNameLocalizations(getLocProps(strings.commands.createuser.name))
   .setDescriptionLocalizations(getLocProps(strings.commands.createuser.desc));
 

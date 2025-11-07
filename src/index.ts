@@ -1,8 +1,7 @@
 import { Client, Events, GatewayIntentBits, MessageFlags } from "discord.js";
 import { config } from "./config";
 import mongoose from "mongoose";
-import { commands } from "./commands/utils/commandUtils";
-import { load } from "./mahjong/imageUtils";
+import { commands } from "./utils/commandUtils";
 
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 
@@ -36,14 +35,12 @@ client.on(Events.InteractionCreate, async (interaction) => {
   }
 });
 
-const image = load();
-
-// mongoose
-//   .connect(config.DB_PATH)
-//   .then(() => {
-//     console.log(`Connected to db`);
-//   })
-//   .then(() => client.login(config.DISCORD_TOKEN))
-//   .then(() => {
-//     console.log(`Logged in`);
-//   });
+mongoose
+  .connect(config.DB_PATH)
+  .then(() => {
+    console.log(`Connected to db`);
+  })
+  .then(() => client.login(config.DISCORD_TOKEN))
+  .then(() => {
+    console.log(`Logged in`);
+  });
