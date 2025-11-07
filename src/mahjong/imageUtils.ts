@@ -10,14 +10,14 @@ const tiltedResourceFileWidth = tiltedTileImgWidth * 10;
 const tiltedResourceFileHeight = tiltedTileImgHeight * 4;
 
 const shrinkFactor = 1;
-let gapWeight = 0.5;
-let offsetWeight = 0.5;
+const gapWeight = 0.5;
+const offsetWeight = 0.5;
 
 const inputFileName = "tiles.png";
 const inputCalledFileName = "tilesCalled.png";
 const resourcesInputDirName = "./src/resources/tiles/base/";
 const resourcesCacheDirName = "./src/resources/tiles/generated/";
-import { loadImage, createCanvas, Image, DOMMatrix } from "canvas";
+import { loadImage, createCanvas, DOMMatrix } from "canvas";
 import { HandToDisplay, MeldSource, MeldType } from "./handTypes";
 import * as fs from "fs";
 import { splitTiles } from "./handParser";
@@ -65,7 +65,6 @@ async function WriteAndGetImageFromHand(
   normalizedWidth += offsetWeight * 2;
 
   const verticalTileWidth = Math.floor(tileImgWidth / shrinkFactor);
-  const horizontalTileWidth = Math.floor(tiltedTileImgWidth / shrinkFactor);
   const gapSize = Math.floor(tileImgWidth * gapWeight);
   const offsetSize = Math.floor(tileImgWidth * offsetWeight);
 
@@ -252,7 +251,6 @@ function getTileArea(tile: string, isTilted: boolean = false): Rectangle {
 export async function getImageFromTiles(hand: HandToDisplay) {
   const outputFilePath = resourcesCacheDirName + handToFileName(hand);
 
-  const exists = fs.existsSync(outputFilePath);
   if (!fs.existsSync(outputFilePath)) {
     if (!fs.existsSync(resourcesCacheDirName)) {
       fs.mkdirSync(resourcesCacheDirName);
@@ -261,9 +259,7 @@ export async function getImageFromTiles(hand: HandToDisplay) {
   } else {
     console.log("image already exists");
   }
-
-  return await WriteAndGetImageFromHand(hand, outputFilePath);
-  //return fs.readFileSync(outputFilePath);
+  return fs.readFileSync(outputFilePath);
 }
 
 //=============

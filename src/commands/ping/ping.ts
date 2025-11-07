@@ -12,5 +12,6 @@ export const data = new SlashCommandBuilder()
 export async function execute(itr: CommandInteraction) {
   const a = itr.client.emojis.valueOf();
   const b = itr.client.emojis.valueOf().get("refresh");
+
   return itr.reply({ content: "pong!", flags: MessageFlags.Ephemeral });
 }

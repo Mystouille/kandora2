@@ -6,11 +6,10 @@ import {
 import { getImageFromTiles } from "../../mahjong/imageUtils";
 import {
   invariantLocale,
-  invariantResources,
   NameDesc,
   strings,
 } from "../../resources/localization/strings";
-import { toHandToDisplay } from "../../mahjong/handParser";
+import { getHandEmojiNames, toHandToDisplay } from "../../mahjong/handParser";
 import { localize } from "../../utils/localizationUtils";
 import { stringFormat } from "../../utils/stringUtils";
 
@@ -74,8 +73,25 @@ export async function executeNanikiru(itr: ChatInputCommandInteraction) {
   const image = await getImageFromTiles(toDisplay);
   const ab = new AttachmentBuilder(image);
 
-  return itr.editReply({
-    content: replyMessage,
-    files: [{ attachment: ab.attachment }],
+  const emojis = getHandEmojiNames({
+    hand: discards || toDisplay.closedTiles,
+    sorted: true,
+    unique: true,
   });
+
+  return itr
+    .editReply({
+      content: replyMessage,
+      files: [{ attachment: ab.attachment }],
+    })
+    .then((message) => {
+      itr.client.application.emojis.fetch().then((appEmojiList) => {
+        emojis.forEach(async (emoji) => {
+          const appEmoji = appEmojiList.find((appEmo) => appEmo.name === emoji);
+          if (appEmoji) {
+            await message.react(appEmoji.identifier);
+          }
+        });
+      });
+    });
 }
