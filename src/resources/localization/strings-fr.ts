@@ -64,7 +64,7 @@ export const stringsFr: StringResources = {
           seat: "Player `{0}`",
           round: "During `{0}`",
           turn: "Turn `{0}`",
-          doras: "Dora `{0}`",
+          doras: "Dora {0}",
           wwyd: "Que feriez vous?",
           threadInfo: "Disctutez-en ici!",
         },

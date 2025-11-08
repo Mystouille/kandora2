@@ -1,8 +1,8 @@
 import {
   compareTiles,
-  getHandEmojiNames,
+  getHandEmojis,
   splitTiles,
-  toHandToDisplay,
+  fromStrToHandToDisplay,
 } from "./handParser";
 import { MeldSource, MeldType } from "./handTypes";
 
@@ -20,16 +20,16 @@ describe("handParser.ts", () => {
   describe("getHandEmojiCodes", () => {
     it("returns correct emojis", () => {
       let hand = "321p465s123456m45z";
-      expect(getHandEmojiNames(hand, false)).toBe(
-        ":3p::2p::1p::4s::6s::5s::1m::2m::3m::4m::5m::6m::4z::5z:"
+      expect(getHandEmojis({ hand, sorted: false }).join("")).toBe(
+        "3p2p1p4s6s5s1m2m3m4m5m6m4z5z"
       );
-      expect(getHandEmojiNames(hand, true)).toBe(
-        ":1m::2m::3m::4m::5m::6m::1p::2p::3p::4s::5s::6s::4z::5z:"
+      expect(getHandEmojis({ hand, sorted: true }).join("")).toBe(
+        "1m2m3m4m5m6m1p2p3p4s5s6s4z5z"
       );
 
       hand = "333p465s123345m45z";
-      expect(getHandEmojiNames(hand, true, true)).toBe(
-        ":1m::2m::3m::4m::5m::3p::4s::5s::6s::4z::5z:"
+      expect(getHandEmojis({ hand, sorted: true, unique: true }).join("")).toBe(
+        "1m2m3m4m5m3p4s5s6s4z5z"
       );
     });
   });
@@ -49,7 +49,7 @@ describe("handParser.ts", () => {
   describe("toHandToDisplay", () => {
     it("returns correct object for closed hand 14 tiles", () => {
       let hand = "111222333p44455s";
-      expect(toHandToDisplay(hand)).toStrictEqual({
+      expect(fromStrToHandToDisplay(hand)).toStrictEqual({
         closedTiles: "1p1p1p2p2p2p3p3p3p4s4s4s5s5s",
         melds: [],
         lastTileSeparated: true,
@@ -57,7 +57,7 @@ describe("handParser.ts", () => {
     });
     it("returns correct object for closed hand 13 tiles", () => {
       let hand = "111222333p4445s";
-      expect(toHandToDisplay(hand)).toStrictEqual({
+      expect(fromStrToHandToDisplay(hand)).toStrictEqual({
         closedTiles: "1p1p1p2p2p2p3p3p3p4s4s4s5s",
         melds: [],
         lastTileSeparated: false,
@@ -65,7 +65,7 @@ describe("handParser.ts", () => {
     });
     it("returns correct object for open hand with chii", () => {
       let hand = "111222333p55s 4'56m";
-      expect(toHandToDisplay(hand)).toStrictEqual({
+      expect(fromStrToHandToDisplay(hand)).toStrictEqual({
         closedTiles: "1p1p1p2p2p2p3p3p3p5s5s",
         melds: [
           { tiles: "4m5m6m", type: MeldType.Chii, source: MeldSource.Kamicha },
@@ -75,7 +75,7 @@ describe("handParser.ts", () => {
     });
     it("returns correct object for open hand with pon", () => {
       let hand = "111222333p55s 4'44m";
-      expect(toHandToDisplay(hand)).toStrictEqual({
+      expect(fromStrToHandToDisplay(hand)).toStrictEqual({
         closedTiles: "1p1p1p2p2p2p3p3p3p5s5s",
         melds: [
           { tiles: "4m4m4m", type: MeldType.Pon, source: MeldSource.Kamicha },
@@ -85,7 +85,7 @@ describe("handParser.ts", () => {
     });
     it("returns correct object for open hand with daiminkan toimen", () => {
       let hand = "111222333p55s 444'4m";
-      expect(toHandToDisplay(hand)).toStrictEqual({
+      expect(fromStrToHandToDisplay(hand)).toStrictEqual({
         closedTiles: "1p1p1p2p2p2p3p3p3p5s5s",
         melds: [
           {
@@ -99,7 +99,7 @@ describe("handParser.ts", () => {
     });
     it("returns correct object for open hand with daiminkan shimocha", () => {
       let hand = "111222333p55s 4444'm";
-      expect(toHandToDisplay(hand)).toStrictEqual({
+      expect(fromStrToHandToDisplay(hand)).toStrictEqual({
         closedTiles: "1p1p1p2p2p2p3p3p3p5s5s",
         melds: [
           {
@@ -113,7 +113,7 @@ describe("handParser.ts", () => {
     });
     it("returns correct object for open hand with free ankan", () => {
       let hand = "111222333p55s 4444m";
-      expect(toHandToDisplay(hand)).toStrictEqual({
+      expect(fromStrToHandToDisplay(hand)).toStrictEqual({
         closedTiles: "1p1p1p2p2p2p3p3p3p5s5s",
         melds: [
           {
@@ -127,7 +127,7 @@ describe("handParser.ts", () => {
     });
     it("returns correct object for open hand with ankan", () => {
       let hand = "111222333p55s 8z444m";
-      expect(toHandToDisplay(hand)).toStrictEqual({
+      expect(fromStrToHandToDisplay(hand)).toStrictEqual({
         closedTiles: "1p1p1p2p2p2p3p3p3p5s5s",
         melds: [
           {
@@ -142,7 +142,7 @@ describe("handParser.ts", () => {
 
     it("returns correct object for open hand with shouminkan", () => {
       let hand = "111222333p55s 4444''m";
-      expect(toHandToDisplay(hand)).toStrictEqual({
+      expect(fromStrToHandToDisplay(hand)).toStrictEqual({
         closedTiles: "1p1p1p2p2p2p3p3p3p5s5s",
         melds: [
           {
@@ -156,7 +156,7 @@ describe("handParser.ts", () => {
     });
     it("returns correct object for open hand with many calls", () => {
       let hand = "111222p55s 4444''m 33'3m";
-      expect(toHandToDisplay(hand)).toStrictEqual({
+      expect(fromStrToHandToDisplay(hand)).toStrictEqual({
         closedTiles: "1p1p1p2p2p2p5s5s",
         melds: [
           {
@@ -175,7 +175,7 @@ describe("handParser.ts", () => {
     });
     it("returns correct object for open hand with many calls 2", () => {
       let hand = "111222p55s 2'34s 33'3m";
-      expect(toHandToDisplay(hand)).toStrictEqual({
+      expect(fromStrToHandToDisplay(hand)).toStrictEqual({
         closedTiles: "1p1p1p2p2p2p5s5s",
         melds: [
           {
@@ -194,7 +194,7 @@ describe("handParser.ts", () => {
     });
     it("returns correct object for open hand with many calls 2", () => {
       let hand = "0m 4444''m 1111z 66'66p 1'23s";
-      expect(toHandToDisplay(hand)).toStrictEqual({
+      expect(fromStrToHandToDisplay(hand)).toStrictEqual({
         closedTiles: "0m",
         melds: [
           {

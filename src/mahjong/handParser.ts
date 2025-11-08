@@ -1,3 +1,5 @@
+import { ApplicationEmoji } from "discord.js";
+import { AppEmojiCollection } from "../resources/emojis/AppEmojiCollection";
 import {
   HandToDisplay,
   MeldSource,
@@ -61,7 +63,7 @@ export function compareTiles(A: string, B: string): number {
   return a > b ? 1 : a < b ? -1 : x > y ? 1 : x < y ? -1 : A.length - B.length;
 }
 
-export function getHandEmojiNames({
+export function getHandEmojis({
   hand,
   sorted,
   unique,
@@ -71,7 +73,6 @@ export function getHandEmojiNames({
   unique?: boolean;
 }): string[] {
   let tileList = splitTiles(hand);
-
   if (sorted) {
     tileList = tileList.sort(compareTiles);
   }
@@ -80,14 +81,19 @@ export function getHandEmojiNames({
   if (unique) {
     handEmojiList = [...new Set(handEmojiList)];
   }
-  return handEmojiList;
+
+  const appEmojiList = AppEmojiCollection.instance.getCollection();
+  return handEmojiList
+    .map((emoji) => appEmojiList.find((appEmo) => appEmo.name === emoji))
+    .filter((e) => !!e)
+    .map((e) => `<:${e.name}:${e.id}>`);
 }
 
 /**
  * Returns an object used to easily generate an image of the hand
  * @param input - A loose-natural form of a hand
  */
-export function toHandToDisplay(handStr: string): HandToDisplay {
+export function fromStrToHandToDisplay(handStr: string): HandToDisplay {
   const toDisplay: HandToDisplay = {
     closedTiles: "",
     lastTileSeparated: false,
