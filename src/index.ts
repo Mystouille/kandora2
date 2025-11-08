@@ -2,6 +2,7 @@ import { Client, Events, GatewayIntentBits, MessageFlags } from "discord.js";
 import { config } from "./config";
 import mongoose from "mongoose";
 import { commands } from "./utils/commandUtils";
+import { AppEmojiCollection } from "./resources/emojis/AppEmojiCollection";
 
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 
@@ -43,4 +44,13 @@ mongoose
   .then(() => client.login(config.DISCORD_TOKEN))
   .then(() => {
     console.log(`Logged in`);
+  })
+  .then(() => client.application?.emojis.fetch())
+  .then(
+    (collection) =>
+      collection && AppEmojiCollection.instance.setCollection(collection)
+  )
+  .then(() => {
+    const coll = AppEmojiCollection.instance.getCollection();
+    console.log(`Fetched emojis (${coll.size})`);
   });

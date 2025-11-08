@@ -3,7 +3,7 @@ import { config } from "../config";
 import * as fs from "fs";
 
 async function deployEmojis() {
-  const emojiDirPath = "./src/resources/emojis/";
+  const emojiDirPath = "./src/resources/emojis/images/";
   const files = fs.readdirSync(emojiDirPath);
 
   for (let i = 0; i < files.length; i++) {
@@ -16,7 +16,7 @@ async function deployEmojis() {
       client.application?.emojis
         .create({
           name: targetEmojiName,
-          attachment: "./src/resources/emojis/" + fileName,
+          attachment: emojiDirPath + fileName,
         })
         .then((emoji) =>
           console.log("Created " + emoji.name + " (" + emoji.id + ")")
