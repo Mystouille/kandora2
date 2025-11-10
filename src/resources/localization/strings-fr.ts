@@ -66,7 +66,7 @@ export const stringsFr: StringResources = {
           turn: "Turn `{0}`",
           doras: "Dora {0}",
           wwyd: "Que feriez vous?",
-          threadInfo: "Disctutez-en ici!",
+          threadTitle: "{0} réfléchi à {1}",
         },
       },
     },
