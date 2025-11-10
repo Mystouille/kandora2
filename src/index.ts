@@ -3,6 +3,9 @@ import { config } from "./config";
 import mongoose from "mongoose";
 import { commands } from "./utils/commandUtils";
 import { AppEmojiCollection } from "./resources/emojis/AppEmojiCollection";
+import csv from "csv-parser";
+import * as fs from "fs";
+import { NanikiruProblem } from "./resources/nanikiru/NanikiruCollections";
 
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 
@@ -36,21 +39,38 @@ client.on(Events.InteractionCreate, async (interaction) => {
   }
 });
 
+const results: NanikiruProblem[] = [];
+
+async function login() {
+  return client
+    .login(config.DISCORD_TOKEN)
+    .then(() => client.application?.emojis.fetch())
+    .then(
+      (collection) =>
+        collection && AppEmojiCollection.instance.setCollection(collection)
+    )
+    .then(() => {
+      const coll = AppEmojiCollection.instance.getCollection();
+      console.log(`Fetched emojis (${coll.size})`);
+    });
+}
+
+const a = [1, 2, 3];
+console.log(a.splice(0, 0));
+
 mongoose
   .connect(config.DB_PATH)
   .then(() => {
     console.log(`Connected to db`);
   })
-  .then(() => client.login(config.DISCORD_TOKEN))
   .then(() => {
-    console.log(`Logged in`);
-  })
-  .then(() => client.application?.emojis.fetch())
-  .then(
-    (collection) =>
-      collection && AppEmojiCollection.instance.setCollection(collection)
-  )
-  .then(() => {
-    const coll = AppEmojiCollection.instance.getCollection();
-    console.log(`Fetched emojis (${coll.size})`);
+    fs.createReadStream(
+      "src/resources/nanikiru/problems/nanikiruCollection.csv"
+    )
+      .pipe(csv())
+      .on("data", (data) => results.push(data))
+      .on("end", () => {
+        console.log(`Fetched nanikiru problems`);
+        login();
+      });
   });

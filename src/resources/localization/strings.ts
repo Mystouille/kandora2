@@ -17,6 +17,38 @@ export const strings = {
       name: "commands.createuser.name",
       desc: "commands.createuser.desc",
     },
+    quizz: {
+      name: "commands.quizz.name",
+      nanikiru: {
+        name: "commands.quizz.nanikiru.name",
+        desc: "commands.quizz.nanikiru.desc",
+        params: {
+          nbRounds: {
+            name: "commands.quizz.nanikiru.params.nbRounds.name",
+            desc: "commands.quizz.nanikiru.params.nbRounds.desc",
+          },
+          mode: {
+            name: "commands.quizz.nanikiru.params.mode.name",
+            desc: "commands.quizz.nanikiru.params.mode.desc",
+            options: {
+              first: "commands.quizz.nanikiru.params.mode.options.first",
+              race: "commands.quizz.nanikiru.params.mode.options.race",
+              explore: "commands.quizz.nanikiru.params.mode.options.explore",
+            },
+          },
+          series: {
+            name: "commands.quizz.nanikiru.params.series.name",
+            desc: "commands.quizz.nanikiru.params.series.desc",
+            options: {
+              uzaku300:
+                "commands.quizz.nanikiru.params.series.options.uzaku300",
+              uzakuKin:
+                "commands.quizz.nanikiru.params.series.options.uzakuKin",
+            },
+          },
+        },
+      },
+    },
     mjg: {
       name: "commands.mjg.name",
       nanikiru: {
@@ -73,7 +105,7 @@ export const strings = {
           turn: "commands.mjg.nanikiru.reply.turn",
           doras: "commands.mjg.nanikiru.reply.doras",
           wwyd: "commands.mjg.nanikiru.reply.wwyd",
-          threadInfo: "commands.mjg.nanikiru.reply.threadInfo",
+          threadTitle: "commands.mjg.nanikiru.reply.threadTitle",
         },
       },
     },

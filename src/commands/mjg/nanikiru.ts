@@ -1,9 +1,11 @@
 import {
-  AttachmentBuilder,
+  AllowedThreadTypeForTextChannel,
+  ChannelType,
   ChatInputCommandInteraction,
+  GuildTextThreadManager,
   InteractionCallbackResponse,
-  InteractionResponse,
   Locale,
+  ThreadAutoArchiveDuration,
 } from "discord.js";
 import { getImageFromTiles } from "../../mahjong/imageUtils";
 import {
@@ -14,14 +16,26 @@ import {
 import {
   getHandEmojis,
   fromStrToHandToDisplay,
-  splitTiles,
 } from "../../mahjong/handParser";
 import { localize } from "../../utils/localizationUtils";
 import { stringFormat } from "../../utils/stringUtils";
-import * as shantenCalc from "syanten";
-import { fromStrToTile9997 } from "../../mahjong/handConverter";
 import { getHairi, Hairi } from "../../mahjong/shanten";
-import { AppEmojiCollection } from "../../resources/emojis/AppEmojiCollection";
+
+export async function executeNanikiru(
+  itr: ChatInputCommandInteraction,
+  response: InteractionCallbackResponse<boolean>
+) {
+  const thread = itr.options.getBoolean(
+    optionName(nanikiruOptions.thread),
+    false
+  );
+
+  if (thread && itr.channel?.type === ChannelType.GuildText) {
+    replyInThread(itr, response, itr.channel.threads);
+  } else {
+    replyInSitu(itr, response);
+  }
+}
 
 export enum SeatChoice {
   East = "East",
@@ -46,8 +60,117 @@ export const nanikiruOptions = {
   thread: strings.commands.mjg.nanikiru.params.thread,
 };
 
-function name(path: NameDesc) {
+function optionName(path: NameDesc) {
   return localize(invariantLocale, path.name);
+}
+
+function replyInSitu(
+  itr: ChatInputCommandInteraction,
+  response: InteractionCallbackResponse<boolean>
+) {
+  const hand = itr.options.getString(optionName(nanikiruOptions.hand), true);
+  const discards = itr.options.getString(
+    optionName(nanikiruOptions.discards),
+    false
+  );
+  const doras = itr.options.getString(optionName(nanikiruOptions.doras), false);
+  const seat = itr.options.getString(optionName(nanikiruOptions.seat), false);
+  const round = itr.options.getString(optionName(nanikiruOptions.round), false);
+  const turn = itr.options.getString(optionName(nanikiruOptions.turn), false);
+  const ukeireChoice = itr.options.getString(
+    optionName(nanikiruOptions.ukeire),
+    false
+  ) as UkeireChoice;
+  const replyMessage = buildText(seat, round, turn, doras, itr.locale);
+  itr.editReply({
+    content: replyMessage,
+  });
+
+  const toDisplay = fromStrToHandToDisplay(hand);
+  getImageFromTiles(toDisplay).then((image) =>
+    itr.editReply({ files: [image] })
+  );
+
+  const emojis = getHandEmojis({
+    hand: discards || toDisplay.closedTiles,
+    sorted: true,
+    unique: true,
+  });
+  emojis.forEach(async (emoji) => {
+    response.resource?.message?.react(emoji);
+  });
+
+  if (ukeireChoice !== UkeireChoice.No) {
+    Promise.resolve(getHairi(toDisplay.closedTiles)).then(async (handInfo) =>
+      itr.editReply({
+        content: replyMessage + "\n" + buildUkeireInfo(handInfo, ukeireChoice),
+      })
+    );
+  }
+}
+
+function replyInThread(
+  itr: ChatInputCommandInteraction,
+  response: InteractionCallbackResponse<boolean>,
+  threadManager: GuildTextThreadManager<AllowedThreadTypeForTextChannel>
+) {
+  const hand = itr.options.getString(optionName(nanikiruOptions.hand), true);
+  const discards = itr.options.getString(
+    optionName(nanikiruOptions.discards),
+    false
+  );
+  const doras = itr.options.getString(optionName(nanikiruOptions.doras), false);
+  const seat = itr.options.getString(optionName(nanikiruOptions.seat), false);
+  const round = itr.options.getString(optionName(nanikiruOptions.round), false);
+  const turn = itr.options.getString(optionName(nanikiruOptions.turn), false);
+  const ukeireChoice = itr.options.getString(
+    optionName(nanikiruOptions.ukeire),
+    false
+  ) as UkeireChoice;
+
+  const replyMessage = buildText(seat, round, turn, doras, itr.locale);
+  itr.editReply({
+    content: replyMessage,
+  });
+
+  const toDisplay = fromStrToHandToDisplay(hand);
+  getImageFromTiles(toDisplay)
+    .then((image) => itr.editReply({ files: [image] }))
+    .then(() => {
+      threadManager
+        .create({
+          name: stringFormat(
+            itr.locale,
+            strings.commands.mjg.nanikiru.reply.threadTitle,
+            itr.member?.user.username || "",
+            hand
+          ),
+          autoArchiveDuration: ThreadAutoArchiveDuration.ThreeDays,
+          startMessage: response.resource?.message?.id,
+          type: 11,
+        })
+        .then((thread) => {
+          Promise.resolve(getHairi(toDisplay.closedTiles)).then(
+            async (handInfo) => {
+              thread
+                .send({
+                  content: buildUkeireInfo(handInfo, ukeireChoice),
+                })
+                .then((message) => {
+                  const emojis = getHandEmojis({
+                    hand: discards || toDisplay.closedTiles,
+                    sorted: true,
+                    unique: true,
+                  });
+
+                  emojis.forEach(async (emoji) => {
+                    message.react(emoji);
+                  });
+                });
+            }
+          );
+        });
+    });
 }
 
 function buildText(
@@ -76,8 +199,18 @@ function buildText(
   sb = sb.filter((x) => !!x);
   return wwyd + sb.join(" | ");
 }
+function buildUkeireInfo(handInfo: Hairi, ukeireDisplayType: UkeireChoice) {
+  switch (ukeireDisplayType) {
+    case UkeireChoice.Yes:
+      return buildBasicUkeireInfo(handInfo);
+    case UkeireChoice.Full:
+      return buildFullUkeireInfo(handInfo);
+    default:
+      return "";
+  }
+}
 
-function buildUkeireInfo(hairi: Hairi): string {
+function buildFullUkeireInfo(hairi: Hairi): string {
   let sb = [];
   sb.push(`${hairi.shanten}-shanten`);
   let hasAtLeastOneGoodTenpai = false;
@@ -117,39 +250,17 @@ function buildUkeireInfo(hairi: Hairi): string {
   return sb.join("\n");
 }
 
-export async function executeNanikiru(
-  itr: ChatInputCommandInteraction,
-  response: InteractionCallbackResponse<boolean>
-) {
-  const hand = itr.options.getString(name(nanikiruOptions.hand), true);
-  const discards = itr.options.getString(name(nanikiruOptions.discards), false);
-  const doras = itr.options.getString(name(nanikiruOptions.doras), false);
-  const seat = itr.options.getString(name(nanikiruOptions.seat), false);
-  const round = itr.options.getString(name(nanikiruOptions.round), false);
-  const turn = itr.options.getString(name(nanikiruOptions.turn), false);
-  const ukeire = itr.options.getString(name(nanikiruOptions.ukeire), false);
-  const thread = itr.options.getBoolean(name(nanikiruOptions.thread), false);
-
-  const replyMessage = buildText(seat, round, turn, doras, itr.locale);
-  itr.editReply({
-    content: replyMessage,
+function buildBasicUkeireInfo(hairi: Hairi): string {
+  let sb = [];
+  sb.push(`${hairi.shanten}-shanten\n`);
+  hairi.ukeire.forEach((discard) => {
+    const tileEmojis = getHandEmojis({
+      hand: discard.tile,
+    });
+    const tileInfo =
+      tileEmojis.length > 1 ? `[${tileEmojis.join("")}]` : tileEmojis[0];
+    const waitStr = `${tileInfo}x${discard.nbTotalWaits} `;
+    sb.push(waitStr);
   });
-
-  const toDisplay = fromStrToHandToDisplay(hand);
-  getImageFromTiles(toDisplay).then((image) =>
-    itr.editReply({ files: [image] })
-  );
-
-  const emojis = getHandEmojis({
-    hand: discards || toDisplay.closedTiles,
-    sorted: true,
-    unique: true,
-  });
-  emojis.forEach(async (emoji) => {
-    response.resource?.message?.react(emoji);
-  });
-
-  Promise.resolve(getHairi(toDisplay.closedTiles)).then(async (handInfo) =>
-    itr.editReply({ content: replyMessage + "\n" + buildUkeireInfo(handInfo) })
-  );
+  return sb.join("");
 }

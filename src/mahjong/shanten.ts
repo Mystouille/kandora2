@@ -67,9 +67,26 @@ export function getHairi(handStr: string): Hairi {
       addTileStrTo9997(toDraw, tile9997, -1);
     });
 
-    hairiExt.push({ tile: toCut, waits, nbGoodTenpaiWaits, nbTotalWaits });
+    const discardStr = JSON.stringify({
+      waits,
+      nbGoodTenpaiWaits,
+      nbTotalWaits,
+    });
+    const similarWait = hairiExt.find(
+      (h) =>
+        JSON.stringify({
+          waits: h.waits,
+          nbGoodTenpaiWaits: h.nbGoodTenpaiWaits,
+          nbTotalWaits: h.nbTotalWaits,
+        }) === discardStr
+    );
+
+    if (similarWait) {
+      similarWait.tile += toCut;
+    } else {
+      hairiExt.push({ tile: toCut, waits, nbGoodTenpaiWaits, nbTotalWaits });
+    }
     addTileStrTo9997(toCut, tile9997, 1);
   });
-
   return { shanten, ukeire: hairiExt };
 }
