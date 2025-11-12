@@ -14,6 +14,12 @@ export enum ChangeType {
   Remove = "Remove",
 }
 
+export enum QuizzMode {
+  Explore = "Explore",
+  First = "First",
+  Race = "Race",
+}
+
 export abstract class QuizzHandler {
   public startTime: Date;
   public resetTimer = () => {
@@ -29,19 +35,35 @@ export abstract class QuizzHandler {
   public rewardTable: number[];
 
   public currentQuestion: QuizzQuestion;
+  public nbQuestionsAsked: number;
 
   protected constructor(
     public generator: QuizzGenerator,
+    public quizzMode: QuizzMode,
     public timeout: number,
     public nbTotalQuestion: number
   ) {
-    this.currentQuestion = generator.getNextQuestion();
+    this.nbQuestionsAsked = 0;
+    this.currentQuestion = this.generateNextQuestion();
     this.startTime = new Date();
     this.winnerTimings = {};
     this.loserTimings = {};
     this.playerPoints = {};
     this.usersAnswers = {};
     this.rewardTable = [6, 4, 2, 1, 1];
+  }
+
+  protected sortTimings(timings: { [id: string]: number }) {
+    const list: { player: string; timing: number }[] = [];
+    Object.keys(timings).forEach((key) =>
+      list.push({ player: key, timing: timings[key] })
+    );
+    return list.sort((a, b) => a.timing - b.timing);
+  }
+
+  private generateNextQuestion() {
+    this.nbQuestionsAsked++;
+    return this.generator.getNextQuestion();
   }
 
   public changeUserAnswer(

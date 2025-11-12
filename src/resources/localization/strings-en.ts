@@ -10,6 +10,60 @@ export const stringsEn: StringResources = {
       name: "createuser",
       desc: "create a user",
     },
+    quizz: {
+      name: "quizz",
+      common: {
+        reply: {
+          timerDisclaimerFormat: ", {0} seconds per question.",
+          openingMessageExploreFormat:
+            "Question **[{0} / {1}]**. {2}\nReact with :eyes: to display the answer.",
+          openingMessageFirstFormat:
+            "Question **[{0} / {1}]**. {2}\nOnly the first to answer correctly with get a point!",
+          openingMessageRaceFormat:
+            "Question **[{0} / {1}]**. {2}\nYou have {2} seconds.",
+          problemIsLoading: "Displaying in 3... 2... 1...",
+          timeoutNoWinnerReply:
+            "No one answered correctly. Don't get discouraged!",
+          firstWinnerMessageFormat: "{0} got this one first!",
+          roundOver: "(Round over)",
+          winnerFormat: "✅: {0}",
+          loserFormat: "❌: {0}",
+        },
+      },
+      nanikiru: {
+        name: "nanikiru",
+        desc: "Starts a wwyd quizz game",
+        params: {
+          nbRounds: {
+            name: "nbRounds",
+            desc: "Number of rounds in the game",
+          },
+          mode: {
+            name: "mode",
+            desc: "The game mode",
+            options: {
+              first: "First",
+              race: "Race",
+              explore: "Explore",
+            },
+          },
+          series: {
+            name: "Series",
+            desc: "The series from where the problems will be selected",
+            options: {
+              uzaku301: "Uzaku301",
+              uzakuKin: "UzakuGold",
+            },
+          },
+        },
+        reply: {
+          theadNameFormat: "Nanikiru du {0} ({1} problèmes)",
+          threadFirstMessageFormat: "Une série de {0} nanikiru commence!",
+          openingMessage: "Find the best discard.",
+          answerLabel: "Answer: ",
+        },
+      },
+    },
     mjg: {
       name: "mjg",
       nanikiru: {

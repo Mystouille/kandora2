@@ -19,6 +19,26 @@ export const strings = {
     },
     quizz: {
       name: "commands.quizz.name",
+      common: {
+        reply: {
+          timerDisclaimerFormat:
+            "commands.quizz.common.reply.timerDisclaimerFormat",
+          openingMessageExploreFormat:
+            "commands.quizz.common.reply.openingMessageExploreFormat",
+          openingMessageFirstFormat:
+            "commands.quizz.common.reply.openingMessageFirstFormat",
+          openingMessageRaceFormat:
+            "commands.quizz.common.reply.openingMessageRaceFormat",
+          problemIsLoading: "commands.quizz.common.reply.problemIsLoading",
+          timeoutNoWinnerReply:
+            "commands.quizz.common.reply.timeoutNoWinnerReply",
+          firstWinnerMessageFormat:
+            "commands.quizz.common.reply.firstWinnerMessageFormat",
+          roundOver: "commands.quizz.nanikiru.reply.roundOver",
+          winnerFormat: "commands.quizz.nanikiru.reply.winnerFormat",
+          loserFormat: "commands.quizz.nanikiru.reply.loserFormat",
+        },
+      },
       nanikiru: {
         name: "commands.quizz.nanikiru.name",
         desc: "commands.quizz.nanikiru.desc",
@@ -40,12 +60,19 @@ export const strings = {
             name: "commands.quizz.nanikiru.params.series.name",
             desc: "commands.quizz.nanikiru.params.series.desc",
             options: {
-              uzaku300:
+              uzaku301:
                 "commands.quizz.nanikiru.params.series.options.uzaku300",
               uzakuKin:
                 "commands.quizz.nanikiru.params.series.options.uzakuKin",
             },
           },
+        },
+        reply: {
+          theadNameFormat: "commands.quizz.nanikiru.reply.theadNameFormat",
+          threadFirstMessageFormat:
+            "commands.quizz.nanikiru.reply.threadFirstMessageFormat",
+          openingMessage: "commands.quizz.nanikiru.reply.openingMessage",
+          answerLabel: "commands.quizz.nanikiru.reply.answerLabel",
         },
       },
     },

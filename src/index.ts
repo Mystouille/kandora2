@@ -7,7 +7,9 @@ import csv from "csv-parser";
 import * as fs from "fs";
 import { NanikiruProblem } from "./resources/nanikiru/NanikiruCollections";
 
-const client = new Client({ intents: [GatewayIntentBits.Guilds] });
+const client = new Client({
+  intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessageReactions],
+});
 
 client.once(Events.ClientReady, (readyClient) => {
   console.log(`Ready! Logged in as ${readyClient.user.tag}`);
