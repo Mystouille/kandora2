@@ -6,11 +6,25 @@ export const data = new SlashCommandBuilder()
   .setName(invariantResources.commands.ping.name);
 
 export async function execute(itr: ChatInputCommandInteraction) {
-  const a = itr.client.emojis.valueOf();
-  const b = itr.client.emojis.valueOf().get("refresh");
-
-  itr.reply({
+  const response = await itr.reply({
     content: "pong!",
     withResponse: true,
+  });
+  const alwaysPass = () => true;
+
+  const collector = response.resource?.message?.createReactionCollector({
+    dispose: true,
+  });
+
+  collector?.on("collect", async (reaction, user) => {
+    itr.editReply({ content: "+ " + reaction.emoji.name });
+    console.log("collected");
+  });
+  collector?.on("remove", async (reaction, user) => {
+    itr.editReply({ content: "- " + reaction.emoji.name });
+    console.log("removed");
+  });
+  collector?.on("end", async (collected, reason) => {
+    console.log(`ended: ${reason}`);
   });
 }

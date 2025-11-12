@@ -10,6 +10,60 @@ export const stringsFr: StringResources = {
       name: "creeutilisateur",
       desc: "cree un utilisateur",
     },
+    quizz: {
+      name: "quizz",
+      common: {
+        reply: {
+          timerDisclaimerFormat: ", {0} secondes par question.",
+          openingMessageExploreFormat:
+            "Question **[{0} / {1}]**. {2}\nRéagissez avec :eyes: pour afficher la réponse.",
+          openingMessageFirstFormat:
+            "Question **[{0} / {1}]**. {2}\nSeul le premier à trouver la réponse remporte un point!",
+          openingMessageRaceFormat:
+            "Question **[{0} / {1}]**. {2}\nVous avez {3} secondes.",
+          problemIsLoading: "Affichage dans 3... 2... 1...",
+          timeoutNoWinnerReply:
+            "Personne n'a trouvé à temps. Ne vous découragez pas!",
+          firstWinnerMessageFormat: "{0} a trouvé en premier!",
+          roundOver: "(Manche terminée)",
+          winnerFormat: "✅: {0}",
+          loserFormat: "❌: {0}",
+        },
+      },
+      nanikiru: {
+        name: "nanikiru",
+        desc: "commence un quizz de wwyd",
+        params: {
+          nbRounds: {
+            name: "nbRounds",
+            desc: "Nombre de rounds du quizz",
+          },
+          mode: {
+            name: "mode",
+            desc: "Mode de fonctionnement du quizz",
+            options: {
+              first: "Preums",
+              race: "Course",
+              explore: "Explore",
+            },
+          },
+          series: {
+            name: "série",
+            desc: "La série d'exercices dont les problèmes seront tirés",
+            options: {
+              uzaku301: "Uzaku301",
+              uzakuKin: "UzakuGold",
+            },
+          },
+        },
+        reply: {
+          theadNameFormat: "Nanikiru du {0} ({1} problèmes)",
+          threadFirstMessageFormat: "Une série de {0} nanikiru commence!",
+          openingMessage: "Trouvez la meilleure défause.",
+          answerLabel: "Réponse: ",
+        },
+      },
+    },
     mjg: {
       name: "mjg",
       nanikiru: {
