@@ -8,7 +8,7 @@ import { buildOptionNameAndDescription } from "../../utils/localizationUtils";
 import { replyWithDelay } from "../../utils/interactionUtils";
 import { executeQuizzNanikiru, nanikiruOptions } from "./nanikiru";
 import { NanikiruType } from "../../resources/nanikiru/NanikiruCollections";
-import { QuizzMode } from "../../quizz/QuizzHandler";
+import { QuizzMode } from "./QuizzHandler";
 
 const nanikiruSubCommandName = invariantResources.commands.mjg.nanikiru.name;
 
@@ -20,7 +20,7 @@ export let data: any = new SlashCommandBuilder()
       .addIntegerOption((option) =>
         buildOptionNameAndDescription(
           option,
-          nanikiruOptions.nbRounds
+          nanikiruOptions.nbrounds
         ).setRequired(true)
       )
       .addStringOption((option) =>

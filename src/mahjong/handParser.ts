@@ -1,4 +1,3 @@
-import { ApplicationEmoji } from "discord.js";
 import { AppEmojiCollection } from "../resources/emojis/AppEmojiCollection";
 import {
   HandToDisplay,
@@ -7,7 +6,7 @@ import {
   MeldType,
 } from "./handTypes";
 
-const SUIT_NAMES = ["p", "m", "s", "z"];
+export const SUIT_NAMES = ["p", "m", "s", "z"];
 
 function getEmojiCode(tileName: string): string {
   return `:${tileName}:`;
@@ -99,7 +98,7 @@ export function fromStrToHandToDisplay(handStr: string): HandToDisplay {
     lastTileSeparated: false,
     melds: [],
   };
-  var handAndMelds = handStr.split(" ");
+  let handAndMelds = handStr.split(" ");
   if (handAndMelds.length === 0) {
     return toDisplay;
   }
@@ -113,7 +112,7 @@ export function fromStrToHandToDisplay(handStr: string): HandToDisplay {
   let count = 0;
   let sourceLookup = false;
   let isCalled = false;
-  let blocks: MeldToDisplay[] = [];
+  const blocks: MeldToDisplay[] = [];
   let currentBlock: string[] = [];
   let currentType: MeldType | undefined = undefined;
   let currentSource: MeldSource | undefined = undefined;

@@ -14,7 +14,7 @@ export const stringsFr: StringResources = {
       name: "quizz",
       common: {
         reply: {
-          timerDisclaimerFormat: ", {0} secondes par question.",
+          timerDisclaimerFormat: "{0} secondes par question.",
           openingMessageExploreFormat:
             "Question **[{0} / {1}]**. {2}\nRéagissez avec :eyes: pour afficher la réponse.",
           openingMessageFirstFormat:
@@ -34,8 +34,8 @@ export const stringsFr: StringResources = {
         name: "nanikiru",
         desc: "commence un quizz de wwyd",
         params: {
-          nbRounds: {
-            name: "nbRounds",
+          nbrounds: {
+            name: "nbrounds",
             desc: "Nombre de rounds du quizz",
           },
           mode: {
@@ -48,7 +48,7 @@ export const stringsFr: StringResources = {
             },
           },
           series: {
-            name: "série",
+            name: "serie",
             desc: "La série d'exercices dont les problèmes seront tirés",
             options: {
               uzaku301: "Uzaku301",

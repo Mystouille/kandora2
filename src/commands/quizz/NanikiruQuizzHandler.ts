@@ -1,114 +1,138 @@
-import {
-  ChatInputCommandInteraction,
-  Locale,
-  Message,
-  messageLink,
-  PublicThreadChannel,
-} from "discord.js";
-import {
-  QuizzGenerator,
-  QuizzHandler,
-  QuizzMode,
-} from "../../quizz/QuizzHandler";
-import { localize } from "../../utils/localizationUtils";
+import { ChatInputCommandInteraction, PublicThreadChannel } from "discord.js";
+import { QuizzHandler, QuizzMode, QuizzQuestion } from "./QuizzHandler";
 import { strings } from "../../resources/localization/strings";
 import { stringFormat } from "../../utils/stringUtils";
-import { getHandEmojis } from "../../mahjong/handParser";
+import {
+  compareTiles,
+  fromStrToHandToDisplay,
+  getHandEmojis,
+  splitTiles,
+  SUIT_NAMES,
+} from "../../mahjong/handParser";
+import {
+  NanikiruCollections,
+  NanikiruProblem,
+  NanikiruType,
+} from "../../resources/nanikiru/NanikiruCollections";
+import { AppEmojiName } from "../../resources/emojis/AppEmojiCollection";
+import { getImageFromTiles } from "../../mahjong/imageUtils";
 
-const commonStrings = strings.commands.quizz.common.reply;
 const nanikiruStrings = strings.commands.quizz.nanikiru;
 
 export class NanikiruQuizzHandler extends QuizzHandler {
   public constructor(
-    public thread: PublicThreadChannel<false>,
-    generator: QuizzGenerator,
+    thread: PublicThreadChannel<false>,
+    interaction: ChatInputCommandInteraction,
     quizzMode: QuizzMode,
     timeout: number | undefined,
-    nbQuestion: number | undefined
+    nbQuestion: number | undefined,
+    public series: NanikiruType
   ) {
-    super(generator, quizzMode, timeout || 0, nbQuestion || 1);
+    super(thread, interaction, quizzMode, timeout || 0, nbQuestion || 1);
   }
 
-  public onQuestionEnd(): void {}
-
-  public onQuestionReaction(): void {}
-
-  public onQuestionTimeout(message: string): void {
-    this.updateScores();
-  }
-
-  getOpeningMessage(locale: Locale) {
-    const openingMessage = localize(
-      locale,
-      strings.commands.quizz.nanikiru.reply.openingMessage
+  protected get firstThreadMessage() {
+    return stringFormat(
+      this.locale,
+      nanikiruStrings.reply.threadFirstMessageFormat
     );
-    switch (this.quizzMode) {
-      case QuizzMode.Explore:
-        return stringFormat(
-          locale,
-          commonStrings.openingMessageExploreFormat,
-          `${this.nbQuestionsAsked}`,
-          `${this.nbTotalQuestion}`,
-          openingMessage
-        );
-      case QuizzMode.First:
-        return stringFormat(
-          locale,
-          commonStrings.openingMessageFirstFormat,
-          `${this.nbQuestionsAsked}`,
-          `${this.nbTotalQuestion}`,
-          openingMessage
-        );
-      case QuizzMode.Explore:
-        return stringFormat(
-          locale,
-          commonStrings.openingMessageRaceFormat,
-          `${this.nbQuestionsAsked}`,
-          `${this.nbTotalQuestion}`,
-          `${this.timeout}`,
-          openingMessage
-        );
-    }
   }
 
-  protected getAnswer(locale: Locale) {
+  protected get baseMessagePath() {
+    return nanikiruStrings.reply.openingMessage;
+  }
+
+  async getNewQuestionData() {
+    const problem = NanikiruCollections.instance.getNextProblem(this.series);
+    return this.problemToQuestion(problem);
+  }
+
+  protected async problemToQuestion(
+    problem: NanikiruProblem
+  ): Promise<QuizzQuestion> {
+    const fullAnswer = this.getAnswerTextFromProblem(problem);
+    const answer = splitTiles(
+      problem.answer.replaceAll("k", "").replaceAll("r", "")
+    );
+    answer.sort(compareTiles);
+
+    const questionImage = await getImageFromTiles(
+      fromStrToHandToDisplay(problem.hand)
+    );
+
+    if (problem.answer.includes("k")) {
+      answer.push(AppEmojiName.Kan);
+    }
+    if (problem.answer.includes("r")) {
+      answer.push(AppEmojiName.Riichi);
+    }
+
+    const optionEmojis = getHandEmojis({
+      hand: problem.hand,
+      sorted: true,
+      unique: true,
+    });
+    return { questionImage, answer, fullAnswer, optionEmojis };
+  }
+
+  protected getAnswerTextFromProblem(problem: NanikiruProblem) {
     const sb = [];
     const answerEmojis = getHandEmojis({
-      hand: this.currentQuestion.answer.join(""),
+      hand: problem.answer,
     });
     sb.push(`# ${nanikiruStrings.reply.answerLabel} ||${answerEmojis}||`);
 
-    if (Object.keys(this.winnerTimings).length > 0) {
-      const winners = this.sortTimings(this.winnerTimings)
-        .map((w) => `<@${w.player}>`)
-        .join("");
-      sb.push(stringFormat(locale, commonStrings.winnerFormat, winners));
+    if (problem.ukeire.startsWith("#")) {
+      sb.push(this.formatAnswerText(problem.ukeire));
     }
-    if (Object.keys(this.loserTimings).length > 0) {
-      const losers = this.sortTimings(this.loserTimings)
-        .map((l) => `<@${l.player}>`)
-        .join("");
-      sb.push(stringFormat(locale, commonStrings.loserFormat, losers));
+    if (problem.explanation) {
+      sb.push(this.formatAnswerText(problem.explanation, "###", true));
     }
-
-    // TODO: here!
-    const losers = this.sortTimings(this.loserTimings).map(
-      (l) => `<@${l.player}>`
-    );
+    sb.push("### " + problem.source);
     return sb.join("\n");
   }
 
-  protected postAnswer(
-    itr: ChatInputCommandInteraction,
-    message: Message<boolean>
+  formatAnswerText(
+    textRaw: string,
+    prefix: string = "",
+    spoiler: boolean = true
   ) {
-    const sb = [];
-    sb.push(localize(itr.locale, commonStrings.roundOver));
-    sb.push(this.getOpeningMessage(itr.locale));
-    message.edit({ content: sb.join("\n") });
-    message.reactions.removeAll();
+    const compositeText = textRaw.split("#");
 
-    const answer = this.getAnswer(itr.locale);
-    message.reply({ content: answer });
+    for (let i = 0; i < compositeText.length; i++) {
+      if ((i + 2) % 3 === 0) {
+        const handText = compositeText[i].split("+");
+        const emojiHand: string[] = [];
+        handText.forEach((subHand) =>
+          emojiHand.push(
+            getHandEmojis({ hand: subHand, sorted: false, unique: false }).join(
+              ""
+            )
+          )
+        );
+        compositeText[i] = "# " + emojiHand.join("➕");
+      } else {
+        let textWithEmojis = compositeText[i];
+        for (let n = 0; n <= 9; n++) {
+          SUIT_NAMES.forEach((s: string) => {
+            if (s === "z" && (n > 7 || n === 0)) {
+              return;
+            }
+            const emojiStr = n.toString() + s;
+            textWithEmojis = textWithEmojis.replaceAll(
+              emojiStr,
+              getHandEmojis({ hand: emojiStr }).join("")
+            );
+          });
+        }
+        compositeText[i] =
+          (textWithEmojis.length > 0 ? prefix : "") + textWithEmojis;
+      }
+    }
+    let finalText = compositeText.join("\n");
+    if (spoiler) {
+      finalText = `||${finalText}||`;
+    }
+    return finalText;
   }
 }

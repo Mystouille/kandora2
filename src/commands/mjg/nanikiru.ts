@@ -20,6 +20,8 @@ import {
 import { localize } from "../../utils/localizationUtils";
 import { stringFormat } from "../../utils/stringUtils";
 import { getHairi, Hairi } from "../../mahjong/shanten";
+import * as shantenCalc from "syanten";
+import { fromStrToTile9997 } from "../../mahjong/handConverter";
 
 export async function executeNanikiru(
   itr: ChatInputCommandInteraction,
@@ -150,25 +152,36 @@ function replyInThread(
           type: 11,
         })
         .then((thread) => {
-          Promise.resolve(getHairi(toDisplay.closedTiles)).then(
-            async (handInfo) => {
-              thread
-                .send({
+          const getUkeireMessage = () =>
+            Promise.resolve(getHairi(toDisplay.closedTiles)).then(
+              async (handInfo) =>
+                thread.send({
                   content: buildUkeireInfo(handInfo, ukeireChoice),
                 })
-                .then((message) => {
-                  const emojis = getHandEmojis({
-                    hand: discards || toDisplay.closedTiles,
-                    sorted: true,
-                    unique: true,
-                  });
+            );
+          const getNormalMessage = () =>
+            Promise.resolve(
+              shantenCalc.syantenAll(fromStrToTile9997(toDisplay.closedTiles))
+            ).then(async (shanten) =>
+              thread.send({
+                content: `${shanten}-shanten`,
+              })
+            );
+          const messagePromise =
+            ukeireChoice === UkeireChoice.No
+              ? getNormalMessage()
+              : getUkeireMessage();
+          messagePromise.then((message) => {
+            const emojis = getHandEmojis({
+              hand: discards || toDisplay.closedTiles,
+              sorted: true,
+              unique: true,
+            });
 
-                  emojis.forEach(async (emoji) => {
-                    message.react(emoji);
-                  });
-                });
-            }
-          );
+            emojis.forEach(async (emoji) => {
+              message.react(emoji);
+            });
+          });
         });
     });
 }
@@ -211,7 +224,7 @@ function buildUkeireInfo(handInfo: Hairi, ukeireDisplayType: UkeireChoice) {
 }
 
 function buildFullUkeireInfo(hairi: Hairi): string {
-  let sb = [];
+  const sb = [];
   sb.push(`${hairi.shanten}-shanten`);
   let hasAtLeastOneGoodTenpai = false;
   hairi.ukeire.forEach((discard) => {
@@ -251,7 +264,7 @@ function buildFullUkeireInfo(hairi: Hairi): string {
 }
 
 function buildBasicUkeireInfo(hairi: Hairi): string {
-  let sb = [];
+  const sb = [];
   sb.push(`${hairi.shanten}-shanten\n`);
   hairi.ukeire.forEach((discard) => {
     const tileEmojis = getHandEmojis({
