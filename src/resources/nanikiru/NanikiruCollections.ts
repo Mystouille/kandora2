@@ -40,6 +40,8 @@ export class NanikiruCollections {
   static #instance: NanikiruCollections;
 
   private collections: Collections;
+  private currentProblems: NanikiruProblem[];
+  private currentType: NanikiruType | undefined;
 
   private constructor() {
     this.collections = {
@@ -48,9 +50,10 @@ export class NanikiruCollections {
       uzakuKinCollection: { problems: [], remainingProblems: [] },
       customCollection: { problems: [], remainingProblems: [] },
     };
+    this.currentProblems = [];
   }
 
-  private resetCollection() {
+  private resetCollections() {
     this.collections = {
       uzaku300Collection: { problems: [], remainingProblems: [] },
       uzaku301Collection: { problems: [], remainingProblems: [] },
@@ -71,12 +74,7 @@ export class NanikiruCollections {
         return this.collections.customCollection;
     }
   }
-  /**
-   * The static getter that controls access to the singleton instance.
-   *
-   * This implementation allows you to extend the Singleton class while
-   * keeping just one instance of each subclass around.
-   */
+
   public static get instance(): NanikiruCollections {
     if (!NanikiruCollections.#instance) {
       NanikiruCollections.#instance = new NanikiruCollections();
@@ -84,8 +82,8 @@ export class NanikiruCollections {
     return NanikiruCollections.#instance;
   }
 
-  public setCollection(collection: NanikiruProblem[]) {
-    this.resetCollection();
+  public setCollections(collection: NanikiruProblem[]) {
+    this.resetCollections();
     collection.forEach((prob) => {
       const type = prob.source.split("-")[0] as NanikiruType;
       const collection = this.getCollectionFromSource(type);
@@ -94,7 +92,7 @@ export class NanikiruCollections {
     });
   }
 
-  public getNextproblems(type: NanikiruType): NanikiruProblem[] {
+  private getNextProblems(type: NanikiruType): NanikiruProblem[] {
     const pageSize = pageSizes[type];
     const collection = this.getCollectionFromSource(type);
     const remainingProb = collection.remainingProblems;
@@ -107,5 +105,16 @@ export class NanikiruCollections {
       startIdx,
       Math.max(startIdx + pageSize, remainingProb.length - 1)
     );
+  }
+
+  public getNextProblem(type: NanikiruType): NanikiruProblem {
+    let problem = this.currentProblems.pop();
+    if (problem === undefined || this.currentType !== type) {
+      this.currentType = type;
+      this.currentProblems = this.getNextProblems(type);
+      this.currentProblems.reverse();
+      problem = this.currentProblems.pop();
+    }
+    return problem as NanikiruProblem;
   }
 }

@@ -1,6 +1,5 @@
 import { addTileStrTo9997, fromStrToTile9997 } from "./handConverter";
 import * as shantenCalc from "syanten";
-import { fromStrToHandToDisplay } from "./handParser";
 
 type Wait = {
   nbTile: number;
@@ -37,22 +36,26 @@ export function getHairi(handStr: string): Hairi {
       shanten = entryCut[1] as number;
       return;
     }
+    if (toCut === "wait") {
+      shanten = 0;
+      return;
+    }
     let nbGoodTenpaiWaits = 0;
     let nbTotalWaits = 0;
     addTileStrTo9997(toCut, tile9997, -1);
     const waits: Wait[] = [];
-    Object.entries(entryCut[1] as Object).forEach((entryDraw) => {
+    Object.entries(entryCut[1] as object).forEach((entryDraw) => {
       const toDraw = entryDraw[0];
       const nbTile = entryDraw[1];
       addTileStrTo9997(toDraw, tile9997, 1);
       const tenpai = shantenCalc.hairi(tile9997);
       let maxWaits = 0;
-      Object.entries(tenpai as Object).forEach((tenpaiDiscard) => {
+      Object.entries(tenpai as object).forEach((tenpaiDiscard) => {
         if (tenpaiDiscard[0] === "now") {
           return;
         }
         let nbWaits = 0;
-        Object.values(tenpaiDiscard[1] as Object).forEach((nbAgari) => {
+        Object.values(tenpaiDiscard[1] as object).forEach((nbAgari) => {
           nbWaits += nbAgari;
         });
         maxWaits = Math.max(maxWaits, nbWaits);

@@ -11,6 +11,7 @@
 
       // Debug current file in VSCode
       "program": "./src/index.ts",
+      //"program": "./src/scripts/deployCommands.ts",
 
       /*
        * Path to tsx binary

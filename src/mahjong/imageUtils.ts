@@ -34,10 +34,7 @@ export function handToFileName(hand: HandToDisplay) {
   return `${hand.closedTiles}${hand.melds.length > 0 ? "_" : ""}${hand.melds.map((meld) => `${meld.source}${meld.type}${meld.tiles}`).join("_")}${hand.lastTileSeparated ? "_x" : ""}.png`;
 }
 
-async function WriteAndGetImageFromHand(
-  hand: HandToDisplay,
-  outputPath: string
-) {
+async function WriteImageFromHand(hand: HandToDisplay, outputPath: string) {
   const resImage = await getAllTiles();
   const resImageTilted = await getAllTiltedTiles();
   const closedTileList = splitTiles(hand.closedTiles);
@@ -100,7 +97,7 @@ async function WriteAndGetImageFromHand(
 
   let targetX = offsetSize;
   //tiles will be drawn lower itf there is a kakan in the hand
-  let targetY = Math.floor(
+  const targetY = Math.floor(
     isKakanInHand
       ? tiltedTileImgHeight * 2 - tiltedTileTopMargin - tileImgHeight
       : 0
@@ -158,7 +155,7 @@ async function WriteAndGetImageFromHand(
         meld.type == MeldType.Ankan &&
         (i === 0 || i === meldedTiles.length - 1)
       ) {
-        meldedTiles[i] = "8z";
+        meldedTiles[i] = "0z";
       }
       const tileArea = getTileArea(meldedTiles[i], isTilted);
       targetContext.drawImage(
@@ -192,13 +189,13 @@ async function WriteAndGetImageFromHand(
     }
   });
 
-  return new Promise<Buffer<ArrayBuffer>>((resolve, reject) => {
+  return new Promise<void>((resolve, reject) => {
     const out = fs.createWriteStream(outputPath);
     const stream = targetCanvas.createPNGStream();
     stream.pipe(out);
     out.on("finish", async () => {
       try {
-        resolve(fs.readFileSync(outputPath));
+        resolve();
       } catch (err) {
         reject(err);
       }
@@ -255,11 +252,15 @@ export async function getImageFromTiles(hand: HandToDisplay) {
     if (!fs.existsSync(resourcesCacheDirName)) {
       fs.mkdirSync(resourcesCacheDirName);
     }
-    return await WriteAndGetImageFromHand(hand, outputFilePath);
+    return await WriteImageFromHand(hand, outputFilePath).then(
+      () => outputFilePath
+    );
   } else {
     console.log("image already exists");
   }
-  return fs.readFileSync(outputFilePath);
+
+  return outputFilePath;
+  //return fs.readFileSync(outputFilePath);
 }
 
 //=============

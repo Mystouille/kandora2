@@ -5,7 +5,10 @@ import { commands } from "./utils/commandUtils";
 import { AppEmojiCollection } from "./resources/emojis/AppEmojiCollection";
 import csv from "csv-parser";
 import * as fs from "fs";
-import { NanikiruProblem } from "./resources/nanikiru/NanikiruCollections";
+import {
+  NanikiruCollections,
+  NanikiruProblem,
+} from "./resources/nanikiru/NanikiruCollections";
 
 const client = new Client({
   intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessageReactions],
@@ -41,8 +44,6 @@ client.on(Events.InteractionCreate, async (interaction) => {
   }
 });
 
-const results: NanikiruProblem[] = [];
-
 async function login() {
   return client
     .login(config.DISCORD_TOKEN)
@@ -57,8 +58,7 @@ async function login() {
     });
 }
 
-const a = [1, 2, 3];
-console.log(a.splice(0, 0));
+const nanikiruProblems: NanikiruProblem[] = [];
 
 mongoose
   .connect(config.DB_PATH)
@@ -70,8 +70,12 @@ mongoose
       "src/resources/nanikiru/problems/nanikiruCollection.csv"
     )
       .pipe(csv())
-      .on("data", (data) => results.push(data))
+      .on("data", (data: NanikiruProblem) => nanikiruProblems.push(data))
       .on("end", () => {
+        nanikiruProblems.sort((a, b) =>
+          a.source.toLowerCase() < b.source.toLowerCase() ? -1 : 1
+        );
+        NanikiruCollections.instance.setCollections(nanikiruProblems);
         console.log(`Fetched nanikiru problems`);
         login();
       });

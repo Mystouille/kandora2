@@ -43,9 +43,9 @@ export const strings = {
         name: "commands.quizz.nanikiru.name",
         desc: "commands.quizz.nanikiru.desc",
         params: {
-          nbRounds: {
-            name: "commands.quizz.nanikiru.params.nbRounds.name",
-            desc: "commands.quizz.nanikiru.params.nbRounds.desc",
+          nbrounds: {
+            name: "commands.quizz.nanikiru.params.nbrounds.name",
+            desc: "commands.quizz.nanikiru.params.nbrounds.desc",
           },
           mode: {
             name: "commands.quizz.nanikiru.params.mode.name",
