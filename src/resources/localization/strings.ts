@@ -9,6 +9,9 @@ export type NameDesc = {
 
 export const strings = {
   commands: {
+    common: {
+      shantenGoodWaitInfo: "commands.common.shantenGoodWaitInfo",
+    },
     ping: {
       name: "commands.ping.name",
       desc: "commands.ping.description",
@@ -34,9 +37,9 @@ export const strings = {
             "commands.quizz.common.reply.timeoutNoWinnerReply",
           firstWinnerMessageFormat:
             "commands.quizz.common.reply.firstWinnerMessageFormat",
-          roundOver: "commands.quizz.nanikiru.reply.roundOver",
-          winnerFormat: "commands.quizz.nanikiru.reply.winnerFormat",
-          loserFormat: "commands.quizz.nanikiru.reply.loserFormat",
+          roundOver: "commands.quizz.common.reply.roundOver",
+          winnerFormat: "commands.quizz.common.reply.winnerFormat",
+          loserFormat: "commands.quizz.common.reply.loserFormat",
         },
       },
       nanikiru: {
@@ -55,6 +58,10 @@ export const strings = {
               race: "commands.quizz.nanikiru.params.mode.options.race",
               explore: "commands.quizz.nanikiru.params.mode.options.explore",
             },
+          },
+          timeout: {
+            name: "commands.quizz.nanikiru.params.timeout.name",
+            desc: "commands.quizz.nanikiru.params.timeout.desc",
           },
           series: {
             name: "commands.quizz.nanikiru.params.series.name",

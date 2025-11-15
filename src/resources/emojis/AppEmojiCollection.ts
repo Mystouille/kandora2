@@ -31,7 +31,7 @@ export class AppEmojiCollection {
 export enum AppEmojiName {
   Kan = "kan",
   Riichi = "riichi",
-  Eyes = "eyes",
+  Eyes = "👀",
   m0 = "0m",
   m1 = "1m",
   m2 = "2m",

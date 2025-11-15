@@ -16,6 +16,8 @@ import {
 } from "../../resources/nanikiru/NanikiruCollections";
 import { AppEmojiName } from "../../resources/emojis/AppEmojiCollection";
 import { getImageFromTiles } from "../../mahjong/imageUtils";
+import { localize } from "../../utils/localizationUtils";
+import { getShantenInfo, UkeireChoice } from "../../mahjong/shantenUtils";
 
 const nanikiruStrings = strings.commands.quizz.nanikiru;
 
@@ -80,13 +82,24 @@ export class NanikiruQuizzHandler extends QuizzHandler {
     const answerEmojis = getHandEmojis({
       hand: problem.answer,
     });
-    sb.push(`# ${nanikiruStrings.reply.answerLabel} ||${answerEmojis}||`);
+    sb.push(
+      `# ${localize(this.locale, nanikiruStrings.reply.answerLabel)} ||${answerEmojis}||`
+    );
 
     if (problem.ukeire.startsWith("#")) {
-      sb.push(this.formatAnswerText(problem.ukeire));
+      sb.push(
+        getShantenInfo(
+          problem.hand,
+          UkeireChoice.Yes,
+          this.locale,
+          problem.ukeire
+        )
+      );
+    } else {
+      sb.push(this.formatAnswerText(problem.ukeire, "### ", true));
     }
     if (problem.explanation) {
-      sb.push(this.formatAnswerText(problem.explanation, "###", true));
+      sb.push(this.formatAnswerText(problem.explanation, "### ", true));
     }
     sb.push("### " + problem.source);
     return sb.join("\n");

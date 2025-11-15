@@ -19,7 +19,12 @@ import {
 } from "../../mahjong/handParser";
 import { localize } from "../../utils/localizationUtils";
 import { stringFormat } from "../../utils/stringUtils";
-import { getHairi, Hairi } from "../../mahjong/shanten";
+import {
+  getShantenInfo,
+  getHairi,
+  Hairi,
+  UkeireChoice,
+} from "../../mahjong/shantenUtils";
 import * as shantenCalc from "syanten";
 import { fromStrToTile9997 } from "../../mahjong/handConverter";
 
@@ -44,11 +49,6 @@ export enum SeatChoice {
   South = "South",
   West = "West",
   North = "North",
-}
-export enum UkeireChoice {
-  No = "No",
-  Yes = "Yes",
-  Full = "Full",
 }
 
 export const nanikiruOptions = {
@@ -102,13 +102,12 @@ function replyInSitu(
     response.resource?.message?.react(emoji);
   });
 
-  if (ukeireChoice !== UkeireChoice.No) {
-    Promise.resolve(getHairi(toDisplay.closedTiles)).then(async (handInfo) =>
-      itr.editReply({
-        content: replyMessage + "\n" + buildUkeireInfo(handInfo, ukeireChoice),
-      })
-    );
-  }
+  itr.editReply({
+    content:
+      replyMessage +
+      "\n" +
+      getShantenInfo(hand, ukeireChoice, itr.locale, discards || undefined),
+  });
 }
 
 function replyInThread(
@@ -152,36 +151,21 @@ function replyInThread(
           type: 11,
         })
         .then((thread) => {
-          const getUkeireMessage = () =>
-            Promise.resolve(getHairi(toDisplay.closedTiles)).then(
-              async (handInfo) =>
-                thread.send({
-                  content: buildUkeireInfo(handInfo, ukeireChoice),
-                })
-            );
-          const getNormalMessage = () =>
-            Promise.resolve(
-              shantenCalc.syantenAll(fromStrToTile9997(toDisplay.closedTiles))
-            ).then(async (shanten) =>
-              thread.send({
-                content: `${shanten}-shanten`,
-              })
-            );
-          const messagePromise =
-            ukeireChoice === UkeireChoice.No
-              ? getNormalMessage()
-              : getUkeireMessage();
-          messagePromise.then((message) => {
-            const emojis = getHandEmojis({
-              hand: discards || toDisplay.closedTiles,
-              sorted: true,
-              unique: true,
-            });
+          thread
+            .send({
+              content: getShantenInfo(hand, ukeireChoice, itr.locale),
+            })
+            .then((message) => {
+              const emojis = getHandEmojis({
+                hand: discards || toDisplay.closedTiles,
+                sorted: true,
+                unique: true,
+              });
 
-            emojis.forEach(async (emoji) => {
-              message.react(emoji);
+              emojis.forEach(async (emoji) => {
+                message.react(emoji);
+              });
             });
-          });
         });
     });
 }
@@ -211,69 +195,4 @@ function buildText(
   sb.push(doraEmojis && stringFormat(locale, replyStrings.doras, doraEmojis));
   sb = sb.filter((x) => !!x);
   return wwyd + sb.join(" | ");
-}
-function buildUkeireInfo(handInfo: Hairi, ukeireDisplayType: UkeireChoice) {
-  switch (ukeireDisplayType) {
-    case UkeireChoice.Yes:
-      return buildBasicUkeireInfo(handInfo);
-    case UkeireChoice.Full:
-      return buildFullUkeireInfo(handInfo);
-    default:
-      return "";
-  }
-}
-
-function buildFullUkeireInfo(hairi: Hairi): string {
-  const sb = [];
-  sb.push(`${hairi.shanten}-shanten`);
-  let hasAtLeastOneGoodTenpai = false;
-  hairi.ukeire.forEach((discard) => {
-    const tileEmoji = getHandEmojis({
-      hand: discard.tile,
-    });
-    hasAtLeastOneGoodTenpai =
-      hasAtLeastOneGoodTenpai || discard.nbGoodTenpaiWaits > 0;
-    const goodWaitTenpaiInfo =
-      discard.nbGoodTenpaiWaits > 0 ? `(${discard.nbGoodTenpaiWaits}\\*)` : "";
-    const goodTenpaiDraws = discard.waits
-      .filter((w) => w.goodTenpai)
-      .map((w) => w.tile)
-      .join("");
-    const badTenpaiDraws = discard.waits
-      .filter((w) => !w.goodTenpai)
-      .map((w) => w.tile)
-      .join("");
-    const goodTenpaiEmojis = getHandEmojis({
-      hand: goodTenpaiDraws,
-      sorted: true,
-      unique: true,
-    }).join("");
-    const goodMark = goodTenpaiEmojis.length > 0 ? "\\*" : "";
-    const badTenpaiEmojis = getHandEmojis({
-      hand: badTenpaiDraws,
-      sorted: true,
-      unique: true,
-    }).join("");
-    const waitStr = `${tileEmoji}:\t ${discard.nbTotalWaits}${goodWaitTenpaiInfo}[${goodTenpaiEmojis}${goodMark}${badTenpaiEmojis}]`;
-    sb.push(waitStr);
-  });
-  if (hasAtLeastOneGoodTenpai) {
-    sb.push("*:resulting in 5+ tile tenpai");
-  }
-  return sb.join("\n");
-}
-
-function buildBasicUkeireInfo(hairi: Hairi): string {
-  const sb = [];
-  sb.push(`${hairi.shanten}-shanten\n`);
-  hairi.ukeire.forEach((discard) => {
-    const tileEmojis = getHandEmojis({
-      hand: discard.tile,
-    });
-    const tileInfo =
-      tileEmojis.length > 1 ? `[${tileEmojis.join("")}]` : tileEmojis[0];
-    const waitStr = `${tileInfo}x${discard.nbTotalWaits} `;
-    sb.push(waitStr);
-  });
-  return sb.join("");
 }
