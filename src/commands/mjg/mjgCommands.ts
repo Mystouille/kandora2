@@ -1,16 +1,12 @@
 import { ChatInputCommandInteraction, SlashCommandBuilder } from "discord.js";
-import {
-  executeNanikiru,
-  nanikiruOptions,
-  SeatChoice,
-  UkeireChoice,
-} from "./nanikiru";
+import { executeNanikiru, nanikiruOptions, SeatChoice } from "./nanikiru";
 import {
   invariantResources,
   strings,
 } from "../../resources/localization/strings";
 import { buildOptionNameAndDescription } from "../../utils/localizationUtils";
 import { replyWithDelay } from "../../utils/interactionUtils";
+import { UkeireChoice } from "../../mahjong/shantenUtils";
 
 const nanikiruSubCommandName = invariantResources.commands.mjg.nanikiru.name;
 

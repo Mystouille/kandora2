@@ -7,10 +7,8 @@ import {
 import { localize } from "../../utils/localizationUtils";
 import { strings } from "../../resources/localization/strings";
 import { stringFormat } from "../../utils/stringUtils";
-import {
-  AppEmojiName,
-  getEmojiByName,
-} from "../../resources/emojis/AppEmojiCollection";
+import { AppEmojiName } from "../../resources/emojis/AppEmojiCollection";
+import { config } from "../../config";
 
 export type QuizzQuestion = {
   questionImage: string;
@@ -39,23 +37,20 @@ enum StopReason {
 const commonStrings = strings.commands.quizz.common.reply;
 
 export abstract class QuizzHandler {
-  public startTime: Date;
-  public resetTimer = () => {
-    this.startTime = new Date();
-  };
+  protected startTime: Date;
 
-  public winnerTimings: { [id: string]: number };
-  public loserTimings: { [id: string]: number };
-  public playerPoints: { [id: string]: number };
+  protected winnerTimings: { [id: string]: number };
+  protected loserTimings: { [id: string]: number };
+  protected playerPoints: { [id: string]: number };
   protected abstract getNewQuestionData(): Promise<QuizzQuestion>;
   protected abstract get baseMessagePath(): string;
   protected abstract get firstThreadMessage(): string;
-  public currentQuestion: QuizzQuestion;
+  protected currentQuestion: QuizzQuestion;
 
-  public usersAnswers: { [id: string]: string[] };
-  public rewardTable: number[];
+  protected usersAnswers: { [id: string]: string[] };
+  protected rewardTable: number[];
 
-  public nbQuestionsAsked: number;
+  protected nbQuestionsAsked: number;
 
   protected constructor(
     protected thread: PublicThreadChannel<false>,
@@ -96,7 +91,7 @@ export abstract class QuizzHandler {
     this.nbQuestionsAsked++;
   }
 
-  public changeUserAnswer(
+  protected changeUserAnswer(
     userId: string,
     answer: string,
     changeType: ChangeType
@@ -125,7 +120,7 @@ export abstract class QuizzHandler {
     return isWinner;
   }
 
-  public getCurrentWinners() {
+  protected getCurrentWinners() {
     if (this.timeout === 0) {
       return "";
     }
@@ -145,7 +140,7 @@ export abstract class QuizzHandler {
     return sb.join("\n");
   }
 
-  public addPointsToUser(userId: string, points: number) {
+  protected addPointsToUser(userId: string, points: number) {
     this.playerPoints[userId] = (this.playerPoints[userId] || 0) + points;
   }
 
@@ -164,18 +159,11 @@ export abstract class QuizzHandler {
     }
   }
 
-  protected startQuizz(thread: PublicThreadChannel<false>) {
-    const timerDisclaimer =
-      this.timeout > 0
-        ? stringFormat(this.locale, this.timeout.toString())
-        : "";
-    thread.send({ content: `${this.firstThreadMessage}${timerDisclaimer}` });
-    this.postNewQuestion(thread);
+  public startQuizz() {
+    this.postNewQuestion();
   }
 
-  protected async postNewQuestion(
-    thread: PublicThreadChannel<false>
-  ): Promise<Message<true> | undefined> {
+  protected async postNewQuestion(): Promise<Message<true> | undefined> {
     await this.generateNextQuestion();
     const question = this.currentQuestion;
     let sb = [];
@@ -188,23 +176,29 @@ export abstract class QuizzHandler {
     sb.push(localize(this.locale, commonStrings.problemIsLoading));
     const waitText = sb.join("\n");
     const image = this.currentQuestion.questionImage;
-    const message = await thread.send({
+    const message = await this.thread.send({
       content: waitText,
     });
     question.optionEmojis.forEach(async (option) => {
       message.react(option);
     });
     if (this.quizzMode === QuizzMode.Explore) {
-      message.react(getEmojiByName(AppEmojiName.Eyes));
+      message.react(AppEmojiName.Eyes);
     }
     const collector = message.createReactionCollector({
       dispose: true,
+      time: this.timeout > 0 ? this.timeout * 1_000 : undefined,
     });
-    collector.on("end", (reason: StopReason) => {
+    console.log(`collector ${message.id} started`);
+    collector.on("end", (_, reason: StopReason) => {
+      console.log(`collector ${message.id} ended`);
       this.onQuestionEnd(message, reason);
     });
     collector.on(ChangeType.Collect, (reaction, user) => {
-      if (reaction.emoji.name !== null) {
+      if (
+        user.id !== config.DISCORD_CLIENT_ID &&
+        reaction.emoji.name !== null
+      ) {
         if (
           this.quizzMode === QuizzMode.Explore &&
           reaction.emoji.name === AppEmojiName.Eyes
@@ -245,6 +239,9 @@ export abstract class QuizzHandler {
     message.edit({ content: sb.join("\n") });
     message.reactions.removeAll();
     this.replyWithAnswer(message, reason);
+    if (this.nbQuestionsAsked < this.nbTotalQuestion) {
+      this.postNewQuestion();
+    }
   }
 
   private replyWithAnswer(message: Message<true>, reason: StopReason) {
@@ -255,7 +252,12 @@ export abstract class QuizzHandler {
     ) {
       sb.push(localize(this.locale, commonStrings.timeoutNoWinnerReply));
     }
-
+    if (
+      Object.keys(this.winnerTimings).length > 0 ||
+      Object.keys(this.loserTimings).length > 0
+    ) {
+      sb.push(".");
+    }
     if (Object.keys(this.winnerTimings).length > 0) {
       const winners = this.sortTimings(this.winnerTimings)
         .map((w) => `<@${w.player}>`)
@@ -270,10 +272,10 @@ export abstract class QuizzHandler {
     }
 
     sb.push(this.currentQuestion?.fullAnswer);
-    message.reply({ content: "" });
+    message.reply({ content: sb.join("\n") });
   }
 
-  getFullOpeningMessage(locale: Locale, baseMessagePath: string) {
+  protected getFullOpeningMessage(locale: Locale, baseMessagePath: string) {
     const openingMessage = localize(locale, baseMessagePath);
     switch (this.quizzMode) {
       case QuizzMode.Explore:

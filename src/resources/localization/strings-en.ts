@@ -2,6 +2,9 @@ import { StringResources } from "./strings";
 
 export const stringsEn: StringResources = {
   commands: {
+    common: {
+      shantenGoodWaitInfo: "\\*:yields a 5+ tile tenpai",
+    },
     ping: {
       name: "ping",
       desc: "replies pong",
@@ -46,6 +49,10 @@ export const stringsEn: StringResources = {
               race: "Race",
               explore: "Explore",
             },
+          },
+          timeout: {
+            name: "timeout",
+            desc: "Number of seconds per question",
           },
           series: {
             name: "series",

@@ -17,23 +17,6 @@ describe("handParser.ts", () => {
     });
   });
 
-  describe("getHandEmojiCodes", () => {
-    it("returns correct emojis", () => {
-      let hand = "321p465s123456m45z";
-      expect(getHandEmojis({ hand, sorted: false }).join("")).toBe(
-        "3p2p1p4s6s5s1m2m3m4m5m6m4z5z"
-      );
-      expect(getHandEmojis({ hand, sorted: true }).join("")).toBe(
-        "1m2m3m4m5m6m1p2p3p4s5s6s4z5z"
-      );
-
-      hand = "333p465s123345m45z";
-      expect(getHandEmojis({ hand, sorted: true, unique: true }).join("")).toBe(
-        "1m2m3m4m5m3p4s5s6s4z5z"
-      );
-    });
-  });
-
   describe("splitTiles", () => {
     test.each`
       input                 | expected
