@@ -40,6 +40,8 @@ export const strings = {
           roundOver: "commands.quizz.common.reply.roundOver",
           winnerFormat: "commands.quizz.common.reply.winnerFormat",
           loserFormat: "commands.quizz.common.reply.loserFormat",
+          continueQuizzPrompt:
+            "commands.quizz.common.reply.continueQuizzPrompt",
         },
       },
       nanikiru: {

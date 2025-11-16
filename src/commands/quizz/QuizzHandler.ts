@@ -58,7 +58,8 @@ export abstract class QuizzHandler {
     protected interaction: ChatInputCommandInteraction,
     protected quizzMode: QuizzMode,
     protected timeout: number,
-    protected nbTotalQuestion: number
+    protected nbTotalQuestion: number,
+    private pauseBetweenQuestion: boolean = false
   ) {
     this.nbQuestionsAsked = 0;
     this.currentQuestion = {
@@ -174,6 +175,8 @@ export abstract class QuizzHandler {
     this.postNewQuestion();
   }
 
+  private endQuizz() {}
+
   protected async postNewQuestion(): Promise<Message<true> | undefined> {
     await this.generateNextQuestion();
     const question = this.currentQuestion;
@@ -199,16 +202,16 @@ export abstract class QuizzHandler {
         content: waitText,
       });
     }
+    const collector = message.createReactionCollector({
+      dispose: true,
+      time: this.timeout > 0 ? this.timeout * 1_000 : undefined,
+    });
     for (let option of question.optionEmojis) {
       await message.react(option);
     }
     if (this.quizzMode === QuizzMode.Explore) {
       await message.react(AppEmojiName.Eyes);
     }
-    const collector = message.createReactionCollector({
-      dispose: true,
-      time: this.timeout > 0 ? this.timeout * 1_000 : undefined,
-    });
     console.log(`collector ${message.id} started`);
     collector.on("end", (_, reason: StopReason) => {
       console.log(`collector ${message.id} ended`);
@@ -254,16 +257,44 @@ export abstract class QuizzHandler {
     return message;
   }
 
-  private onQuestionEnd(message: Message<true>, reason: StopReason) {
+  private async onQuestionEnd(message: Message<true>, reason: StopReason) {
     const sb = [];
     sb.push(localize(this.locale, commonStrings.roundOver));
     sb.push(this.getFullOpeningMessage(this.locale, this.baseMessagePath));
     message.edit({ content: sb.join("\n") });
     message.reactions.removeAll();
-    this.replyWithAnswer(message, reason);
-    if (this.nbQuestionsAsked < this.nbTotalQuestion) {
-      this.postNewQuestion();
-    }
+    this.replyWithAnswer(message, reason).then(async (message) => {
+      if (this.nbQuestionsAsked >= this.nbTotalQuestion) {
+        this.endQuizz();
+      }
+      if (this.pauseBetweenQuestion || this.quizzMode === QuizzMode.Explore) {
+        await message.react(AppEmojiName.Eyes);
+        await message.edit({
+          content:
+            message.content +
+            "\n" +
+            localize(this.locale, commonStrings.continueQuizzPrompt),
+        });
+        const collector = message.createReactionCollector({
+          time: 180_000, // 3min
+        });
+        console.log(`collector ${message.id} started`);
+        collector.on("end", () => {
+          console.log(`collector ${message.id} ended`);
+          this.postNewQuestion();
+        });
+        collector.on(ChangeType.Collect, (reaction, user) => {
+          if (
+            user.id !== config.DISCORD_CLIENT_ID &&
+            reaction.emoji.name === AppEmojiName.Eyes
+          ) {
+            collector.stop();
+          }
+        });
+      } else {
+        this.postNewQuestion();
+      }
+    });
   }
 
   private replyWithAnswer(message: Message<true>, reason: StopReason) {
@@ -294,7 +325,7 @@ export abstract class QuizzHandler {
     }
 
     sb.push(this.currentQuestion?.fullAnswer);
-    message.reply({ content: sb.join("\n") });
+    return message.reply({ content: sb.join("\n") });
   }
 
   protected getFullOpeningMessage(locale: Locale, baseMessagePath: string) {
