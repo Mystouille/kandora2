@@ -28,7 +28,10 @@ export function fromStrToTile9997(hand: string): Tile9997 {
 
   const tileList = splitTiles(hand);
   tileList.forEach((tile) => {
-    const tileIndex = parseInt(tile[0]);
+    let tileIndex = parseInt(tile[0]);
+    if (tileIndex == 0) {
+      tileIndex = 5;
+    }
     const suitIndex = fromStringToSuitIndex(tile[tile.length - 1]);
     toReturn[suitIndex][tileIndex - 1]++;
   });

@@ -116,7 +116,7 @@ export function getShantenInfo(
 
   switch (ukeireDisplayType) {
     case UkeireChoice.Yes:
-      return buildBasicUkeireInfo(handInfo, locale, restictedTiles);
+      return buildBasicUkeireInfo(handInfo, restictedTiles);
     case UkeireChoice.Full:
       return buildFullUkeireInfo(handInfo, locale, restictedTiles);
     default:
@@ -140,6 +140,7 @@ function buildFullUkeireInfo(
 
   sb.push(`${hairi.shanten}-shanten`);
   let hasAtLeastOneGoodTenpai = false;
+  hairi.ukeire.sort((a, b) => b.nbTotalWaits - a.nbTotalWaits);
   hairi.ukeire.forEach((discard) => {
     if (
       restrictedTileList.length > 0 &&
@@ -182,15 +183,11 @@ function buildFullUkeireInfo(
   return sb.join("\n");
 }
 
-function buildBasicUkeireInfo(
-  hairi: Hairi,
-  locale: Locale,
-  restictedTiles?: string
-): string {
+function buildBasicUkeireInfo(hairi: Hairi, restictedTiles?: string): string {
   const sb = [];
   const restrictedTileList = restictedTiles ? splitTiles(restictedTiles) : [];
   sb.push(`${hairi.shanten}-shanten\n`);
-  let hasAtLeastOneGoodTenpai = false;
+  hairi.ukeire.sort((a, b) => b.nbTotalWaits - a.nbTotalWaits);
   hairi.ukeire.forEach((discard) => {
     if (
       restrictedTileList.length > 0 &&
@@ -198,8 +195,6 @@ function buildBasicUkeireInfo(
     ) {
       return;
     }
-    hasAtLeastOneGoodTenpai =
-      hasAtLeastOneGoodTenpai || discard.nbGoodTenpaiWaits > 0;
     const tileEmojis = getHandEmojis({
       hand: discard.tile,
     });
@@ -208,9 +203,5 @@ function buildBasicUkeireInfo(
     const waitStr = `${tileInfo}x${discard.nbTotalWaits} `;
     sb.push(waitStr);
   });
-  if (hasAtLeastOneGoodTenpai) {
-    sb.push("\n");
-    sb.push(localize(locale, strings.commands.common.shantenGoodWaitInfo));
-  }
   return sb.join("");
 }

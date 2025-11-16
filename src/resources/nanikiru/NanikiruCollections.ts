@@ -115,6 +115,9 @@ export class NanikiruCollections {
       this.currentProblems.reverse();
       problem = this.currentProblems.pop();
     }
-    return problem as NanikiruProblem;
+    return this.collections.uzaku301Collection.problems[
+      this.collections.uzaku301Collection.problems.length - 1
+    ];
+    //return problem as NanikiruProblem;
   }
 }

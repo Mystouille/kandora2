@@ -1,3 +1,4 @@
+import { Locale } from "discord.js";
 import { AppEmojiCollection } from "../resources/emojis/AppEmojiCollection";
 import {
   HandToDisplay,
@@ -5,6 +6,8 @@ import {
   MeldToDisplay,
   MeldType,
 } from "./handTypes";
+import { strings } from "../resources/localization/strings";
+import { stringFormat } from "../utils/stringUtils";
 
 export const SUIT_NAMES = ["p", "m", "s", "z"];
 
@@ -256,4 +259,29 @@ export function fromStrToHandToDisplay(handStr: string): HandToDisplay {
   }
 
   return toDisplay;
+}
+
+export function getHandContext(
+  seat: string | null,
+  round: string | null,
+  turn: string | null,
+  doras: string | null,
+  locale: Locale
+) {
+  const replyStrings = strings.commands.mjg.nanikiru.reply;
+  let sb = [];
+
+  const doraEmojis =
+    doras &&
+    getHandEmojis({
+      hand: doras,
+      sorted: false,
+      unique: true,
+    }).join("");
+  sb.push(seat && stringFormat(locale, replyStrings.seat, seat));
+  sb.push(round && stringFormat(locale, replyStrings.round, round));
+  sb.push(turn && stringFormat(locale, replyStrings.turn, turn));
+  sb.push(doraEmojis && stringFormat(locale, replyStrings.doras, doraEmojis));
+  sb = sb.filter((x) => !!x);
+  return sb.join(" | ");
 }

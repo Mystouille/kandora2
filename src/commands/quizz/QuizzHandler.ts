@@ -11,6 +11,7 @@ import { AppEmojiName } from "../../resources/emojis/AppEmojiCollection";
 import { config } from "../../config";
 
 export type QuizzQuestion = {
+  questionText: string;
   questionImage: string;
   optionEmojis: string[];
   answer: string[];
@@ -61,6 +62,7 @@ export abstract class QuizzHandler {
   ) {
     this.nbQuestionsAsked = 0;
     this.currentQuestion = {
+      questionText: "",
       answer: [],
       fullAnswer: "",
       optionEmojis: [],
@@ -102,7 +104,10 @@ export abstract class QuizzHandler {
       }
       this.usersAnswers[userId].push(answer);
     } else {
-      this.usersAnswers[userId]?.filter((x) => x !== answer);
+      const index = this.usersAnswers[userId].findIndex((a) => a == answer);
+      if (index >= 0) {
+        this.usersAnswers[userId].splice(index, 1);
+      }
     }
     const correctUserAnswers = this.usersAnswers[userId]?.filter(
       (x) => this.currentQuestion.answer.findIndex((y) => y === x) >= 0
@@ -114,8 +119,14 @@ export abstract class QuizzHandler {
     const durationMs = endTime.getTime() - this.startTime.getTime();
     if (isWinner) {
       this.winnerTimings[userId] = durationMs;
+      delete this.loserTimings[userId];
     } else {
       this.loserTimings[userId] = durationMs;
+      delete this.winnerTimings[userId];
+    }
+    if (this.usersAnswers[userId].length === 0) {
+      delete this.winnerTimings[userId];
+      delete this.loserTimings[userId];
     }
     return isWinner;
   }
@@ -169,6 +180,7 @@ export abstract class QuizzHandler {
     let sb = [];
     sb.push(".");
     sb.push(this.getFullOpeningMessage(this.locale, this.baseMessagePath));
+    sb.push(this.currentQuestion.questionText);
     const questionText = sb.join("\n");
 
     sb = [];
@@ -176,14 +188,22 @@ export abstract class QuizzHandler {
     sb.push(localize(this.locale, commonStrings.problemIsLoading));
     const waitText = sb.join("\n");
     const image = this.currentQuestion.questionImage;
-    const message = await this.thread.send({
-      content: waitText,
-    });
-    question.optionEmojis.forEach(async (option) => {
-      message.react(option);
-    });
+    let message;
     if (this.quizzMode === QuizzMode.Explore) {
-      message.react(AppEmojiName.Eyes);
+      message = await this.thread.send({
+        content: questionText,
+        files: [image],
+      });
+    } else {
+      message = await this.thread.send({
+        content: waitText,
+      });
+    }
+    for (let option of question.optionEmojis) {
+      await message.react(option);
+    }
+    if (this.quizzMode === QuizzMode.Explore) {
+      await message.react(AppEmojiName.Eyes);
     }
     const collector = message.createReactionCollector({
       dispose: true,
@@ -228,7 +248,9 @@ export abstract class QuizzHandler {
         }
       }
     });
-    message.edit({ content: questionText, files: [image] });
+    if (this.quizzMode !== QuizzMode.Explore) {
+      await message.edit({ content: questionText, files: [image] });
+    }
     return message;
   }
 
