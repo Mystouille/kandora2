@@ -21,7 +21,7 @@ export const stringsEn: StringResources = {
           openingMessageExploreFormat:
             "Question **[{0} / {1}]**. {2}\nReact with :eyes: to display the answer.",
           openingMessageFirstFormat:
-            "Question **[{0} / {1}]**. {2}\nOnly the first to answer correctly with get a point!",
+            "Question **[{0} / {1}]**. {2}\nOnly the first to answer correctly gets a point!",
           openingMessageRaceFormat:
             "Question **[{0} / {1}]**. {2}\nYou have {2} seconds.",
           problemIsLoading: "Displaying in 3... 2... 1...",

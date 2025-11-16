@@ -16,17 +16,11 @@ import {
 import {
   getHandEmojis,
   fromStrToHandToDisplay,
+  getHandContext,
 } from "../../mahjong/handParser";
 import { localize } from "../../utils/localizationUtils";
 import { stringFormat } from "../../utils/stringUtils";
-import {
-  getShantenInfo,
-  getHairi,
-  Hairi,
-  UkeireChoice,
-} from "../../mahjong/shantenUtils";
-import * as shantenCalc from "syanten";
-import { fromStrToTile9997 } from "../../mahjong/handConverter";
+import { getShantenInfo, UkeireChoice } from "../../mahjong/shantenUtils";
 
 export async function executeNanikiru(
   itr: ChatInputCommandInteraction,
@@ -83,7 +77,7 @@ function replyInSitu(
     optionName(nanikiruOptions.ukeire),
     false
   ) as UkeireChoice;
-  const replyMessage = buildText(seat, round, turn, doras, itr.locale);
+  const replyMessage = getFullHandContext(seat, round, turn, doras, itr.locale);
   itr.editReply({
     content: replyMessage,
   });
@@ -129,7 +123,7 @@ function replyInThread(
     false
   ) as UkeireChoice;
 
-  const replyMessage = buildText(seat, round, turn, doras, itr.locale);
+  const replyMessage = getFullHandContext(seat, round, turn, doras, itr.locale);
   itr.editReply({
     content: replyMessage,
   });
@@ -170,7 +164,7 @@ function replyInThread(
     });
 }
 
-function buildText(
+function getFullHandContext(
   seat: string | null,
   round: string | null,
   turn: string | null,
@@ -178,21 +172,6 @@ function buildText(
   locale: Locale
 ) {
   const replyStrings = strings.commands.mjg.nanikiru.reply;
-  let sb = [];
-
-  const doraEmojis =
-    doras &&
-    getHandEmojis({
-      hand: doras,
-      sorted: false,
-      unique: true,
-    }).join("");
-
   const wwyd = localize(locale, replyStrings.wwyd) + "\n";
-  sb.push(seat && stringFormat(locale, replyStrings.seat, seat));
-  sb.push(round && stringFormat(locale, replyStrings.round, round));
-  sb.push(turn && stringFormat(locale, replyStrings.turn, turn));
-  sb.push(doraEmojis && stringFormat(locale, replyStrings.doras, doraEmojis));
-  sb = sb.filter((x) => !!x);
-  return wwyd + sb.join(" | ");
+  return wwyd + getHandContext(seat, round, turn, doras, locale);
 }

@@ -5,6 +5,7 @@ import { stringFormat } from "../../utils/stringUtils";
 import {
   compareTiles,
   fromStrToHandToDisplay,
+  getHandContext,
   getHandEmojis,
   splitTiles,
   SUIT_NAMES,
@@ -74,7 +75,15 @@ export class NanikiruQuizzHandler extends QuizzHandler {
       sorted: true,
       unique: true,
     });
-    return { questionImage, answer, fullAnswer, optionEmojis };
+
+    const questionText = getHandContext(
+      problem.seat,
+      problem.round,
+      problem.turn,
+      problem.dora,
+      this.locale
+    );
+    return { questionText, questionImage, answer, fullAnswer, optionEmojis };
   }
 
   protected getAnswerTextFromProblem(problem: NanikiruProblem) {
