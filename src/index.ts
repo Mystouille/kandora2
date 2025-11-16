@@ -61,7 +61,7 @@ async function login() {
 const nanikiruProblems: NanikiruProblem[] = [];
 
 mongoose
-  .connect(config.DB_PATH)
+  .connect(config.MONGODB_URI)
   .then(() => {
     console.log(`Connected to db`);
   })
