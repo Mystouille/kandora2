@@ -39,6 +39,7 @@
     "test": "jest",
     "deployCommands": "tsx src/scripts/deployCommands.ts",
     "deployEmoji": "tsx src/scripts/deployEmojis.ts",
+    "tsx": "tsx src/index.ts",
     "start": "node dist/index.js",
     "build": "tsup src/index.ts --minify"
   },

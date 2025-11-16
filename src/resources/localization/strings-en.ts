@@ -31,6 +31,7 @@ export const stringsEn: StringResources = {
           roundOver: "(Round over)",
           winnerFormat: "✅: {0}",
           loserFormat: "❌: {0}",
+          continueQuizzPrompt: "React with :eyes: to start the next question",
         },
       },
       nanikiru: {
