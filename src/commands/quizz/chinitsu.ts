@@ -9,12 +9,12 @@ import {
   NameDesc,
   strings,
 } from "../../resources/localization/strings";
-import { commonOptions } from "./quizCommands";
 import { QuizMode } from "./handlers/QuizHandler";
 import { DifficultyOption, SuitOption } from "../../mahjong/ChinitsuGenerator";
 import { stringFormat } from "../../utils/stringUtils";
 import { ChinitsuQuizHandler } from "./handlers/ChinitsuQuizHandler";
 import { localize } from "../../utils/localizationUtils";
+import { commonOptions } from "./quizCommands";
 
 export const chinitsuOptions = {
   suit: strings.commands.quiz.chinitsu.params.suit,
