@@ -1,7 +1,7 @@
 import { ChatInputCommandInteraction, PublicThreadChannel } from "discord.js";
-import { QuizzHandler, QuizzMode, QuizzQuestion } from "./QuizzHandler";
-import { strings } from "../../resources/localization/strings";
-import { stringFormat } from "../../utils/stringUtils";
+import { QuizHandler, QuizMode, QuizQuestion } from "./QuizHandler";
+import { strings } from "../../../resources/localization/strings";
+import { stringFormat } from "../../../utils/stringUtils";
 import {
   compareTiles,
   fromStrToHandToDisplay,
@@ -9,29 +9,29 @@ import {
   getHandEmojis,
   splitTiles,
   SUIT_NAMES,
-} from "../../mahjong/handParser";
+} from "../../../mahjong/handParser";
 import {
   NanikiruCollections,
   NanikiruProblem,
   NanikiruType,
-} from "../../resources/nanikiru/NanikiruCollections";
-import { AppEmojiName } from "../../resources/emojis/AppEmojiCollection";
-import { getImageFromTiles } from "../../mahjong/imageUtils";
-import { localize } from "../../utils/localizationUtils";
-import { getShantenInfo, UkeireChoice } from "../../mahjong/shantenUtils";
+} from "../../../resources/nanikiru/NanikiruCollections";
+import { AppEmojiName } from "../../../resources/emojis/AppEmojiCollection";
+import { getImageFromTiles } from "../../../mahjong/imageUtils";
+import { localize } from "../../../utils/localizationUtils";
+import { getShantenInfo, UkeireChoice } from "../../../mahjong/shantenUtils";
 
-const nanikiruStrings = strings.commands.quizz.nanikiru;
+const nanikiruStrings = strings.commands.quiz.nanikiru;
 
-export class NanikiruQuizzHandler extends QuizzHandler {
+export class NanikiruQuizHandler extends QuizHandler {
   public constructor(
     thread: PublicThreadChannel<false>,
     interaction: ChatInputCommandInteraction,
-    quizzMode: QuizzMode,
+    quizMode: QuizMode,
     timeout: number | undefined,
     nbQuestion: number | undefined,
     public series: NanikiruType
   ) {
-    super(thread, interaction, quizzMode, timeout || 0, nbQuestion || 1);
+    super(thread, interaction, quizMode, timeout || 0, nbQuestion || 1);
   }
 
   protected get firstThreadMessage() {
@@ -52,7 +52,7 @@ export class NanikiruQuizzHandler extends QuizzHandler {
 
   protected async problemToQuestion(
     problem: NanikiruProblem
-  ): Promise<QuizzQuestion> {
+  ): Promise<QuizQuestion> {
     const fullAnswer = this.getAnswerTextFromProblem(problem);
     const answer = splitTiles(
       problem.answer.replaceAll("k", "").replaceAll("r", "")

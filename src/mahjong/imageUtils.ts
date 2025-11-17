@@ -33,6 +33,9 @@ async function getAllTiltedTiles() {
 export function handToFileName(hand: HandToDisplay) {
   return `${hand.closedTiles}${hand.melds.length > 0 ? "_" : ""}${hand.melds.map((meld) => `${meld.source}${meld.type}${meld.tiles}`).join("_")}${hand.lastTileSeparated ? "_x" : ""}.png`;
 }
+export function handStrToFileName(hand: string, lastTileSeparated: boolean) {
+  return `${hand}${lastTileSeparated ? "_x" : ""}.png`;
+}
 
 async function WriteImageFromHand(hand: HandToDisplay, outputPath: string) {
   const resImage = await getAllTiles();
@@ -261,6 +264,12 @@ export async function getImageFromTiles(hand: HandToDisplay) {
 
   return outputFilePath;
   //return fs.readFileSync(outputFilePath);
+}
+
+export function checkFileExists(hand: string, lastTileSeparated: boolean) {
+  const outputFilePath =
+    resourcesCacheDirName + handStrToFileName(hand, lastTileSeparated);
+  return fs.existsSync(outputFilePath);
 }
 
 //=============

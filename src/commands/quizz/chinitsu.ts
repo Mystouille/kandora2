@@ -9,18 +9,19 @@ import {
   NameDesc,
   strings,
 } from "../../resources/localization/strings";
-import { localize } from "../../utils/localizationUtils";
-import { NanikiruType } from "../../resources/nanikiru/NanikiruCollections";
-import { stringFormat } from "../../utils/stringUtils";
-import { QuizMode } from "./handlers/QuizHandler";
-import { NanikiruQuizHandler } from "./handlers/NanikiruQuizHandler";
 import { commonOptions } from "./quizCommands";
+import { QuizMode } from "./handlers/QuizHandler";
+import { DifficultyOption, SuitOption } from "../../mahjong/ChinitsuGenerator";
+import { stringFormat } from "../../utils/stringUtils";
+import { ChinitsuQuizHandler } from "./handlers/ChinitsuQuizHandler";
+import { localize } from "../../utils/localizationUtils";
 
-export const nanikiruOptions = {
-  series: strings.commands.quiz.nanikiru.params.series,
+export const chinitsuOptions = {
+  suit: strings.commands.quiz.chinitsu.params.suit,
+  difficulty: strings.commands.quiz.chinitsu.params.difficulty,
 };
 
-export async function executeQuizNanikiru(
+export async function executeQuizChinitsu(
   itr: ChatInputCommandInteraction,
   response: InteractionCallbackResponse<boolean>
 ) {
@@ -32,22 +33,24 @@ export async function executeQuizNanikiru(
     optionName(commonOptions.mode),
     false
   );
-  const seriesParam = itr.options.getString(
-    optionName(nanikiruOptions.series),
+  const suitParam = itr.options.getInteger(
+    optionName(chinitsuOptions.suit),
     false
   );
   const timeoutParam = itr.options.getInteger(
     optionName(commonOptions.timeout),
     false
   );
+  const difficultyParam = itr.options.getString(
+    optionName(chinitsuOptions.difficulty),
+    false
+  );
   if (itr.channel?.type === ChannelType.GuildText) {
     const threadManager = itr.channel.threads;
     const mode =
       modeParam === null ? QuizMode.Explore : (modeParam as QuizMode);
-    const series =
-      seriesParam === null
-        ? NanikiruType.Uzaku301
-        : (seriesParam as NanikiruType);
+    const suit =
+      suitParam === null ? SuitOption.Random : (suitParam as SuitOption);
     const nbRounds = nbRoundsParam === null ? 1 : nbRoundsParam;
     const timeout =
       timeoutParam === null
@@ -55,6 +58,10 @@ export async function executeQuizNanikiru(
           ? 0
           : 30
         : timeoutParam;
+    const difficulty =
+      difficultyParam === null
+        ? DifficultyOption.Normal
+        : (difficultyParam as DifficultyOption);
 
     const currentDate = new Date().toLocaleDateString(itr.locale, {
       month: "narrow",
@@ -73,7 +80,7 @@ export async function executeQuizNanikiru(
         : "";
     const startDisclaimer = stringFormat(
       itr.locale,
-      strings.commands.quiz.nanikiru.reply.threadFirstMessageFormat,
+      strings.commands.quiz.chinitsu.reply.threadFirstMessageFormat,
       nbRounds.toString()
     );
     itr
@@ -95,13 +102,14 @@ export async function executeQuizNanikiru(
           })
           .then((thread) => {
             if (thread.type === ChannelType.PublicThread) {
-              const quizHandler = new NanikiruQuizHandler(
+              const quizHandler = new ChinitsuQuizHandler(
                 thread,
                 itr,
                 mode,
                 timeout,
                 nbRounds,
-                series
+                suit,
+                difficulty
               );
               quizHandler.startQuiz();
             }

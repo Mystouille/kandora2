@@ -20,68 +20,99 @@ export const strings = {
       name: "commands.createuser.name",
       desc: "commands.createuser.desc",
     },
-    quizz: {
-      name: "commands.quizz.name",
+    quiz: {
+      name: "commands.quiz.name",
       common: {
-        reply: {
-          timerDisclaimerFormat:
-            "commands.quizz.common.reply.timerDisclaimerFormat",
-          openingMessageExploreFormat:
-            "commands.quizz.common.reply.openingMessageExploreFormat",
-          openingMessageFirstFormat:
-            "commands.quizz.common.reply.openingMessageFirstFormat",
-          openingMessageRaceFormat:
-            "commands.quizz.common.reply.openingMessageRaceFormat",
-          problemIsLoading: "commands.quizz.common.reply.problemIsLoading",
-          timeoutNoWinnerReply:
-            "commands.quizz.common.reply.timeoutNoWinnerReply",
-          firstWinnerMessageFormat:
-            "commands.quizz.common.reply.firstWinnerMessageFormat",
-          roundOver: "commands.quizz.common.reply.roundOver",
-          winnerFormat: "commands.quizz.common.reply.winnerFormat",
-          loserFormat: "commands.quizz.common.reply.loserFormat",
-          continueQuizzPrompt:
-            "commands.quizz.common.reply.continueQuizzPrompt",
-        },
-      },
-      nanikiru: {
-        name: "commands.quizz.nanikiru.name",
-        desc: "commands.quizz.nanikiru.desc",
         params: {
           nbrounds: {
-            name: "commands.quizz.nanikiru.params.nbrounds.name",
-            desc: "commands.quizz.nanikiru.params.nbrounds.desc",
+            name: "commands.quiz.common.params.nbrounds.name",
+            desc: "commands.quiz.common.params.nbrounds.desc",
           },
           mode: {
-            name: "commands.quizz.nanikiru.params.mode.name",
-            desc: "commands.quizz.nanikiru.params.mode.desc",
+            name: "commands.quiz.common.params.mode.name",
+            desc: "commands.quiz.common.params.mode.desc",
             options: {
-              first: "commands.quizz.nanikiru.params.mode.options.first",
-              race: "commands.quizz.nanikiru.params.mode.options.race",
-              explore: "commands.quizz.nanikiru.params.mode.options.explore",
+              first: "commands.quiz.common.params.mode.options.first",
+              race: "commands.quiz.common.params.mode.options.race",
+              explore: "commands.quiz.common.params.mode.options.explore",
             },
           },
           timeout: {
-            name: "commands.quizz.nanikiru.params.timeout.name",
-            desc: "commands.quizz.nanikiru.params.timeout.desc",
+            name: "commands.quiz.common.params.timeout.name",
+            desc: "commands.quiz.common.params.timeout.desc",
           },
+        },
+        reply: {
+          timerDisclaimerFormat:
+            "commands.quiz.common.reply.timerDisclaimerFormat",
+          openingMessageExploreFormat:
+            "commands.quiz.common.reply.openingMessageExploreFormat",
+          openingMessageFirstFormat:
+            "commands.quiz.common.reply.openingMessageFirstFormat",
+          openingMessageRaceFormat:
+            "commands.quiz.common.reply.openingMessageRaceFormat",
+          problemIsLoading: "commands.quiz.common.reply.problemIsLoading",
+          timeoutNoWinnerReply:
+            "commands.quiz.common.reply.timeoutNoWinnerReply",
+          firstWinnerMessageFormat:
+            "commands.quiz.common.reply.firstWinnerMessageFormat",
+          roundOver: "commands.quiz.common.reply.roundOver",
+          winnerFormat: "commands.quiz.common.reply.winnerFormat",
+          loserFormat: "commands.quiz.common.reply.loserFormat",
+          continueQuizPrompt: "commands.quiz.common.reply.continueQuizPrompt",
+          quizIsOver: "commands.quiz.common.reply.quizIsOver",
+        },
+      },
+      nanikiru: {
+        name: "commands.quiz.nanikiru.name",
+        desc: "commands.quiz.nanikiru.desc",
+        params: {
           series: {
-            name: "commands.quizz.nanikiru.params.series.name",
-            desc: "commands.quizz.nanikiru.params.series.desc",
+            name: "commands.quiz.nanikiru.params.series.name",
+            desc: "commands.quiz.nanikiru.params.series.desc",
             options: {
-              uzaku301:
-                "commands.quizz.nanikiru.params.series.options.uzaku300",
-              uzakuKin:
-                "commands.quizz.nanikiru.params.series.options.uzakuKin",
+              uzaku301: "commands.quiz.nanikiru.params.series.options.uzaku300",
+              uzakuKin: "commands.quiz.nanikiru.params.series.options.uzakuKin",
             },
           },
         },
         reply: {
-          theadNameFormat: "commands.quizz.nanikiru.reply.theadNameFormat",
+          theadNameFormat: "commands.quiz.nanikiru.reply.theadNameFormat",
           threadFirstMessageFormat:
-            "commands.quizz.nanikiru.reply.threadFirstMessageFormat",
-          openingMessage: "commands.quizz.nanikiru.reply.openingMessage",
-          answerLabel: "commands.quizz.nanikiru.reply.answerLabel",
+            "commands.quiz.nanikiru.reply.threadFirstMessageFormat",
+          openingMessage: "commands.quiz.nanikiru.reply.openingMessage",
+          answerLabel: "commands.quiz.nanikiru.reply.answerLabel",
+        },
+      },
+      chinitsu: {
+        name: "commands.quiz.chinitsu.name",
+        desc: "commands.quiz.chinitsu.desc",
+        params: {
+          suit: {
+            name: "commands.quiz.chinitsu.params.suit.name",
+            desc: "commands.quiz.chinitsu.params.suit.desc",
+            options: {
+              pinzu: "commands.quiz.chinitsu.params.suit.options.pinzu",
+              manzu: "commands.quiz.chinitsu.params.suit.options.manzu",
+              souzu: "commands.quiz.chinitsu.params.suit.options.souzu",
+            },
+          },
+          difficulty: {
+            name: "commands.quiz.chinitsu.params.difficulty.name",
+            desc: "commands.quiz.chinitsu.params.difficulty.desc",
+            options: {
+              easy: "commands.quiz.chinitsu.params.difficulty.options.easy",
+              normal: "commands.quiz.chinitsu.params.difficulty.options.normal",
+              hard: "commands.quiz.chinitsu.params.difficulty.options.hard",
+            },
+          },
+        },
+        reply: {
+          theadNameFormat: "commands.quiz.chinitsu.reply.theadNameFormat",
+          threadFirstMessageFormat:
+            "commands.quiz.chinitsu.reply.threadFirstMessageFormat",
+          openingMessage: "commands.quiz.chinitsu.reply.openingMessage",
+          answerLabel: "commands.quiz.chinitsu.reply.answerLabel",
         },
       },
     },

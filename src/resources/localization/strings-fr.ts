@@ -13,9 +13,28 @@ export const stringsFr: StringResources = {
       name: "creeutilisateur",
       desc: "cree un utilisateur",
     },
-    quizz: {
-      name: "quizz",
+    quiz: {
+      name: "quiz",
       common: {
+        params: {
+          nbrounds: {
+            name: "nbrounds",
+            desc: "Nombre de rounds du quiz",
+          },
+          mode: {
+            name: "mode",
+            desc: "Preums: Seul le premier gagne. Course: Soyez rapide. Explore: Prenez votre temps.",
+            options: {
+              first: "Preums",
+              race: "Course",
+              explore: "Explore",
+            },
+          },
+          timeout: {
+            name: "timeout",
+            desc: "Nombre de secondes par question",
+          },
+        },
         reply: {
           timerDisclaimerFormat: "{0} secondes par question.",
           openingMessageExploreFormat:
@@ -31,31 +50,15 @@ export const stringsFr: StringResources = {
           roundOver: "(Manche terminée)",
           winnerFormat: "✅: {0}",
           loserFormat: "❌: {0}",
-          continueQuizzPrompt:
+          continueQuizPrompt:
             "Réagissez avec :eyes: pour commencer la question suivante",
+          quizIsOver: "Le quiz est fini!",
         },
       },
       nanikiru: {
         name: "nanikiru",
-        desc: "commence un quizz de wwyd",
+        desc: "commence un quiz de wwyd",
         params: {
-          nbrounds: {
-            name: "nbrounds",
-            desc: "Nombre de rounds du quizz",
-          },
-          mode: {
-            name: "mode",
-            desc: "Mode de fonctionnement du quizz",
-            options: {
-              first: "Preums",
-              race: "Course",
-              explore: "Explore",
-            },
-          },
-          timeout: {
-            name: "timeout",
-            desc: "Nombre de secondes par question",
-          },
           series: {
             name: "serie",
             desc: "La série d'exercices dont les problèmes seront tirés",
@@ -69,6 +72,36 @@ export const stringsFr: StringResources = {
           theadNameFormat: "Nanikiru du {0} ({1} problèmes)",
           threadFirstMessageFormat: "Une série de {0} nanikiru commence!",
           openingMessage: "Trouvez la meilleure défause.",
+          answerLabel: "Réponse: ",
+        },
+      },
+      chinitsu: {
+        name: "chinitsu",
+        desc: "commence un quiz de chinitsu",
+        params: {
+          suit: {
+            name: "famille",
+            desc: "Choisi la famille de tuile utilisée (aléatoire par défaut)",
+            options: {
+              pinzu: "Pinzu",
+              manzu: "Manzu",
+              souzu: "Souzu",
+            },
+          },
+          difficulty: {
+            name: "niveau",
+            desc: "Facile: avec kanchan. Difficile: 3 attentes ou plus. (défaut: Normal)",
+            options: {
+              easy: "Facile",
+              normal: "Normal",
+              hard: "Difficile",
+            },
+          },
+        },
+        reply: {
+          theadNameFormat: "Chinitsu du {0} ({1} problèmes)",
+          threadFirstMessageFormat: "Une série de {0} chinitsu commence!",
+          openingMessage: "Trouvez la/les attentes de cette main:",
           answerLabel: "Réponse: ",
         },
       },
