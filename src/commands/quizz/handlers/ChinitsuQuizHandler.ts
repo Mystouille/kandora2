@@ -1,0 +1,92 @@
+import { ChatInputCommandInteraction, PublicThreadChannel } from "discord.js";
+import { QuizHandler, QuizMode, QuizQuestion } from "./QuizHandler";
+import { strings } from "../../../resources/localization/strings";
+import { stringFormat } from "../../../utils/stringUtils";
+import {
+  fromStrToHandToDisplay,
+  getHandEmojis,
+} from "../../../mahjong/handParser";
+import { getImageFromTiles } from "../../../mahjong/imageUtils";
+import { localize } from "../../../utils/localizationUtils";
+import {
+  ChinitsuProblem,
+  DifficultyOption,
+  getNewChinitsuProblem,
+  SuitOption,
+} from "../../../mahjong/ChinitsuGenerator";
+
+const chinitsuStrings = strings.commands.quiz.chinitsu;
+
+export class ChinitsuQuizHandler extends QuizHandler {
+  public constructor(
+    thread: PublicThreadChannel<false>,
+    interaction: ChatInputCommandInteraction,
+    quizMode: QuizMode,
+    timeout: number | undefined,
+    nbQuestion: number | undefined,
+    private suit: SuitOption,
+    private difficulty: DifficultyOption
+  ) {
+    super(thread, interaction, quizMode, timeout || 0, nbQuestion || 1);
+  }
+
+  protected get firstThreadMessage() {
+    return stringFormat(
+      this.locale,
+      chinitsuStrings.reply.threadFirstMessageFormat
+    );
+  }
+
+  protected get baseMessagePath() {
+    return chinitsuStrings.reply.openingMessage;
+  }
+
+  async getNewQuestionData() {
+    const problem = getNewChinitsuProblem(this.suit, this.difficulty);
+    return this.problemToQuestion(problem);
+  }
+
+  protected async problemToQuestion(
+    problem: ChinitsuProblem
+  ): Promise<QuizQuestion> {
+    const answer = problem.answer;
+    const suit = problem.hand[problem.hand.length - 1];
+    answer.sort((a, b) => a - b);
+
+    const answerStr = problem.answer.map((a) => `${a}${suit}`);
+    const questionImage = await getImageFromTiles(
+      fromStrToHandToDisplay(problem.hand)
+    );
+
+    const optionEmojis = getHandEmojis({
+      hand: `123456789${suit}`,
+      sorted: true,
+      unique: true,
+    });
+
+    const fullAnswer = this.getAnswerTextFromProblem(problem);
+
+    return {
+      questionImage,
+      answer: answerStr,
+      optionEmojis,
+      fullAnswer,
+      questionText: undefined,
+    };
+  }
+
+  protected getAnswerTextFromProblem(problem: ChinitsuProblem) {
+    const sb = [];
+    const answer = problem.answer;
+    const suit = problem.hand[problem.hand.length - 1];
+    answer.sort((a, b) => a - b);
+    const answerStr = problem.answer.map((a) => `${a}${suit}`);
+    const answerEmojis = getHandEmojis({
+      hand: answerStr.join(""),
+    }).join("");
+    sb.push(
+      `# ${localize(this.locale, chinitsuStrings.reply.answerLabel)} ||${answerEmojis}||`
+    );
+    return sb.join("\n");
+  }
+}

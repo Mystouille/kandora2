@@ -13,9 +13,28 @@ export const stringsEn: StringResources = {
       name: "createuser",
       desc: "create a user",
     },
-    quizz: {
-      name: "quizz",
+    quiz: {
+      name: "quiz",
       common: {
+        params: {
+          nbrounds: {
+            name: "nbrounds",
+            desc: "Number of rounds in the game",
+          },
+          mode: {
+            name: "mode",
+            desc: "First: Only the first wins. Race: Be fast. Explore: Take your time!",
+            options: {
+              first: "First",
+              race: "Race",
+              explore: "Explore",
+            },
+          },
+          timeout: {
+            name: "timeout",
+            desc: "Number of seconds per question",
+          },
+        },
         reply: {
           timerDisclaimerFormat: "{0} seconds per question.",
           openingMessageExploreFormat:
@@ -31,30 +50,14 @@ export const stringsEn: StringResources = {
           roundOver: "(Round over)",
           winnerFormat: "✅: {0}",
           loserFormat: "❌: {0}",
-          continueQuizzPrompt: "React with :eyes: to start the next question",
+          continueQuizPrompt: "React with :eyes: to start the next question",
+          quizIsOver: "The quiz is over",
         },
       },
       nanikiru: {
         name: "nanikiru",
-        desc: "Starts a wwyd quizz game",
+        desc: "Starts a wwyd quiz game",
         params: {
-          nbrounds: {
-            name: "nbrounds",
-            desc: "Number of rounds in the game",
-          },
-          mode: {
-            name: "mode",
-            desc: "The game mode",
-            options: {
-              first: "First",
-              race: "Race",
-              explore: "Explore",
-            },
-          },
-          timeout: {
-            name: "timeout",
-            desc: "Number of seconds per question",
-          },
           series: {
             name: "series",
             desc: "The series from where the problems will be selected",
@@ -65,9 +68,39 @@ export const stringsEn: StringResources = {
           },
         },
         reply: {
-          theadNameFormat: "Nanikiru du {0} ({1} problèmes)",
-          threadFirstMessageFormat: "Une série de {0} nanikiru commence!",
+          theadNameFormat: "Nanikiru of {0} ({1} problems)",
+          threadFirstMessageFormat: "A series of {0} nanikiru is starting!",
           openingMessage: "Find the best discard.",
+          answerLabel: "Answer: ",
+        },
+      },
+      chinitsu: {
+        name: "chinitsu",
+        desc: "Starts a chinitsu quiz game",
+        params: {
+          suit: {
+            name: "suit",
+            desc: "Select the suit used (random by default)",
+            options: {
+              pinzu: "Pinzu",
+              manzu: "Manzu",
+              souzu: "Souzu",
+            },
+          },
+          difficulty: {
+            name: "level",
+            desc: "Easy: with single waits. Difficult: 3 or more waits. (Default: Normal)",
+            options: {
+              easy: "Easy",
+              normal: "Normal",
+              hard: "Difficult",
+            },
+          },
+        },
+        reply: {
+          theadNameFormat: "Chinitsu of {0} ({1} problems)",
+          threadFirstMessageFormat: "A series of {0} chinitsu is starting!",
+          openingMessage: "Find the waits of this hand:",
           answerLabel: "Answer: ",
         },
       },

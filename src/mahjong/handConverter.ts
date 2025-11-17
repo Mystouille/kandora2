@@ -20,7 +20,7 @@ function fromStringToSuitIndex(suit: string): number {
 }
 
 /**
- * Returns a Tile997 representation of the hand
+ * Returns a Tile9997 representation of the hand
  * @param hand - A strict natural representation of the hand (and no aka)
  */
 export function fromStrToTile9997(hand: string): Tile9997 {
@@ -35,8 +35,38 @@ export function fromStrToTile9997(hand: string): Tile9997 {
     const suitIndex = fromStringToSuitIndex(tile[tile.length - 1]);
     toReturn[suitIndex][tileIndex - 1]++;
   });
-
   return toReturn;
+}
+
+/**
+ * Returns a strict representation of the hand
+ * @param hand - A tile9997 representation of the hand
+ */
+export function fromTile9997ToStr(hand: Tile9997): string {
+  const sb = [];
+
+  for (let i = 0; i < 9; i++) {
+    for (let j = 0; j < hand[0][i]; j++) {
+      sb.push(`${i + 1}m`);
+    }
+  }
+  for (let i = 0; i < 9; i++) {
+    for (let j = 0; j < hand[1][i]; j++) {
+      sb.push(`${i + 1}p`);
+    }
+  }
+  for (let i = 0; i < 9; i++) {
+    for (let j = 0; j < hand[2][i]; j++) {
+      sb.push(`${i + 1}s`);
+    }
+  }
+  for (let i = 0; i < 7; i++) {
+    for (let j = 0; j < hand[3][i]; j++) {
+      sb.push(`${i + 1}z`);
+    }
+  }
+
+  return sb.join("");
 }
 
 /**
@@ -98,9 +128,27 @@ export function from34To136(hand: number[]): number[] {
 }
 
 /**
- * Returns a Tile136 representation of the hand
- * @param hand - A strict natural representation of the hand (and no aka)
+ * Returns a string representation of the hand
+ * @param hand - A Tile34 representation of the same hand
  */
-export function fromStrTo136(hand: number[]): number[] {
-  return from34To136(from34To136(hand));
+export function from34ToStr(hand: number[]): string {
+  let toReturn: string = "";
+  for (let x = 0; x <= 34; x++) {
+    if (hand[x] <= 0) {
+      continue;
+    }
+    const suit = x < 9 ? "m" : x < 18 ? "p" : x < 27 ? "s" : "z";
+    const index = (x % 9) + 1;
+
+    const nbTiles = hand[x] % 10;
+    const nbRedTiles = Math.floor(hand[x] / 10);
+
+    for (let i = 0; i < nbRedTiles; i++) {
+      toReturn += "0" + suit;
+    }
+    for (let i = 0; i < nbTiles; i++) {
+      toReturn += index.toString() + suit;
+    }
+  }
+  return toReturn;
 }

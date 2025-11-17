@@ -40,12 +40,19 @@ export type HandToDisplay = {
  * NO RED FIVE
  */
 type NbTile = 0 | 1 | 2 | 3 | 4;
-export type Tile997 = [
-  [NbTile, NbTile, NbTile, NbTile, NbTile, NbTile, NbTile, NbTile, NbTile],
-  [NbTile, NbTile, NbTile, NbTile, NbTile, NbTile, NbTile, NbTile, NbTile],
-  [NbTile, NbTile, NbTile, NbTile, NbTile, NbTile, NbTile, NbTile, NbTile],
-  [NbTile, NbTile, NbTile, NbTile, NbTile, NbTile, NbTile],
+export type Suit997 = [
+  NbTile,
+  NbTile,
+  NbTile,
+  NbTile,
+  NbTile,
+  NbTile,
+  NbTile,
+  NbTile,
+  NbTile,
 ];
+export type Honor997 = [NbTile, NbTile, NbTile, NbTile, NbTile, NbTile, NbTile];
+export type Tile997 = [Suit997, Suit997, Suit997, Honor997];
 
 export const makeNewTile997 = () =>
   [

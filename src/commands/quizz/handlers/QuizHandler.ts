@@ -4,18 +4,18 @@ import {
   Message,
   PublicThreadChannel,
 } from "discord.js";
-import { localize } from "../../utils/localizationUtils";
-import { strings } from "../../resources/localization/strings";
-import { stringFormat } from "../../utils/stringUtils";
-import { AppEmojiName } from "../../resources/emojis/AppEmojiCollection";
-import { config } from "../../config";
+import { strings } from "../../../resources/localization/strings";
+import { localize } from "../../../utils/localizationUtils";
+import { AppEmojiName } from "../../../resources/emojis/AppEmojiCollection";
+import { config } from "../../../config";
+import { stringFormat } from "../../../utils/stringUtils";
 
-export type QuizzQuestion = {
-  questionText: string;
+export type QuizQuestion = {
+  questionText: string | undefined;
   questionImage: string;
   optionEmojis: string[];
   answer: string[];
-  fullAnswer: string | undefined;
+  fullAnswer: string;
 };
 
 export enum ChangeType {
@@ -23,7 +23,7 @@ export enum ChangeType {
   Remove = "remove",
 }
 
-export enum QuizzMode {
+export enum QuizMode {
   Explore = "Explore",
   First = "First",
   Race = "Race",
@@ -35,18 +35,21 @@ enum StopReason {
   Reveal = "reveal",
 }
 
-const commonStrings = strings.commands.quizz.common.reply;
+const commonStrings = strings.commands.quiz.common.reply;
 
-export abstract class QuizzHandler {
+export abstract class QuizHandler {
   protected startTime: Date;
 
   protected winnerTimings: { [id: string]: number };
   protected loserTimings: { [id: string]: number };
   protected playerPoints: { [id: string]: number };
-  protected abstract getNewQuestionData(): Promise<QuizzQuestion>;
+  protected lastPlayersPerf: {
+    [id: string]: { timing: number; scoreDelta: number };
+  };
+  protected abstract getNewQuestionData(): Promise<QuizQuestion>;
   protected abstract get baseMessagePath(): string;
   protected abstract get firstThreadMessage(): string;
-  protected currentQuestion: QuizzQuestion;
+  protected currentQuestion: QuizQuestion;
 
   protected usersAnswers: { [id: string]: string[] };
   protected rewardTable: number[];
@@ -56,7 +59,7 @@ export abstract class QuizzHandler {
   protected constructor(
     protected thread: PublicThreadChannel<false>,
     protected interaction: ChatInputCommandInteraction,
-    protected quizzMode: QuizzMode,
+    protected quizMode: QuizMode,
     protected timeout: number,
     protected nbTotalQuestion: number,
     private pauseBetweenQuestion: boolean = false
@@ -74,6 +77,7 @@ export abstract class QuizzHandler {
     this.loserTimings = {};
     this.playerPoints = {};
     this.usersAnswers = {};
+    this.lastPlayersPerf = {};
     this.rewardTable = [6, 4, 2, 1, 1];
   }
 
@@ -81,16 +85,22 @@ export abstract class QuizzHandler {
     return this.interaction.locale;
   }
 
-  protected sortTimings(timings: { [id: string]: number }) {
-    const list: { player: string; timing: number }[] = [];
-    Object.keys(timings).forEach((key) =>
-      list.push({ player: key, timing: timings[key] })
+  protected sortDict(dict: { [id: string]: number }, reverse: boolean = false) {
+    const list: { player: string; value: number }[] = [];
+    Object.keys(dict).forEach((key) =>
+      list.push({ player: key, value: dict[key] })
     );
-    return list.sort((a, b) => a.timing - b.timing);
+    return list.sort((a, b) =>
+      reverse ? b.value - a.value : a.value - b.value
+    );
   }
 
   private async generateNextQuestion() {
     this.currentQuestion = await this.getNewQuestionData();
+    this.usersAnswers = {};
+    this.lastPlayersPerf = {};
+    this.winnerTimings = {};
+    this.loserTimings = {};
     this.nbQuestionsAsked++;
   }
 
@@ -132,24 +142,25 @@ export abstract class QuizzHandler {
     return isWinner;
   }
 
-  protected getCurrentWinners() {
+  protected addCurrentWinners(sb: string[]) {
     if (this.timeout === 0) {
       return "";
     }
-    const sb = [];
-    const timingList = Object.entries(this.winnerTimings)
-      .map(([player, timing]) => ({ player, timing }))
-      .sort((a, b) => b.timing - a.timing);
-    for (let i = 0; i < this.rewardTable.length; i++) {
-      if (i < timingList.length) {
-        sb.push(
-          `${i + 1}: <@${timingList[i].player}>\`+${this.rewardTable[i]}pts\` (${Math.round(timingList[i].timing / 1000).toFixed(1)}s)`
-        );
-      } else {
-        sb.push(`${i + 1}: ....`);
-      }
+    const playerScoresSorted = this.sortDict(this.playerPoints, true);
+    for (let i = 0; i < playerScoresSorted.length; i++) {
+      const player = playerScoresSorted[i].player;
+      const playerPerf = this.lastPlayersPerf[player];
+      const totalPointData = `\`${this.playerPoints[player]}pts\``;
+      const timingData =
+        this.quizMode !== QuizMode.Explore && playerPerf !== undefined
+          ? `\`${Math.round(playerPerf.timing / 1000).toFixed(1)}s\` : `
+          : "";
+      const pointChangeData =
+        playerPerf !== undefined ? `\`+${playerPerf.scoreDelta}pts\`` : "";
+      sb.push(
+        `${i + 1}: <@${player}>: ${totalPointData}(${timingData}${pointChangeData})`
+      );
     }
-    return sb.join("\n");
   }
 
   protected addPointsToUser(userId: string, points: number) {
@@ -157,25 +168,34 @@ export abstract class QuizzHandler {
   }
 
   protected updateScores() {
-    const timingList = Object.entries(this.winnerTimings)
-      .map(([player, timing]) => ({ player, timing }))
-      .sort((a, b) => b.timing - a.timing);
-    if (this.timeout === 0) {
+    const timingList = this.sortDict(this.winnerTimings);
+    if (
+      this.quizMode === QuizMode.First ||
+      this.quizMode === QuizMode.Explore
+    ) {
       if (timingList.length > 0) {
         this.addPointsToUser(timingList[0].player, 1);
+        this.lastPlayersPerf[timingList[0].player] = {
+          timing: timingList[0].value,
+          scoreDelta: 1,
+        };
       }
-    } else {
-      for (let i = 0; i < this.rewardTable.length; i++) {
+    } else if (this.quizMode === QuizMode.Race) {
+      for (let i = 0; i < timingList.length; i++) {
         this.addPointsToUser(timingList[i].player, this.rewardTable[i]);
+        this.lastPlayersPerf[timingList[i].player] = {
+          timing: timingList[i].value,
+          scoreDelta: this.rewardTable[i],
+        };
       }
     }
   }
 
-  public startQuizz() {
+  public startQuiz() {
     this.postNewQuestion();
   }
 
-  private endQuizz() {}
+  private endQuiz() {}
 
   protected async postNewQuestion(): Promise<Message<true> | undefined> {
     await this.generateNextQuestion();
@@ -183,8 +203,10 @@ export abstract class QuizzHandler {
     let sb = [];
     sb.push(".");
     sb.push(this.getFullOpeningMessage(this.locale, this.baseMessagePath));
-    sb.push(this.currentQuestion.questionText);
-    const questionText = sb.join("\n");
+    if (this.currentQuestion.questionText !== undefined) {
+      sb.push(this.currentQuestion.questionText);
+    }
+    const fullQuestionText = sb.join("\n");
 
     sb = [];
     sb.push(".");
@@ -192,11 +214,12 @@ export abstract class QuizzHandler {
     const waitText = sb.join("\n");
     const image = this.currentQuestion.questionImage;
     let message;
-    if (this.quizzMode === QuizzMode.Explore) {
+    if (this.quizMode === QuizMode.Explore) {
       message = await this.thread.send({
-        content: questionText,
+        content: fullQuestionText,
         files: [image],
       });
+      this.startTime = new Date();
     } else {
       message = await this.thread.send({
         content: waitText,
@@ -206,12 +229,6 @@ export abstract class QuizzHandler {
       dispose: true,
       time: this.timeout > 0 ? this.timeout * 1_000 : undefined,
     });
-    for (let option of question.optionEmojis) {
-      await message.react(option);
-    }
-    if (this.quizzMode === QuizzMode.Explore) {
-      await message.react(AppEmojiName.Eyes);
-    }
     console.log(`collector ${message.id} started`);
     collector.on("end", (_, reason: StopReason) => {
       console.log(`collector ${message.id} ended`);
@@ -223,7 +240,7 @@ export abstract class QuizzHandler {
         reaction.emoji.name !== null
       ) {
         if (
-          this.quizzMode === QuizzMode.Explore &&
+          this.quizMode === QuizMode.Explore &&
           reaction.emoji.name === AppEmojiName.Eyes
         ) {
           collector.stop(StopReason.Reveal);
@@ -234,7 +251,8 @@ export abstract class QuizzHandler {
           reaction.emoji.name,
           ChangeType.Collect
         );
-        if (isOk && this.quizzMode == QuizzMode.First) {
+        console.log(`got ${reaction.emoji.name}: ${isOk}`);
+        if (isOk && this.quizMode == QuizMode.First) {
           collector.stop(StopReason.Winner);
         }
       }
@@ -246,34 +264,43 @@ export abstract class QuizzHandler {
           reaction.emoji.name,
           ChangeType.Remove
         );
-        if (isOk && this.quizzMode == QuizzMode.First) {
+        if (isOk && this.quizMode == QuizMode.First) {
           collector.stop(StopReason.Winner);
         }
       }
     });
-    if (this.quizzMode !== QuizzMode.Explore) {
-      await message.edit({ content: questionText, files: [image] });
+    for (let option of question.optionEmojis) {
+      await message.react(option);
+    }
+    if (this.quizMode === QuizMode.Explore) {
+      await message.react(AppEmojiName.Eyes);
+    }
+    if (this.quizMode !== QuizMode.Explore) {
+      await message.edit({ content: fullQuestionText, files: [image] });
+      this.startTime = new Date();
     }
     return message;
   }
 
   private async onQuestionEnd(message: Message<true>, reason: StopReason) {
     const sb = [];
+    this.updateScores();
     sb.push(localize(this.locale, commonStrings.roundOver));
     sb.push(this.getFullOpeningMessage(this.locale, this.baseMessagePath));
     message.edit({ content: sb.join("\n") });
     message.reactions.removeAll();
     this.replyWithAnswer(message, reason).then(async (message) => {
       if (this.nbQuestionsAsked >= this.nbTotalQuestion) {
-        this.endQuizz();
+        this.endQuiz();
+        return;
       }
-      if (this.pauseBetweenQuestion || this.quizzMode === QuizzMode.Explore) {
+      if (this.pauseBetweenQuestion || this.quizMode === QuizMode.Explore) {
         await message.react(AppEmojiName.Eyes);
         await message.edit({
           content:
             message.content +
             "\n" +
-            localize(this.locale, commonStrings.continueQuizzPrompt),
+            localize(this.locale, commonStrings.continueQuizPrompt),
         });
         const collector = message.createReactionCollector({
           time: 180_000, // 3min
@@ -298,40 +325,83 @@ export abstract class QuizzHandler {
   }
 
   private replyWithAnswer(message: Message<true>, reason: StopReason) {
-    const sb = [];
+    let sb = [];
     if (
       reason === StopReason.Time &&
       Object.keys(this.winnerTimings).length === 0
     ) {
       sb.push(localize(this.locale, commonStrings.timeoutNoWinnerReply));
-    }
-    if (
+    } else if (
       Object.keys(this.winnerTimings).length > 0 ||
       Object.keys(this.loserTimings).length > 0
     ) {
       sb.push(".");
     }
+    switch (this.quizMode) {
+      case QuizMode.Explore:
+        this.addScoresForExplore(sb);
+        break;
+      case QuizMode.First:
+        this.addScoresForFirst(sb);
+        break;
+      case QuizMode.Race:
+        this.addScoresForRace(sb);
+        break;
+    }
+    sb.push(this.currentQuestion?.fullAnswer);
+    return message.reply({ content: sb.join("\n") });
+  }
+
+  private addScoresForExplore(sb: string[]) {
     if (Object.keys(this.winnerTimings).length > 0) {
-      const winners = this.sortTimings(this.winnerTimings)
+      const winners = this.sortDict(this.winnerTimings)
         .map((w) => `<@${w.player}>`)
         .join("");
       sb.push(stringFormat(this.locale, commonStrings.winnerFormat, winners));
     }
     if (Object.keys(this.loserTimings).length > 0) {
-      const losers = this.sortTimings(this.loserTimings)
+      const losers = this.sortDict(this.loserTimings)
         .map((l) => `<@${l.player}>`)
         .join("");
       sb.push(stringFormat(this.locale, commonStrings.loserFormat, losers));
     }
+  }
+  private addScoresForFirst(sb: string[]) {
+    if (Object.keys(this.winnerTimings).length > 0) {
+      const winners = this.sortDict(this.winnerTimings)
+        .map((w) => `<@${w.player}>`)
+        .join("");
+      sb.push(stringFormat(this.locale, commonStrings.winnerFormat, winners));
+    }
+    if (Object.keys(this.loserTimings).length > 0) {
+      const losers = this.sortDict(this.loserTimings)
+        .map((l) => `<@${l.player}>`)
+        .join("");
+      sb.push(stringFormat(this.locale, commonStrings.loserFormat, losers));
+    }
+    this.addCurrentWinners(sb);
+  }
 
-    sb.push(this.currentQuestion?.fullAnswer);
-    return message.reply({ content: sb.join("\n") });
+  private addScoresForRace(sb: string[]) {
+    if (Object.keys(this.winnerTimings).length > 0) {
+      const winners = this.sortDict(this.winnerTimings)
+        .map((w) => `<@${w.player}>`)
+        .join("");
+      sb.push(stringFormat(this.locale, commonStrings.winnerFormat, winners));
+    }
+    if (Object.keys(this.loserTimings).length > 0) {
+      const losers = this.sortDict(this.loserTimings)
+        .map((l) => `<@${l.player}>`)
+        .join("");
+      sb.push(stringFormat(this.locale, commonStrings.loserFormat, losers));
+    }
+    this.addCurrentWinners(sb);
   }
 
   protected getFullOpeningMessage(locale: Locale, baseMessagePath: string) {
     const openingMessage = localize(locale, baseMessagePath);
-    switch (this.quizzMode) {
-      case QuizzMode.Explore:
+    switch (this.quizMode) {
+      case QuizMode.Explore:
         return stringFormat(
           locale,
           commonStrings.openingMessageExploreFormat,
@@ -339,7 +409,7 @@ export abstract class QuizzHandler {
           `${this.nbTotalQuestion}`,
           openingMessage
         );
-      case QuizzMode.First:
+      case QuizMode.First:
         return stringFormat(
           locale,
           commonStrings.openingMessageFirstFormat,
@@ -347,7 +417,7 @@ export abstract class QuizzHandler {
           `${this.nbTotalQuestion}`,
           openingMessage
         );
-      case QuizzMode.Race:
+      case QuizMode.Race:
         return stringFormat(
           locale,
           commonStrings.openingMessageRaceFormat,
