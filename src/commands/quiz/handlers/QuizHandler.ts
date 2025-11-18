@@ -229,9 +229,7 @@ export abstract class QuizHandler {
       dispose: true,
       time: this.timeout > 0 ? this.timeout * 1_000 : undefined,
     });
-    console.log(`collector ${message.id} started`);
     collector.on("end", (_, reason: StopReason) => {
-      console.log(`collector ${message.id} ended`);
       this.onQuestionEnd(message, reason);
     });
     collector.on(ChangeType.Collect, (reaction, user) => {
@@ -251,7 +249,6 @@ export abstract class QuizHandler {
           reaction.emoji.name,
           ChangeType.Collect
         );
-        console.log(`got ${reaction.emoji.name}: ${isOk}`);
         if (isOk && this.quizMode == QuizMode.First) {
           collector.stop(StopReason.Winner);
         }
@@ -305,9 +302,7 @@ export abstract class QuizHandler {
         const collector = message.createReactionCollector({
           time: 180_000, // 3min
         });
-        console.log(`collector ${message.id} started`);
         collector.on("end", () => {
-          console.log(`collector ${message.id} ended`);
           this.postNewQuestion();
         });
         collector.on(ChangeType.Collect, (reaction, user) => {
