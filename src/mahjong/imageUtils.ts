@@ -258,8 +258,6 @@ export async function getImageFromTiles(hand: HandToDisplay) {
     return await WriteImageFromHand(hand, outputFilePath).then(
       () => outputFilePath
     );
-  } else {
-    console.log("image already exists");
   }
 
   return outputFilePath;
@@ -330,5 +328,4 @@ export async function generateTiltedTiles() {
   const out = fs.createWriteStream(resourcesCacheDirName + "out.png");
   const stream = sourceCanvasBlank.createPNGStream();
   stream.pipe(out);
-  out.on("finish", () => console.log("image written!"));
 }

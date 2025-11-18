@@ -94,7 +94,6 @@ function getRandomChinitsuTenpai(suit: SuitOption, nbMinWaits: number) {
     const fullHand = makeNewTile997();
     fullHand[suit.valueOf()] = hand;
     shanten = shantenCalc.syantenAll(fullHand);
-    console.log(`shanten:${shanten}`);
     if (shanten === 0) {
       waits = [];
       for (let j = 0; j < 9; j++) {
@@ -102,7 +101,6 @@ function getRandomChinitsuTenpai(suit: SuitOption, nbMinWaits: number) {
           hand[j]++;
           const newShanten = shantenCalc.syantenAll(fullHand);
           if (newShanten === -1) {
-            console.log(`add wait: ${j + 1}`);
             waits.push(j + 1);
           }
           hand[j]--;
@@ -111,13 +109,9 @@ function getRandomChinitsuTenpai(suit: SuitOption, nbMinWaits: number) {
       if (waits.length >= nbMinWaits) {
         handStr = fromTile9997ToStr(fullHand);
         handAlreadyExist = checkFileExists(handStr, true);
-
-        console.log(`file exists: ${handAlreadyExist}`);
       }
     }
     nbIter++;
   }
-
-  console.log(`return ${handStr}`);
   return { hand: handStr, waits };
 }
