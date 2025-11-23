@@ -176,6 +176,52 @@ export const strings = {
         },
       },
     },
+    league: {
+      name: "commands.league.name",
+      create: {
+        name: "commands.league.create.name",
+        desc: "commands.league.create.desc",
+        params: {
+          leagueName: {
+            name: "commands.league.create.params.leagueName.name",
+            desc: "commands.league.create.params.leagueName.desc",
+          },
+          startTime: {
+            name: "commands.league.create.params.startTime.name",
+            desc: "commands.league.create.params.startTime.desc",
+          },
+          endTime: {
+            name: "commands.league.create.params.endTime.name",
+            desc: "commands.league.create.params.endTime.desc",
+          },
+          cutoffTime: {
+            name: "commands.league.create.params.cutoffTime.name",
+            desc: "commands.league.create.params.cutoffTime.desc",
+          },
+          ruleset: {
+            name: "commands.league.create.params.ruleset.name",
+            desc: "commands.league.create.params.ruleset.desc",
+            options: {
+              ema: "commands.league.create.params.ruleset.options.ema",
+              wrc: "commands.league.create.params.ruleset.options.wrc",
+              online: "commands.league.create.params.ruleset.options.online",
+              mleague: "commands.league.create.params.ruleset.options.mleague",
+            },
+          },
+          platform: {
+            name: "commands.league.create.params.platform.name",
+            desc: "commands.league.create.params.platform.desc",
+            options: {
+              majsoul: "commands.league.create.params.platform.options.majsoul",
+              tenhou: "commands.league.create.params.platform.options.tenhou",
+              riichiCity:
+                "commands.league.create.params.platform.options.riichiCity",
+              irl: "commands.league.create.params.platform.options.irl",
+            },
+          },
+        },
+      },
+    },
   },
 };
 
