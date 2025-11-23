@@ -4,7 +4,6 @@ import {
   invariantResources,
   NameDesc,
   resourceMap,
-  StringResources,
 } from "../resources/localization/strings";
 
 type NestedStringContainer = { [id: string]: NestedStringContainer | string };

@@ -6,15 +6,22 @@
     "discord.js": "^14.24.2",
     "dotenv": "^17.2.3",
     "fs": "^0.0.1-security",
+    "https-proxy-agent": "^7.0.6",
     "lodash": "^4.17.21",
     "mongoose": "^8.19.2",
-    "syanten": "^1.6.0"
+    "node-fetch": "^3.3.2",
+    "protobufjs": "^7.5.4",
+    "rxjs": "^7.8.2",
+    "syanten": "^1.6.0",
+    "user-agents": "^1.1.669",
+    "uuid": "^13.0.0"
   },
   "devDependencies": {
     "@babel/preset-env": "^7.28.5",
     "@eslint/js": "^9.39.1",
     "@types/jest": "^30.0.0",
     "@types/node": "^24.9.2",
+    "@types/user-agents": "^1.0.4",
     "@typescript-eslint/eslint-plugin": "^8.46.2",
     "@typescript-eslint/parser": "^8.46.3",
     "eslint": "^9.39.1",

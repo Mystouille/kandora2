@@ -165,5 +165,50 @@ export const stringsEn: StringResources = {
         },
       },
     },
+    league: {
+      name: "league",
+      create: {
+        name: "create",
+        desc: "create a league",
+        params: {
+          leagueName: {
+            name: "leaguename",
+            desc: "Name of the league to create",
+          },
+          startTime: {
+            name: "starttime",
+            desc: "Start time of the league (format: YYYY-MM-DD HH:mm in UTC)",
+          },
+          endTime: {
+            name: "endtime",
+            desc: "End time of the league (format: YYYY-MM-DD HH:mm in UTC)",
+          },
+          cutoffTime: {
+            name: "cutofftime",
+            desc: "[Optional] Start time of the final phase (format: YYYY-MM-DD HH:mm in UTC)",
+          },
+          ruleset: {
+            name: "ruleset",
+            desc: "Ruleset used for the league",
+            options: {
+              ema: "EMA",
+              wrc: "WRC",
+              online: "Online",
+              mleague: "M-League",
+            },
+          },
+          platform: {
+            name: "platform",
+            desc: "Platform where the league will be played",
+            options: {
+              tenhou: "Tenhou",
+              majsoul: "Mahjong Soul",
+              riichiCity: "Riichi City",
+              irl: "In real life",
+            },
+          },
+        },
+      },
+    },
   },
 };
