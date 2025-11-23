@@ -29,12 +29,6 @@ export let data: any = new SlashCommandBuilder()
         ).setRequired(true)
       )
       .addStringOption((option) =>
-        buildOptionNameAndDescription(option, createleagueOptions.endTime)
-      )
-      .addStringOption((option) =>
-        buildOptionNameAndDescription(option, createleagueOptions.cutoffTime)
-      )
-      .addStringOption((option) =>
         buildOptionNameAndDescription(option, createleagueOptions.ruleset)
           .setRequired(true)
           .addChoices([
@@ -87,6 +81,12 @@ export let data: any = new SlashCommandBuilder()
             },
           ])
           .setRequired(true)
+      )
+      .addStringOption((option) =>
+        buildOptionNameAndDescription(option, createleagueOptions.endTime)
+      )
+      .addStringOption((option) =>
+        buildOptionNameAndDescription(option, createleagueOptions.cutoffTime)
       )
   );
 
