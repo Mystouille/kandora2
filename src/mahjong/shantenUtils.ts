@@ -20,6 +20,7 @@ type Wait = {
 type Ukeire = {
   tile: string;
   waits: Wait[];
+  waitsStr: string;
   nbGoodTenpaiWaits: number;
   nbTotalWaits: number;
 };
@@ -38,18 +39,14 @@ export function getHairi(handStr: string): Hairi {
   const hairi = shantenCalc.hairi(tile9997);
   const goodWaitLimit = 5;
   const hairiExt: Ukeire[] = [];
-  let shanten = 0;
+  const shanten = hairi["wait"] ? 0 : hairi["now"];
 
   Object.entries(hairi).forEach((entryCut) => {
     const toCut = entryCut[0];
-    if (toCut === "now") {
-      shanten = entryCut[1] as number;
+    if (toCut === "now" || toCut === "wait") {
       return;
     }
-    if (toCut === "wait") {
-      shanten = 0;
-      return;
-    }
+
     let nbGoodTenpaiWaits = 0;
     let nbTotalWaits = 0;
     addTileStrTo9997(toCut, tile9997, -1);
@@ -60,16 +57,18 @@ export function getHairi(handStr: string): Hairi {
       addTileStrTo9997(toDraw, tile9997, 1);
       const tenpai = shantenCalc.hairi(tile9997);
       let maxWaits = 0;
-      Object.entries(tenpai as object).forEach((tenpaiDiscard) => {
-        if (tenpaiDiscard[0] === "now") {
-          return;
-        }
-        let nbWaits = 0;
-        Object.values(tenpaiDiscard[1] as object).forEach((nbAgari) => {
-          nbWaits += nbAgari;
+      if (tenpai["now"] == 0) {
+        Object.entries(tenpai as object).forEach((tenpaiDiscard) => {
+          if (tenpaiDiscard[0] === "now") {
+            return;
+          }
+          let nbWaits = 0;
+          Object.values(tenpaiDiscard[1] as object).forEach((nbAgari) => {
+            nbWaits += nbAgari;
+          });
+          maxWaits = Math.max(maxWaits, nbWaits);
         });
-        maxWaits = Math.max(maxWaits, nbWaits);
-      });
+      }
       nbTotalWaits += nbTile;
       nbGoodTenpaiWaits += maxWaits >= goodWaitLimit ? nbTile : 0;
       waits.push({
@@ -79,26 +78,27 @@ export function getHairi(handStr: string): Hairi {
       });
       addTileStrTo9997(toDraw, tile9997, -1);
     });
-
-    const discardStr = JSON.stringify({
+    const waitsStr =
+      JSON.stringify(entryCut[1]) + nbGoodTenpaiWaits + "'" + nbTotalWaits;
+    const similarWait = hairiExt.find((c) => c.waitsStr === waitsStr);
+    if (similarWait !== undefined) {
+      similarWait.tile += toCut;
+      return;
+    }
+    hairiExt.push({
+      tile: toCut,
       waits,
       nbGoodTenpaiWaits,
       nbTotalWaits,
+      waitsStr,
     });
-    const similarWait = hairiExt.find(
-      (h) =>
-        JSON.stringify({
-          waits: h.waits,
-          nbGoodTenpaiWaits: h.nbGoodTenpaiWaits,
-          nbTotalWaits: h.nbTotalWaits,
-        }) === discardStr
+    hairiExt.sort(
+      (a, b) =>
+        b.nbTotalWaits * 100 +
+        b.nbGoodTenpaiWaits -
+        a.nbTotalWaits * 100 -
+        a.nbGoodTenpaiWaits
     );
-
-    if (similarWait) {
-      similarWait.tile += toCut;
-    } else {
-      hairiExt.push({ tile: toCut, waits, nbGoodTenpaiWaits, nbTotalWaits });
-    }
     addTileStrTo9997(toCut, tile9997, 1);
   });
   return { shanten, ukeire: hairiExt };
@@ -110,15 +110,21 @@ export function getShantenInfo(
   locale: Locale,
   restictedTiles?: string
 ) {
-  let closedHands = handStr.split(" ")[0];
-  const handInfo = getHairi(closedHands);
-  const shanten = handInfo.shanten;
+  const closedHands = handStr.split(" ")[0];
+  let handInfo: Hairi | undefined;
+  let shanten = 0;
+
+  if (ukeireDisplayType !== UkeireChoice.No) {
+    handInfo = getHairi(closedHands);
+  } else {
+    shanten = shantenCalc.syantenAll(fromStrToTile9997(handStr));
+  }
 
   switch (ukeireDisplayType) {
     case UkeireChoice.Yes:
-      return buildBasicUkeireInfo(handInfo, restictedTiles);
+      return buildBasicUkeireInfo(handInfo!, restictedTiles);
     case UkeireChoice.Full:
-      return buildFullUkeireInfo(handInfo, locale, restictedTiles);
+      return buildFullUkeireInfo(handInfo!, locale, restictedTiles);
     default:
       return shanten > 0
         ? `${shanten}-shanten`
