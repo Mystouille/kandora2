@@ -73,10 +73,14 @@ function replyInSitu(
   const seat = itr.options.getString(optionName(nanikiruOptions.seat), false);
   const round = itr.options.getString(optionName(nanikiruOptions.round), false);
   const turn = itr.options.getString(optionName(nanikiruOptions.turn), false);
-  const ukeireChoice = itr.options.getString(
+  const ukeireChoiceParam = itr.options.getString(
     optionName(nanikiruOptions.ukeire),
     false
-  ) as UkeireChoice;
+  );
+  const ukeireChoice =
+    ukeireChoiceParam !== null
+      ? (ukeireChoiceParam as UkeireChoice)
+      : UkeireChoice.No;
   const replyMessage = getFullHandContext(seat, round, turn, doras, itr.locale);
   itr.editReply({
     content: replyMessage,
