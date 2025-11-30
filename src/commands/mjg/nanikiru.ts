@@ -60,7 +60,7 @@ function optionName(path: NameDesc) {
   return localize(invariantLocale, path.name);
 }
 
-function replyInSitu(
+async function replyInSitu(
   itr: ChatInputCommandInteraction,
   response: InteractionCallbackResponse<boolean>
 ) {
@@ -82,10 +82,18 @@ function replyInSitu(
       ? (ukeireChoiceParam as UkeireChoice)
       : UkeireChoice.No;
   const replyMessage = getFullHandContext(seat, round, turn, doras, itr.locale);
-  itr.editReply({
+  await itr.editReply({
     content: replyMessage,
   });
 
+  const messageResp = Promise.resolve(getShantenInfo(hand, ukeireChoice, itr.locale, discards || undefined)).then((shantenInfo) => 
+    itr.editReply({
+      content:
+        replyMessage +
+        "\n" +
+        shantenInfo,
+    })
+  );
   const toDisplay = fromStrToHandToDisplay(hand);
   getImageFromTiles(toDisplay).then((image) =>
     itr.editReply({ files: [image] })
@@ -96,19 +104,15 @@ function replyInSitu(
     sorted: true,
     unique: true,
   });
-  emojis.forEach(async (emoji) => {
-    response.resource?.message?.react(emoji);
-  });
-
-  itr.editReply({
-    content:
-      replyMessage +
-      "\n" +
-      getShantenInfo(hand, ukeireChoice, itr.locale, discards || undefined),
-  });
+  emojis.forEach(async (emoji) => 
+    response.resource?.message?.react(emoji)
+  );
+  return messageResp;
 }
+  
 
-function replyInThread(
+
+async function replyInThread(
   itr: ChatInputCommandInteraction,
   response: InteractionCallbackResponse<boolean>,
   threadManager: GuildTextThreadManager<AllowedThreadTypeForTextChannel>
@@ -135,7 +139,7 @@ function replyInThread(
   const toDisplay = fromStrToHandToDisplay(hand);
   getImageFromTiles(toDisplay)
     .then((image) => itr.editReply({ files: [image] }))
-    .then(() => {
+    .then(() => 
       threadManager
         .create({
           name: stringFormat(
@@ -147,25 +151,24 @@ function replyInThread(
           autoArchiveDuration: ThreadAutoArchiveDuration.ThreeDays,
           startMessage: response.resource?.message?.id,
           type: 11,
-        })
-        .then((thread) => {
-          thread
-            .send({
-              content: getShantenInfo(hand, ukeireChoice, itr.locale),
-            })
-            .then((message) => {
-              const emojis = getHandEmojis({
-                hand: discards || toDisplay.closedTiles,
-                sorted: true,
-                unique: true,
-              });
-
-              emojis.forEach(async (emoji) => {
-                message.react(emoji);
-              });
+        }))
+      .then((thread) => {
+        thread
+          .send({
+            content: getShantenInfo(hand, ukeireChoice, itr.locale),
+          })
+          .then((message) => {
+            const emojis = getHandEmojis({
+              hand: discards || toDisplay.closedTiles,
+              sorted: true,
+              unique: true,
             });
-        });
-    });
+
+            emojis.forEach(async (emoji) => {
+              message.react(emoji);
+            });
+          });
+      });
 }
 
 function getFullHandContext(
