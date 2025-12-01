@@ -29,7 +29,10 @@ export class AppEmojiCollection {
 }
 
 export enum AppEmojiName {
+  Chii = "chii",
+  Pon = "pon",
   Kan = "kan",
+  Skip = "skip",
   Riichi = "riichi",
   Eyes = "👀",
   m0 = "0m",

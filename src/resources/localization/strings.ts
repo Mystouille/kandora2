@@ -27,8 +27,8 @@ export const strings = {
             name: "commands.admin.checkNanikiru.params.id.name",
             desc: "commands.admin.checkNanikiru.params.id.desc",
           },
-        }
-      }
+        },
+      },
     },
     createuser: {
       name: "commands.createuser.name",
@@ -94,7 +94,8 @@ export const strings = {
           theadNameFormat: "commands.quiz.nanikiru.reply.theadNameFormat",
           threadFirstMessageFormat:
             "commands.quiz.nanikiru.reply.threadFirstMessageFormat",
-          openingMessage: "commands.quiz.nanikiru.reply.openingMessage",
+          defaultOpeningMessage:
+            "commands.quiz.nanikiru.reply.defaultOpeningMessage",
           answerLabel: "commands.quiz.nanikiru.reply.answerLabel",
         },
       },

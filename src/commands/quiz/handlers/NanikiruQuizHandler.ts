@@ -5,9 +5,10 @@ import { stringFormat } from "../../../utils/stringUtils";
 import {
   compareTiles,
   fromStrToHandToDisplay,
+  getEmoji,
+  getEmojis,
   getHandContext,
   getHandEmojis,
-  splitTiles,
   SUIT_NAMES,
 } from "../../../mahjong/handParser";
 import {
@@ -41,10 +42,6 @@ export class NanikiruQuizHandler extends QuizHandler {
     );
   }
 
-  protected get baseMessagePath() {
-    return nanikiruStrings.reply.openingMessage;
-  }
-
   async getNewQuestionData() {
     const problem = NanikiruCollections.instance.getNextProblem(this.series);
     return this.problemToQuestion(problem);
@@ -54,43 +51,55 @@ export class NanikiruQuizHandler extends QuizHandler {
     problem: NanikiruProblem
   ): Promise<QuizQuestion> {
     const fullAnswer = this.getAnswerTextFromProblem(problem);
-    const answer = splitTiles(
-      problem.answer.replaceAll("k", "").replaceAll("r", "")
-    );
+    const answer = problem.answer.split(" ");
     answer.sort(compareTiles);
 
     const questionImage = await getImageFromTiles(
       fromStrToHandToDisplay(problem.hand)
     );
 
-    if (problem.answer.includes("k")) {
-      answer.push(AppEmojiName.Kan);
-    }
-    if (problem.answer.includes("r")) {
-      answer.push(AppEmojiName.Riichi);
-    }
+    const callOptions = problem.options?.split(" ") ?? [];
 
     const optionEmojis = getHandEmojis({
       hand: problem.hand,
       sorted: true,
       unique: true,
     });
+    if (callOptions.includes("chii")) {
+      optionEmojis.push(getEmoji(AppEmojiName.Chii));
+    }
+    if (callOptions.includes("pon")) {
+      optionEmojis.push(getEmoji(AppEmojiName.Pon));
+    }
+    if (callOptions.includes("kan")) {
+      optionEmojis.push(getEmoji(AppEmojiName.Kan));
+    }
+    if (callOptions.includes("skip")) {
+      optionEmojis.push(getEmoji(AppEmojiName.Skip));
+    }
+    if (callOptions.includes("riichi")) {
+      optionEmojis.push(getEmoji(AppEmojiName.Riichi));
+    }
 
-    const questionText = getHandContext(
+    let questionText = getHandContext(
       problem.seat,
       problem.round,
       problem.turn,
       problem.dora,
       this.locale
     );
+    if (problem.context && problem.context.length > 0) {
+      questionText += `\n\n${this.formatAnswerText(problem.context, "", false)}`;
+    } else {
+      questionText += `\n\n${localize(this.locale, nanikiruStrings.reply.defaultOpeningMessage)}`;
+    }
     return { questionText, questionImage, answer, fullAnswer, optionEmojis };
   }
 
   protected getAnswerTextFromProblem(problem: NanikiruProblem) {
     const sb = [];
-    const answerEmojis = getHandEmojis({
-      hand: problem.answer,
-    });
+    const answerEmojiNames = problem.answer.split(" ");
+    const answerEmojis = getEmojis(answerEmojiNames).join("");
     sb.push(
       `# ${localize(this.locale, nanikiruStrings.reply.answerLabel)} ||${answerEmojis}||`
     );
@@ -153,7 +162,7 @@ export class NanikiruQuizHandler extends QuizHandler {
     }
     let finalText = compositeText.join("\n");
     if (spoiler) {
-      finalText = `||${finalText}||`;
+      finalText = `${spoiler ? "||" : ""}${finalText}${spoiler ? "||" : ""}`;
     }
     return finalText;
   }

@@ -28,8 +28,6 @@ async function deployEmojis() {
       console.log(`All good, ${targetEmojiName} already exist in app`);
     }
   }
-
-  console.log("Refresh finished!");
 }
 
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
