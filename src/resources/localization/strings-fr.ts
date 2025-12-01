@@ -9,6 +9,20 @@ export const stringsFr: StringResources = {
       name: "ping",
       desc: "répond pong",
     },
+    admin: {
+      name: "admin",
+      desc: "commandes admin",
+      checkNanikiru: {
+        name: "checknanikiru",
+        desc: " affiche un problème nanikiru par son ID pour vérifier son contenu",
+        params: {
+          id: {
+            name: "id",
+            desc: "L'ID de la ligne dans Google Sheets du problème à vérifier",
+          },
+        },
+      },
+    },
     createuser: {
       name: "creeutilisateur",
       desc: "cree un utilisateur",

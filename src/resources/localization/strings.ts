@@ -16,6 +16,20 @@ export const strings = {
       name: "commands.ping.name",
       desc: "commands.ping.description",
     },
+    admin: {
+      name: "commands.admin.name",
+      desc: "commands.admin.desc",
+      checkNanikiru: {
+        name: "commands.admin.checkNanikiru.name",
+        desc: "commands.admin.checkNanikiru.desc",
+        params: {
+          id: {
+            name: "commands.admin.checkNanikiru.params.id.name",
+            desc: "commands.admin.checkNanikiru.params.id.desc",
+          },
+        }
+      }
+    },
     createuser: {
       name: "commands.createuser.name",
       desc: "commands.createuser.desc",
