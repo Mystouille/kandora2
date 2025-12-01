@@ -4,13 +4,12 @@ import {
   strings,
 } from "../../resources/localization/strings";
 import { buildOptionNameAndDescription } from "../../utils/localizationUtils";
-import { replyWithDelay } from "../../utils/interactionUtils";
 import { executeCheckNanikiru } from "./checkNanikiru";
 
 const checkNanikiruSubCommandName =
   invariantResources.commands.admin.checkNanikiru.name;
 
-export let data: any = new SlashCommandBuilder()
+export const data = new SlashCommandBuilder()
   .setName(invariantResources.commands.admin.name)
   .setDescription(invariantResources.commands.admin.desc)
   .addSubcommand((subcommand) =>
@@ -27,6 +26,6 @@ export let data: any = new SlashCommandBuilder()
 
 export async function execute(interaction: ChatInputCommandInteraction) {
   if (interaction.options.getSubcommand() === checkNanikiruSubCommandName) {
-    await replyWithDelay(interaction, {}, executeCheckNanikiru);
+    executeCheckNanikiru(interaction);
   }
 }

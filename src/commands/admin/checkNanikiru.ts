@@ -1,6 +1,6 @@
 import {
   ChatInputCommandInteraction,
-  InteractionCallbackResponse,
+  MessageFlags,
   PublicThreadChannel,
 } from "discord.js";
 import {
@@ -20,16 +20,14 @@ export const nanikiruOptions = {
   id: strings.commands.admin.checkNanikiru.params.id,
 };
 
-export async function executeCheckNanikiru(
-  itr: ChatInputCommandInteraction,
-  response: InteractionCallbackResponse<boolean>
-) {
+export async function executeCheckNanikiru(itr: ChatInputCommandInteraction) {
   const index = itr.options.getInteger(optionName(nanikiruOptions.id), true);
 
   const problem = await NanikiruCollections.instance.getProblemFromRowId(index);
   if (problem === null) {
-    response.resource?.message?.edit({
+    itr.reply({
       content: `No problem found for id ${index}`,
+      options: { flags: MessageFlags.Ephemeral },
     });
     return;
   }
@@ -44,9 +42,10 @@ export async function executeCheckNanikiru(
   );
 
   const question = await dummyHandler.problemToQuestion(problem);
-  response.resource?.message?.edit({
+  itr.user.send({
     content: `text:\n\n${question.questionText}\n\n answer:\n\n${question.fullAnswer}`,
     files: [question.questionImage],
+    options: { flags: MessageFlags.Ephemeral },
   });
 }
 

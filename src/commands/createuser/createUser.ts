@@ -1,6 +1,5 @@
 import {
   CommandInteraction,
-  Locale,
   MessageFlags,
   SlashCommandBuilder,
 } from "discord.js";
