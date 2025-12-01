@@ -2,6 +2,7 @@ import {
   CommandInteraction,
   MessageFlags,
   SlashCommandBuilder,
+  TextDisplayBuilder,
 } from "discord.js";
 import {
   invariantResources,
@@ -17,8 +18,11 @@ export const data = new SlashCommandBuilder()
 
 export async function execute(interaction: CommandInteraction) {
   //const doc = new User({ name: "bla" });
+  const exampleTextDisplay = new TextDisplayBuilder().setContent(
+    "### This is a md text"
+  );
   return interaction.reply({
-    content: `pending...`,
-    flags: MessageFlags.Ephemeral,
+    components: [exampleTextDisplay],
+    flags: MessageFlags.Ephemeral + MessageFlags.IsComponentsV2,
   });
 }

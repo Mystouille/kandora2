@@ -47,7 +47,6 @@ export abstract class QuizHandler {
     [id: string]: { timing: number; scoreDelta: number };
   };
   protected abstract getNewQuestionData(): Promise<QuizQuestion>;
-  protected abstract get baseMessagePath(): string;
   protected abstract get firstThreadMessage(): string;
   protected currentQuestion: QuizQuestion;
 
@@ -202,7 +201,7 @@ export abstract class QuizHandler {
     const question = this.currentQuestion;
     let sb = [];
     sb.push(".");
-    sb.push(this.getFullOpeningMessage(this.locale, this.baseMessagePath));
+    sb.push(this.getFullOpeningMessage(this.locale));
     if (this.currentQuestion.questionText !== undefined) {
       sb.push(this.currentQuestion.questionText);
     }
@@ -266,7 +265,7 @@ export abstract class QuizHandler {
         }
       }
     });
-    for (let option of question.optionEmojis) {
+    for (const option of question.optionEmojis) {
       await message.react(option);
     }
     if (this.quizMode === QuizMode.Explore) {
@@ -283,7 +282,7 @@ export abstract class QuizHandler {
     const sb = [];
     this.updateScores();
     sb.push(localize(this.locale, commonStrings.roundOver));
-    sb.push(this.getFullOpeningMessage(this.locale, this.baseMessagePath));
+    sb.push(this.getFullOpeningMessage(this.locale));
     message.edit({ content: sb.join("\n") });
     message.reactions.removeAll();
     this.replyWithAnswer(message, reason).then(async (message) => {
@@ -320,7 +319,7 @@ export abstract class QuizHandler {
   }
 
   private replyWithAnswer(message: Message<true>, reason: StopReason) {
-    let sb = [];
+    const sb = [];
     if (
       reason === StopReason.Time &&
       Object.keys(this.winnerTimings).length === 0
@@ -393,24 +392,21 @@ export abstract class QuizHandler {
     this.addCurrentWinners(sb);
   }
 
-  protected getFullOpeningMessage(locale: Locale, baseMessagePath: string) {
-    const openingMessage = localize(locale, baseMessagePath);
+  protected getFullOpeningMessage(locale: Locale) {
     switch (this.quizMode) {
       case QuizMode.Explore:
         return stringFormat(
           locale,
           commonStrings.openingMessageExploreFormat,
           `${this.nbQuestionsAsked}`,
-          `${this.nbTotalQuestion}`,
-          openingMessage
+          `${this.nbTotalQuestion}`
         );
       case QuizMode.First:
         return stringFormat(
           locale,
           commonStrings.openingMessageFirstFormat,
           `${this.nbQuestionsAsked}`,
-          `${this.nbTotalQuestion}`,
-          openingMessage
+          `${this.nbTotalQuestion}`
         );
       case QuizMode.Race:
         return stringFormat(
@@ -418,8 +414,7 @@ export abstract class QuizHandler {
           commonStrings.openingMessageRaceFormat,
           `${this.nbQuestionsAsked}`,
           `${this.nbTotalQuestion}`,
-          `${this.timeout}`,
-          openingMessage
+          `${this.timeout}`
         );
     }
   }

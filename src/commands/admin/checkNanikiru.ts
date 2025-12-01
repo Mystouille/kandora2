@@ -43,7 +43,7 @@ export async function executeCheckNanikiru(itr: ChatInputCommandInteraction) {
 
   const question = await dummyHandler.problemToQuestion(problem);
   itr.user.send({
-    content: `text:\n\n${question.questionText}\n\n answer:\n\n${question.fullAnswer}`,
+    content: `text:\n\n${question.questionText}\n\n options:\n\n${question.optionEmojis.join("")}\n\n answer:\n\n${question.fullAnswer}`,
     files: [question.questionImage],
     options: { flags: MessageFlags.Ephemeral },
   });

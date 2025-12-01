@@ -14,6 +14,9 @@ export type NanikiruProblem = {
   explanation: string;
   ukeire: string;
   source: string;
+  context: string | undefined;
+  options: string | undefined;
+  hint: string | undefined;
 };
 
 export enum NanikiruType {
@@ -43,7 +46,7 @@ type Collections = {
 };
 
 export class NanikiruCollections {
-  static #instance: NanikiruCollections;
+  static #instance: NanikiruCollections = new NanikiruCollections();
 
   private collections: Collections;
   private currentProblems: NanikiruProblem[];
@@ -75,6 +78,9 @@ export class NanikiruCollections {
     this.currentProblems = [];
     this.fetchAllProblems().then((problems) => {
       this.setCollections(problems);
+      console.log(
+        `Nanikiru problems loaded. Total: ${problems.length} problems.`
+      );
     });
   }
 
@@ -110,6 +116,9 @@ export class NanikiruCollections {
   private setCollections(collection: NanikiruProblem[]) {
     this.resetCollections();
     collection.forEach((prob) => {
+      if (prob.source === undefined) {
+        return;
+      }
       const type = prob.source.split("-")[0] as NanikiruType;
       const collection = this.getCollectionFromSource(type);
       collection.problems.push(prob);
@@ -163,6 +172,9 @@ export class NanikiruCollections {
           turn: row.get("turn"),
           dora: row.get("dora"),
           hand: row.get("hand"),
+          context: row.get("context"),
+          options: row.get("options"),
+          hint: row.get("hint"),
           answer: row.get("answer"),
           explanation: row.get("explanation"),
           ukeire: row.get("ukeire"),
@@ -192,10 +204,15 @@ export class NanikiruCollections {
             explanation: row.get("explanation"),
             ukeire: row.get("ukeire"),
             source: row.get("source"),
+            context: row.get("context"),
+            options: row.get("options"),
+            hint: row.get("hint"),
           };
           nanikiruProblems.push(problem);
         });
-        return nanikiruProblems.filter((p) => p.hand !== undefined);
+        return nanikiruProblems.filter(
+          (p) => p.hand !== undefined && p.answer !== undefined
+        );
       });
   }
 }

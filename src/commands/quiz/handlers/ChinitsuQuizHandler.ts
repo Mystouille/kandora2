@@ -37,10 +37,6 @@ export class ChinitsuQuizHandler extends QuizHandler {
     );
   }
 
-  protected get baseMessagePath() {
-    return chinitsuStrings.reply.openingMessage;
-  }
-
   async getNewQuestionData() {
     const problem = getNewChinitsuProblem(this.suit, this.difficulty);
     return this.problemToQuestion(problem);
@@ -58,6 +54,10 @@ export class ChinitsuQuizHandler extends QuizHandler {
       fromStrToHandToDisplay(problem.hand)
     );
 
+    const questionText = localize(
+      this.locale,
+      chinitsuStrings.reply.openingMessage
+    );
     const optionEmojis = getHandEmojis({
       hand: `123456789${suit}`,
       sorted: true,
@@ -67,11 +67,11 @@ export class ChinitsuQuizHandler extends QuizHandler {
     const fullAnswer = this.getAnswerTextFromProblem(problem);
 
     return {
+      questionText,
       questionImage,
       answer: answerStr,
       optionEmojis,
       fullAnswer,
-      questionText: undefined,
     };
   }
 

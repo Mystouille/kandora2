@@ -52,11 +52,11 @@ export const stringsEn: StringResources = {
         reply: {
           timerDisclaimerFormat: "{0} seconds per question.",
           openingMessageExploreFormat:
-            "Question **[{0} / {1}]**. {2}\nReact with :eyes: to display the answer.",
+            "Question **[{0} / {1}]**.\nReact with :eyes: to display the answer.",
           openingMessageFirstFormat:
-            "Question **[{0} / {1}]**. {2}\nOnly the first to answer correctly gets a point!",
+            "Question **[{0} / {1}]**.\nOnly the first to answer correctly gets a point!",
           openingMessageRaceFormat:
-            "Question **[{0} / {1}]**. {2}\nYou have {2} seconds.",
+            "Question **[{0} / {1}]**.\nYou have {2} seconds.",
           problemIsLoading: "Displaying in 3... 2... 1...",
           timeoutNoWinnerReply:
             "No one answered correctly. Don't get discouraged!",
@@ -84,7 +84,7 @@ export const stringsEn: StringResources = {
         reply: {
           theadNameFormat: "Nanikiru of {0} ({1} problems)",
           threadFirstMessageFormat: "A series of {0} nanikiru is starting!",
-          openingMessage: "Find the best discard.",
+          defaultOpeningMessage: "Find the best discard.",
           answerLabel: "Answer: ",
         },
       },

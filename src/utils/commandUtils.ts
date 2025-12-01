@@ -2,6 +2,7 @@ import * as mjg from "../commands/mjg/mjgCommands";
 import * as quiz from "../commands/quiz/quizCommands";
 import * as admin from "../commands/admin/adminCommands";
 import * as ping from "../commands/ping/ping";
+import * as createuser from "../commands/createuser/createUser";
 import { REST, Routes } from "discord.js";
 import { config } from "../config";
 
@@ -25,9 +26,14 @@ export const commands = {
 };
 export const guildCommands = {
   ping,
+  createuser,
 };
 
 const commandsData = Object.values(commands).map((command) =>
+  command.data.toJSON()
+);
+
+const guildCommandsData = Object.values(guildCommands).map((command) =>
   command.data.toJSON()
 );
 
@@ -49,7 +55,7 @@ export async function deployCommands() {
           config.DISCORD_CLIENT_ID,
           config.DISCORD_GUILD_ID
         ),
-        { body: guildCommands }
+        { body: guildCommandsData }
       )
       .then(() => {
         console.log("Successfully reloaded guild (/) commands.");

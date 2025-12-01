@@ -91,6 +91,18 @@ export function getHandEmojis({
     .map((e) => `<:${e.name}:${e.id}>`);
 }
 
+export function getEmojis(emojiNames: string[]): string[] {
+  const appEmojiList = AppEmojiCollection.instance.getCollection();
+  return emojiNames
+    .map((emoji) => appEmojiList.find((appEmo) => appEmo.name === emoji))
+    .filter((e) => !!e)
+    .map((e) => `<:${e.name}:${e.id}>`);
+}
+
+export function getEmoji(emojiName: string): string {
+  return getEmojis([emojiName])[0];
+}
+
 /**
  * Returns an object used to easily generate an image of the hand
  * @param input - A loose-natural form of a hand

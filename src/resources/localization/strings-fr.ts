@@ -52,11 +52,11 @@ export const stringsFr: StringResources = {
         reply: {
           timerDisclaimerFormat: "{0} secondes par question.",
           openingMessageExploreFormat:
-            "Question **[{0} / {1}]**. {2}\nRéagissez avec :eyes: pour afficher la réponse.",
+            "Question **[{0} / {1}]**.\nRéagissez avec :eyes: pour afficher la réponse.",
           openingMessageFirstFormat:
-            "Question **[{0} / {1}]**. {2}\nSeul le premier à trouver la réponse remporte un point!",
+            "Question **[{0} / {1}]**.\nSeul le premier à trouver la réponse remporte un point!",
           openingMessageRaceFormat:
-            "Question **[{0} / {1}]**. {2}\nVous avez {3} secondes.",
+            "Question **[{0} / {1}]**.\nVous avez {3} secondes.",
           problemIsLoading: "Affichage dans 3... 2... 1...",
           timeoutNoWinnerReply:
             "Personne n'a trouvé à temps. Ne vous découragez pas!",
@@ -85,7 +85,7 @@ export const stringsFr: StringResources = {
         reply: {
           theadNameFormat: "Nanikiru du {0} ({1} problèmes)",
           threadFirstMessageFormat: "Une série de {0} nanikiru commence!",
-          openingMessage: "Trouvez la meilleure défause.",
+          defaultOpeningMessage: "Trouvez la meilleure défause.",
           answerLabel: "Réponse: ",
         },
       },
