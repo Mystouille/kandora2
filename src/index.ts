@@ -3,12 +3,6 @@ import { config } from "./config";
 import mongoose from "mongoose";
 import { commands } from "./utils/commandUtils";
 import { AppEmojiCollection } from "./resources/emojis/AppEmojiCollection";
-import csv from "csv-parser";
-import * as fs from "fs";
-import {
-  NanikiruCollections,
-  NanikiruProblem,
-} from "./resources/nanikiru/NanikiruCollections";
 
 const client = new Client({
   intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessageReactions],
@@ -58,25 +52,11 @@ async function login() {
     });
 }
 
-const nanikiruProblems: NanikiruProblem[] = [];
-
 mongoose
   .connect(config.MONGODB_URI)
   .then(() => {
     console.log(`Connected to db`);
   })
   .then(() => {
-    fs.createReadStream(
-      "src/resources/nanikiru/problems/nanikiruCollection.csv"
-    )
-      .pipe(csv())
-      .on("data", (data: NanikiruProblem) => nanikiruProblems.push(data))
-      .on("end", () => {
-        nanikiruProblems.sort((a, b) =>
-          a.source.toLowerCase() < b.source.toLowerCase() ? -1 : 1
-        );
-        NanikiruCollections.instance.setCollections(nanikiruProblems);
-        console.log(`Fetched nanikiru problems`);
-        login();
-      });
+    login();
   });

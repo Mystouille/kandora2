@@ -1,4 +1,10 @@
+import { JWT } from "google-auth-library";
+import * as token from "../../../token.json";
+import { GoogleSpreadsheet } from "google-spreadsheet";
+import { config } from "../../config";
+
 export type NanikiruProblem = {
+  id: number;
   round: string;
   seat: string;
   turn: string;
@@ -42,8 +48,24 @@ export class NanikiruCollections {
   private collections: Collections;
   private currentProblems: NanikiruProblem[];
   private currentType: NanikiruType | undefined;
+  private serviceAccountAuth = new JWT({
+    email: token.client_email,
+    key: token.private_key,
+    scopes: ["https://www.googleapis.com/auth/spreadsheets"],
+  });
+
+  private doc: GoogleSpreadsheet;
 
   private constructor() {
+    this.serviceAccountAuth = new JWT({
+      email: token.client_email,
+      key: token.private_key,
+      scopes: ["https://www.googleapis.com/auth/spreadsheets"],
+    });
+    this.doc = new GoogleSpreadsheet(
+      config.NANIKIRU_SHEET_ID,
+      this.serviceAccountAuth
+    );
     this.collections = {
       uzaku300Collection: { problems: [], remainingProblems: [] },
       uzaku301Collection: { problems: [], remainingProblems: [] },
@@ -51,6 +73,9 @@ export class NanikiruCollections {
       customCollection: { problems: [], remainingProblems: [] },
     };
     this.currentProblems = [];
+    this.fetchAllProblems().then((problems) => {
+      this.setCollections(problems);
+    });
   }
 
   private resetCollections() {
@@ -82,7 +107,7 @@ export class NanikiruCollections {
     return NanikiruCollections.#instance;
   }
 
-  public setCollections(collection: NanikiruProblem[]) {
+  private setCollections(collection: NanikiruProblem[]) {
     this.resetCollections();
     collection.forEach((prob) => {
       const type = prob.source.split("-")[0] as NanikiruType;
@@ -118,6 +143,59 @@ export class NanikiruCollections {
     return this.collections.uzaku301Collection.problems[
       this.collections.uzaku301Collection.problems.length - 1
     ];
-    //return problem as NanikiruProblem;
+  }
+
+  public async getProblemFromRowId(
+    id: number
+  ): Promise<NanikiruProblem | null> {
+    if (id <= 1) {
+      return null;
+    }
+    await this.doc.loadInfo();
+    const sheet = this.doc.sheetsByIndex[0];
+    return sheet.getRows().then((rows) => {
+      const row = rows[id - 2];
+      if (row) {
+        const problem: NanikiruProblem = {
+          id: row.rowNumber,
+          round: row.get("round"),
+          seat: row.get("seat"),
+          turn: row.get("turn"),
+          dora: row.get("dora"),
+          hand: row.get("hand"),
+          answer: row.get("answer"),
+          explanation: row.get("explanation"),
+          ukeire: row.get("ukeire"),
+          source: row.get("source"),
+        };
+        return problem;
+      }
+      return null;
+    });
+  }
+
+  private async fetchAllProblems() {
+    const nanikiruProblems: NanikiruProblem[] = [];
+    return this.doc
+      .loadInfo()
+      .then(() => this.doc.sheetsByIndex[0].getRows())
+      .then((rows) => {
+        rows.forEach((row) => {
+          const problem: NanikiruProblem = {
+            id: row.rowNumber,
+            round: row.get("round"),
+            seat: row.get("seat"),
+            turn: row.get("turn"),
+            dora: row.get("dora"),
+            hand: row.get("hand"),
+            answer: row.get("answer"),
+            explanation: row.get("explanation"),
+            ukeire: row.get("ukeire"),
+            source: row.get("source"),
+          };
+          nanikiruProblems.push(problem);
+        });
+        return nanikiruProblems.filter((p) => p.hand !== undefined);
+      });
   }
 }

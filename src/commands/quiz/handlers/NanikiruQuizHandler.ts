@@ -50,7 +50,7 @@ export class NanikiruQuizHandler extends QuizHandler {
     return this.problemToQuestion(problem);
   }
 
-  protected async problemToQuestion(
+  public async problemToQuestion(
     problem: NanikiruProblem
   ): Promise<QuizQuestion> {
     const fullAnswer = this.getAnswerTextFromProblem(problem);
