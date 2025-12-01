@@ -1,9 +1,7 @@
-import * as ping from "../commands/ping/ping";
-import * as createuser from "../commands/createuser/createUser";
 import * as mjg from "../commands/mjg/mjgCommands";
 import * as quiz from "../commands/quiz/quizCommands";
-import * as league from "../commands/league/leagueCommands";
 import * as admin from "../commands/admin/adminCommands";
+import * as ping from "../commands/ping/ping";
 import { REST, Routes } from "discord.js";
 import { config } from "../config";
 
@@ -21,12 +19,12 @@ export enum Platform {
 }
 
 export const commands = {
-  ping,
   admin,
-  createuser,
   mjg,
   quiz,
-  league,
+};
+export const guildCommands = {
+  ping,
 };
 
 const commandsData = Object.values(commands).map((command) =>
@@ -37,19 +35,25 @@ const rest = new REST({ version: "10" }).setToken(config.DISCORD_TOKEN);
 
 export async function deployCommands() {
   try {
-    console.log("Started refreshing application (/) commands.");
-
-    await rest.put(
-      Routes.applicationGuildCommands(
-        config.DISCORD_CLIENT_ID,
-        config.DISCORD_GUILD_ID
-      ),
-      {
+    await rest
+      .put(Routes.applicationCommands(config.DISCORD_CLIENT_ID), {
         body: commandsData,
-      }
-    );
+      })
+      .then(() => {
+        console.log("Successfully reloaded application (/) commands.");
+      });
 
-    console.log("Successfully reloaded application (/) commands.");
+    await rest
+      .put(
+        Routes.applicationGuildCommands(
+          config.DISCORD_CLIENT_ID,
+          config.DISCORD_GUILD_ID
+        ),
+        { body: guildCommands }
+      )
+      .then(() => {
+        console.log("Successfully reloaded guild (/) commands.");
+      });
   } catch (error) {
     console.error(error);
   }
