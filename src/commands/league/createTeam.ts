@@ -1,11 +1,15 @@
 import {
   ButtonBuilder,
   ButtonStyle,
-  CommandInteraction,
+  ChatInputCommandInteraction,
   ComponentType,
   ContainerBuilder,
+  LabelComponent,
   MessageFlags,
+  ModalBuilder,
   SlashCommandBuilder,
+  TextInputBuilder,
+  TextInputStyle,
   UserSelectMenuBuilder,
 } from "discord.js";
 import {
@@ -13,6 +17,7 @@ import {
   strings,
 } from "../../resources/localization/strings";
 import { getLocProps } from "../../utils/localizationUtils";
+import { Team } from "../../db/Team";
 
 export const data = new SlashCommandBuilder()
   .setDescription(invariantResources.commands.createuser.desc)
@@ -20,7 +25,7 @@ export const data = new SlashCommandBuilder()
   .setNameLocalizations(getLocProps(strings.commands.createuser.name))
   .setDescriptionLocalizations(getLocProps(strings.commands.createuser.desc));
 
-export async function execute(interaction: CommandInteraction) {
+export async function executeCreateTeam(itr: ChatInputCommandInteraction) {
   //const doc = new User({ name: "bla" });
   const captainSelect = new UserSelectMenuBuilder()
     .setCustomId("captain")
@@ -32,10 +37,17 @@ export async function execute(interaction: CommandInteraction) {
     .setPlaceholder("Select the team's members")
     .setMaxValues(5)
     .setRequired(false);
-  const container = new ContainerBuilder()
-    .setAccentColor(0x00ff00)
+
+  const teamNameInput = new TextInputBuilder()
+    .setCustomId("teamName")
+    .setStyle(TextInputStyle.Short)
+    .setRequired(true);
+  const container = new ModalBuilder()
     .addTextDisplayComponents((textDisplay) =>
       textDisplay.setContent("Please select the team captain and members:")
+    )
+    .addLabelComponents((actionRow) =>
+      new LabelComponent().
     )
     .addActionRowComponents((actionRow) =>
       actionRow.setComponents(captainSelect)
@@ -50,26 +62,20 @@ export async function execute(interaction: CommandInteraction) {
       )
     );
 
-  const response = await interaction.reply({
+  const responseMessage = await itr.editReply({
     components: [container],
     flags: MessageFlags.Ephemeral + MessageFlags.IsComponentsV2,
-    withResponse: true,
   });
 
-  if (!response.resource?.message) {
-    return;
-  }
-  const userSelectCollector =
-    response.resource?.message?.createMessageComponentCollector({
-      time: 3_600_000, // 1 hour
-      componentType: ComponentType.UserSelect,
-    });
+  const userSelectCollector = responseMessage.createMessageComponentCollector({
+    time: 3_600_000, // 1 hour
+    componentType: ComponentType.UserSelect,
+  });
 
-  const finalizeCollector =
-    response.resource?.message?.createMessageComponentCollector({
-      time: 3_600_000, // 1 hour
-      componentType: ComponentType.Button,
-    });
+  const finalizeCollector = responseMessage.createMessageComponentCollector({
+    time: 3_600_000, // 1 hour
+    componentType: ComponentType.Button,
+  });
   let captainChoice: string | undefined = undefined;
   let teamChoices: string[] = [];
   userSelectCollector.on("collect", async (i) => {
@@ -90,6 +96,11 @@ export async function execute(interaction: CommandInteraction) {
   });
   finalizeCollector.on("collect", async (i) => {
     if (i.customId === "submit") {
+      Team.create({
+        captainId: captainChoice!,
+        memberIds: teamChoices,
+        captain,
+      });
       await i.update({
         components: [
           new ContainerBuilder()

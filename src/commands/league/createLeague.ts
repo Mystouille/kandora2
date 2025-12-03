@@ -3,30 +3,24 @@ import {
   NameDesc,
   strings,
 } from "../../resources/localization/strings";
-import {
-  ChatInputCommandInteraction,
-  InteractionCallbackResponse,
-} from "discord.js";
+import { ChatInputCommandInteraction } from "discord.js";
 import { localize } from "../../utils/localizationUtils";
 import { League, Platform, Ruleset } from "../../db/League";
 
 export const createleagueOptions = {
-  leagueName: strings.commands.league.create.params.leagueName,
-  startTime: strings.commands.league.create.params.startTime,
-  endTime: strings.commands.league.create.params.endTime,
-  cutoffTime: strings.commands.league.create.params.cutoffTime,
-  ruleset: strings.commands.league.create.params.ruleset,
-  platform: strings.commands.league.create.params.platform,
+  leagueName: strings.commands.league.createLeague.params.leagueName,
+  startTime: strings.commands.league.createLeague.params.startTime,
+  endTime: strings.commands.league.createLeague.params.endTime,
+  cutoffTime: strings.commands.league.createLeague.params.cutoffTime,
+  ruleset: strings.commands.league.createLeague.params.ruleset,
+  platform: strings.commands.league.createLeague.params.platform,
 };
 
 function optionName(path: NameDesc) {
   return localize(invariantLocale, path.name);
 }
 
-export async function executeCreateleague(
-  itr: ChatInputCommandInteraction,
-  response: InteractionCallbackResponse<boolean>
-) {
+export async function executeCreateLeague(itr: ChatInputCommandInteraction) {
   const leagueName = itr.options.getString(
     optionName(createleagueOptions.leagueName),
     true
@@ -58,8 +52,23 @@ export async function executeCreateleague(
 
   const existingleague = await League.findOne({ name: leagueName }).exec();
   if (existingleague !== null) {
-    await response.resource?.message?.edit({
+    await itr.editReply({
       content: "a league with this name already exists",
+    });
+    return;
+  }
+
+  const sb: string[] = [];
+
+  const ongoingleague = await League.findOne({ isOngoing: true }).exec();
+  if (ongoingleague !== null) {
+    await League.updateOne(
+      { _id: ongoingleague._id },
+      { isOngoing: false }
+    ).exec();
+    sb.push(`terminated the ongoing league: \`${ongoingleague.name}\``);
+    await itr.editReply({
+      content: sb.join("\n"),
     });
     return;
   }
@@ -72,9 +81,11 @@ export async function executeCreateleague(
     rules: rulesetStr,
     platform: platformStr,
     hasTeams: true,
+    isOngoing: true,
   }).then(async (newleague) => {
-    await response.resource?.message?.edit({
-      content: `League \`${newleague.name}\` created successfully!`,
+    sb.push(`League \`${newleague.name}\` created successfully!`);
+    await itr.editReply({
+      content: sb.join("\n"),
     });
   });
 }

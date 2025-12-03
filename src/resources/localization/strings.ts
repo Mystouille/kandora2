@@ -193,45 +193,53 @@ export const strings = {
     },
     league: {
       name: "commands.league.name",
-      create: {
-        name: "commands.league.create.name",
-        desc: "commands.league.create.desc",
+      createTeam: {
+        name: "commands.league.createTeam.name",
+        desc: "commands.league.createTeam.desc",
+      },
+      createLeague: {
+        name: "commands.league.createLeague.name",
+        desc: "commands.league.createLeague.desc",
         params: {
           leagueName: {
-            name: "commands.league.create.params.leagueName.name",
-            desc: "commands.league.create.params.leagueName.desc",
+            name: "commands.league.createLeague.params.leagueName.name",
+            desc: "commands.league.createLeague.params.leagueName.desc",
           },
           startTime: {
-            name: "commands.league.create.params.startTime.name",
-            desc: "commands.league.create.params.startTime.desc",
+            name: "commands.league.createLeague.params.startTime.name",
+            desc: "commands.league.createLeague.params.startTime.desc",
           },
           endTime: {
-            name: "commands.league.create.params.endTime.name",
-            desc: "commands.league.create.params.endTime.desc",
+            name: "commands.league.createLeague.params.endTime.name",
+            desc: "commands.league.createLeague.params.endTime.desc",
           },
           cutoffTime: {
-            name: "commands.league.create.params.cutoffTime.name",
-            desc: "commands.league.create.params.cutoffTime.desc",
+            name: "commands.league.createLeague.params.cutoffTime.name",
+            desc: "commands.league.createLeague.params.cutoffTime.desc",
           },
           ruleset: {
-            name: "commands.league.create.params.ruleset.name",
-            desc: "commands.league.create.params.ruleset.desc",
+            name: "commands.league.createLeague.params.ruleset.name",
+            desc: "commands.league.createLeague.params.ruleset.desc",
             options: {
-              ema: "commands.league.create.params.ruleset.options.ema",
-              wrc: "commands.league.create.params.ruleset.options.wrc",
-              online: "commands.league.create.params.ruleset.options.online",
-              mleague: "commands.league.create.params.ruleset.options.mleague",
+              ema: "commands.league.createLeague.params.ruleset.options.ema",
+              wrc: "commands.league.createLeague.params.ruleset.options.wrc",
+              online:
+                "commands.league.createLeague.params.ruleset.options.online",
+              mleague:
+                "commands.league.createLeague.params.ruleset.options.mleague",
             },
           },
           platform: {
-            name: "commands.league.create.params.platform.name",
-            desc: "commands.league.create.params.platform.desc",
+            name: "commands.league.createLeague.params.platform.name",
+            desc: "commands.league.createLeague.params.platform.desc",
             options: {
-              majsoul: "commands.league.create.params.platform.options.majsoul",
-              tenhou: "commands.league.create.params.platform.options.tenhou",
+              majsoul:
+                "commands.league.createLeague.params.platform.options.majsoul",
+              tenhou:
+                "commands.league.createLeague.params.platform.options.tenhou",
               riichiCity:
-                "commands.league.create.params.platform.options.riichiCity",
-              irl: "commands.league.create.params.platform.options.irl",
+                "commands.league.createLeague.params.platform.options.riichiCity",
+              irl: "commands.league.createLeague.params.platform.options.irl",
             },
           },
         },
