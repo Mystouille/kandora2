@@ -1,7 +1,6 @@
 import {
   ChannelType,
   ChatInputCommandInteraction,
-  InteractionCallbackResponse,
   ThreadAutoArchiveDuration,
 } from "discord.js";
 import {
@@ -20,10 +19,7 @@ export const nanikiruOptions = {
   series: strings.commands.quiz.nanikiru.params.series,
 };
 
-export async function executeQuizNanikiru(
-  itr: ChatInputCommandInteraction,
-  response: InteractionCallbackResponse<boolean>
-) {
+export async function executeQuizNanikiru(itr: ChatInputCommandInteraction) {
   const nbRoundsParam = itr.options.getInteger(
     optionName(commonOptions.nbrounds),
     false
@@ -80,7 +76,7 @@ export async function executeQuizNanikiru(
       .editReply({
         content: `${startDisclaimer} ${timerDisclaimer}`,
       })
-      .then(() => {
+      .then((message) => {
         threadManager
           .create({
             name: stringFormat(
@@ -90,7 +86,7 @@ export async function executeQuizNanikiru(
               nbRounds.toString()
             ),
             autoArchiveDuration: ThreadAutoArchiveDuration.ThreeDays,
-            startMessage: response.resource?.message?.id,
+            startMessage: message.id,
             type: 11,
           })
           .then((thread) => {

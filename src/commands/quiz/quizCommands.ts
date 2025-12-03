@@ -5,7 +5,6 @@ import {
   strings,
 } from "../../resources/localization/strings";
 import { buildOptionNameAndDescription } from "../../utils/localizationUtils";
-import { replyWithDelay } from "../../utils/interactionUtils";
 import { executeQuizNanikiru, nanikiruOptions } from "./nanikiru";
 import { NanikiruType } from "../../resources/nanikiru/NanikiruCollections";
 import { QuizMode } from "./handlers/QuizHandler";
@@ -146,10 +145,14 @@ export let data: any = new SlashCommandBuilder()
 export async function execute(interaction: ChatInputCommandInteraction) {
   switch (interaction.options.getSubcommand()) {
     case nanikiruSubCommandName:
-      await replyWithDelay(interaction, {}, executeQuizNanikiru);
+      interaction.deferReply({ ephemeral: false }).then(async () => {
+        await executeQuizNanikiru(interaction);
+      });
       break;
     case chinitsuSubCommandName:
-      await replyWithDelay(interaction, {}, executeQuizChinitsu);
+      interaction.deferReply({ ephemeral: false }).then(async () => {
+        await executeQuizChinitsu(interaction);
+      });
       break;
   }
 }

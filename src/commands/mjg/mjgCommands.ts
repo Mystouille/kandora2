@@ -5,7 +5,6 @@ import {
   strings,
 } from "../../resources/localization/strings";
 import { buildOptionNameAndDescription } from "../../utils/localizationUtils";
-import { replyWithDelay } from "../../utils/interactionUtils";
 import { UkeireChoice } from "../../mahjong/shantenUtils";
 
 const nanikiruSubCommandName = invariantResources.commands.mjg.nanikiru.name;
@@ -86,6 +85,8 @@ export let data: any = new SlashCommandBuilder()
 
 export async function execute(interaction: ChatInputCommandInteraction) {
   if (interaction.options.getSubcommand() === nanikiruSubCommandName) {
-    await replyWithDelay(interaction, {}, executeNanikiru);
+    interaction.deferReply({ ephemeral: false }).then(async () => {
+      await executeNanikiru(interaction);
+    });
   }
 }

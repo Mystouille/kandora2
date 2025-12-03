@@ -3,7 +3,6 @@ import {
   ChannelType,
   ChatInputCommandInteraction,
   GuildTextThreadManager,
-  InteractionCallbackResponse,
   Locale,
   ThreadAutoArchiveDuration,
 } from "discord.js";
@@ -22,19 +21,16 @@ import { localize } from "../../utils/localizationUtils";
 import { stringFormat } from "../../utils/stringUtils";
 import { getShantenInfo, UkeireChoice } from "../../mahjong/shantenUtils";
 
-export async function executeNanikiru(
-  itr: ChatInputCommandInteraction,
-  response: InteractionCallbackResponse<boolean>
-) {
+export async function executeNanikiru(itr: ChatInputCommandInteraction) {
   const thread = itr.options.getBoolean(
     optionName(nanikiruOptions.thread),
     false
   );
 
   if (thread && itr.channel?.type === ChannelType.GuildText) {
-    replyInThread(itr, response, itr.channel.threads);
+    replyInThread(itr, itr.channel.threads);
   } else {
-    replyInSitu(itr, response);
+    replyInSitu(itr);
   }
 }
 
@@ -60,10 +56,7 @@ function optionName(path: NameDesc) {
   return localize(invariantLocale, path.name);
 }
 
-async function replyInSitu(
-  itr: ChatInputCommandInteraction,
-  response: InteractionCallbackResponse<boolean>
-) {
+async function replyInSitu(itr: ChatInputCommandInteraction) {
   const hand = itr.options.getString(optionName(nanikiruOptions.hand), true);
   const discards = itr.options.getString(
     optionName(nanikiruOptions.discards),
@@ -81,17 +74,16 @@ async function replyInSitu(
     ukeireChoiceParam !== null
       ? (ukeireChoiceParam as UkeireChoice)
       : UkeireChoice.No;
-  const replyMessage = getFullHandContext(seat, round, turn, doras, itr.locale);
-  await itr.editReply({
-    content: replyMessage,
+  const contextStr = getFullHandContext(seat, round, turn, doras, itr.locale);
+  const message = await itr.editReply({
+    content: contextStr,
   });
 
-  const messageResp = Promise.resolve(getShantenInfo(hand, ukeireChoice, itr.locale, discards || undefined)).then((shantenInfo) => 
+  const messageResp = Promise.resolve(
+    getShantenInfo(hand, ukeireChoice, itr.locale, discards || undefined)
+  ).then((shantenInfo) =>
     itr.editReply({
-      content:
-        replyMessage +
-        "\n" +
-        shantenInfo,
+      content: contextStr + "\n" + shantenInfo,
     })
   );
   const toDisplay = fromStrToHandToDisplay(hand);
@@ -104,17 +96,12 @@ async function replyInSitu(
     sorted: true,
     unique: true,
   });
-  emojis.forEach(async (emoji) => 
-    response.resource?.message?.react(emoji)
-  );
+  emojis.forEach(async (emoji) => message.react(emoji));
   return messageResp;
 }
-  
-
 
 async function replyInThread(
   itr: ChatInputCommandInteraction,
-  response: InteractionCallbackResponse<boolean>,
   threadManager: GuildTextThreadManager<AllowedThreadTypeForTextChannel>
 ) {
   const hand = itr.options.getString(optionName(nanikiruOptions.hand), true);
@@ -139,36 +126,36 @@ async function replyInThread(
   const toDisplay = fromStrToHandToDisplay(hand);
   getImageFromTiles(toDisplay)
     .then((image) => itr.editReply({ files: [image] }))
-    .then(() => 
-      threadManager
-        .create({
-          name: stringFormat(
-            itr.locale,
-            strings.commands.mjg.nanikiru.reply.threadTitle,
-            itr.member?.user.username || "",
-            hand
-          ),
-          autoArchiveDuration: ThreadAutoArchiveDuration.ThreeDays,
-          startMessage: response.resource?.message?.id,
-          type: 11,
-        }))
-      .then((thread) => {
-        thread
-          .send({
-            content: getShantenInfo(hand, ukeireChoice, itr.locale),
-          })
-          .then((message) => {
-            const emojis = getHandEmojis({
-              hand: discards || toDisplay.closedTiles,
-              sorted: true,
-              unique: true,
-            });
-
-            emojis.forEach(async (emoji) => {
-              message.react(emoji);
-            });
+    .then((message) =>
+      threadManager.create({
+        name: stringFormat(
+          itr.locale,
+          strings.commands.mjg.nanikiru.reply.threadTitle,
+          itr.member?.user.username || "",
+          hand
+        ),
+        autoArchiveDuration: ThreadAutoArchiveDuration.ThreeDays,
+        startMessage: message.id,
+        type: 11,
+      })
+    )
+    .then((thread) => {
+      thread
+        .send({
+          content: getShantenInfo(hand, ukeireChoice, itr.locale),
+        })
+        .then((message) => {
+          const emojis = getHandEmojis({
+            hand: discards || toDisplay.closedTiles,
+            sorted: true,
+            unique: true,
           });
-      });
+
+          emojis.forEach(async (emoji) => {
+            message.react(emoji);
+          });
+        });
+    });
 }
 
 function getFullHandContext(
