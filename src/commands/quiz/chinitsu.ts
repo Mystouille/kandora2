@@ -1,7 +1,6 @@
 import {
   ChannelType,
   ChatInputCommandInteraction,
-  InteractionCallbackResponse,
   ThreadAutoArchiveDuration,
 } from "discord.js";
 import {
@@ -21,10 +20,7 @@ export const chinitsuOptions = {
   difficulty: strings.commands.quiz.chinitsu.params.difficulty,
 };
 
-export async function executeQuizChinitsu(
-  itr: ChatInputCommandInteraction,
-  response: InteractionCallbackResponse<boolean>
-) {
+export async function executeQuizChinitsu(itr: ChatInputCommandInteraction) {
   const nbRoundsParam = itr.options.getInteger(
     optionName(commonOptions.nbrounds),
     false
@@ -87,7 +83,7 @@ export async function executeQuizChinitsu(
       .editReply({
         content: `${startDisclaimer} ${timerDisclaimer}`,
       })
-      .then(() => {
+      .then((message) => {
         threadManager
           .create({
             name: stringFormat(
@@ -97,7 +93,7 @@ export async function executeQuizChinitsu(
               nbRounds.toString()
             ),
             autoArchiveDuration: ThreadAutoArchiveDuration.ThreeDays,
-            startMessage: response.resource?.message?.id,
+            startMessage: message.id,
             type: 11,
           })
           .then((thread) => {
