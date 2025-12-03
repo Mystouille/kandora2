@@ -137,7 +137,7 @@ export class NanikiruCollections {
     startIdx -= startIdx % pageSize;
     return remainingProb.splice(
       startIdx,
-      Math.max(startIdx + pageSize, remainingProb.length - 1)
+      Math.min(pageSize, remainingProb.length - 1 - startIdx)
     );
   }
 
