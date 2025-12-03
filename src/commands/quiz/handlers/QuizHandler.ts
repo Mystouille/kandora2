@@ -283,6 +283,9 @@ export abstract class QuizHandler {
     this.updateScores();
     sb.push(localize(this.locale, commonStrings.roundOver));
     sb.push(this.getFullOpeningMessage(this.locale));
+    if (this.currentQuestion.questionText !== undefined) {
+      sb.push(this.currentQuestion.questionText);
+    }
     message.edit({ content: sb.join("\n") });
     message.reactions.removeAll();
     this.replyWithAnswer(message, reason).then(async (message) => {

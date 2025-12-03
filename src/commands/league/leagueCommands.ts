@@ -6,9 +6,12 @@ import {
 import { buildOptionNameAndDescription } from "../../utils/localizationUtils";
 import { createleagueOptions, executeCreateLeague } from "./createLeague";
 import { Platform, Ruleset } from "../../db/League";
+import { executeCreateTeam } from "./createTeam";
 
-const createLagueSubCommandName =
+const createLeagueSubCommandName =
   invariantResources.commands.league.createLeague.name;
+const createTeamSubCommandName =
+  invariantResources.commands.league.createTeam.name;
 
 export const data = new SlashCommandBuilder()
   .setName(invariantResources.commands.league.name)
@@ -93,9 +96,12 @@ export const data = new SlashCommandBuilder()
   );
 
 export async function execute(interaction: ChatInputCommandInteraction) {
-  if (interaction.options.getSubcommand() === createLagueSubCommandName) {
+  if (interaction.options.getSubcommand() === createLeagueSubCommandName) {
     interaction.deferReply({ ephemeral: true }).then(async () => {
       await executeCreateLeague(interaction);
     });
+  }
+  if (interaction.options.getSubcommand() === createTeamSubCommandName) {
+    executeCreateTeam(interaction);
   }
 }

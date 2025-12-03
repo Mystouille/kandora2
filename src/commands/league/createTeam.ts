@@ -12,7 +12,6 @@ import {
   strings,
 } from "../../resources/localization/strings";
 import { getLocProps } from "../../utils/localizationUtils";
-import { Team } from "../../db/Team";
 
 export const data = new SlashCommandBuilder()
   .setDescription(invariantResources.commands.createuser.desc)
@@ -36,13 +35,18 @@ export async function executeCreateTeam(itr: ChatInputCommandInteraction) {
   const teamNameInput = new TextInputBuilder()
     .setCustomId("teamName")
     .setStyle(TextInputStyle.Short)
-    .setRequired(true);
+    .setRequired(true)
+    .setPlaceholder(
+      "Enter a basic team name (no spaces or special characters)"
+    );
   const fancyTeamNameInput = new TextInputBuilder()
     .setCustomId("fancyTeamName")
     .setStyle(TextInputStyle.Short)
-    .setRequired(true);
+    .setRequired(true)
+    .setPlaceholder("Enter a fancy team name (emojis allowed)");
   const modal = new ModalBuilder()
     .setCustomId("createTeamModal")
+    .setTitle("Create a new team")
     .addLabelComponents((components) =>
       new LabelBuilder()
         .setLabel("Team name")
