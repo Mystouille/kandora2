@@ -182,9 +182,13 @@ export const stringsFr: StringResources = {
     },
     league: {
       name: "ligue",
-      create: {
+      createTeam: {
+        name: "creerequipe",
+        desc: "crée une nouvelle équipe dans la ligue en cours",
+      },
+      createLeague: {
         desc: "crée une nouvelle ligue",
-        name: "creer",
+        name: "creerligue",
         params: {
           leagueName: {
             name: "nom",

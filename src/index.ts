@@ -3,6 +3,7 @@ import { config } from "./config";
 import mongoose from "mongoose";
 import { commands, guildCommands } from "./utils/commandUtils";
 import { AppEmojiCollection } from "./resources/emojis/AppEmojiCollection";
+import { NanikiruCollections } from "./resources/nanikiru/NanikiruCollections";
 
 const client = new Client({
   intents: [
@@ -60,6 +61,9 @@ async function login() {
       console.log(`Fetched emojis (${coll.size})`);
     });
 }
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const collection = NanikiruCollections.instance; // Initialize Nanikiru collections
 
 mongoose
   .connect(config.MONGODB_URI)

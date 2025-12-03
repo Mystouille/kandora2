@@ -46,7 +46,7 @@ type Collections = {
 };
 
 export class NanikiruCollections {
-  static #instance: NanikiruCollections = new NanikiruCollections();
+  static #instance: NanikiruCollections;
 
   private collections: Collections;
   private currentProblems: NanikiruProblem[];

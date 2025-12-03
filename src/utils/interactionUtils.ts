@@ -13,6 +13,6 @@ export async function replyWithDelay(
   ) => Promise<unknown>
 ) {
   interaction
-    .reply({ ...options, content: "Mmmh...", withResponse: true })
+    .deferReply({ ...options })
     .then((response) => execute(interaction, response));
 }
