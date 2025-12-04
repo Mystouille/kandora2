@@ -119,6 +119,13 @@ export const stringsEn: StringResources = {
         },
       },
     },
+    my: {
+      name: "my",
+      info: {
+        name: "info",
+        desc: "display/modify your information",
+      },
+    },
     mjg: {
       name: "mjg",
       nanikiru: {

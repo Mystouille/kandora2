@@ -25,7 +25,7 @@ type Ukeire = {
   nbTotalWaits: number;
 };
 
-export type Hairi = {
+export type WaitInfo = {
   shanten: number;
   ukeire: Ukeire[];
 };
@@ -34,7 +34,7 @@ export type Hairi = {
  * Returns the extended wait info about a hand (the waits improving the hand after each possible discard)
  * @param hand - A strict natural representation of the hand (and no aka)
  */
-export function getHairi(handStr: string): Hairi {
+export function getWaitInfo(handStr: string): WaitInfo {
   const tile9997 = fromStrToTile9997(handStr);
   const hairi = shantenCalc.hairi(tile9997);
   const goodWaitLimit = 5;
@@ -83,6 +83,7 @@ export function getHairi(handStr: string): Hairi {
     const similarWait = hairiExt.find((c) => c.waitsStr === waitsStr);
     if (similarWait !== undefined) {
       similarWait.tile += toCut;
+      addTileStrTo9997(toCut, tile9997, 1);
       return;
     }
     hairiExt.push({
@@ -111,11 +112,11 @@ export function getShantenInfo(
   restictedTiles?: string
 ) {
   const closedHands = handStr.split(" ")[0];
-  let handInfo: Hairi | undefined;
+  let handInfo: WaitInfo | undefined;
   let shanten = 0;
 
   if (ukeireDisplayType !== UkeireChoice.No) {
-    handInfo = getHairi(closedHands);
+    handInfo = getWaitInfo(closedHands);
   } else {
     shanten = shantenCalc.syantenAll(fromStrToTile9997(handStr));
   }
@@ -137,7 +138,7 @@ export function getShantenInfo(
 }
 
 function buildFullUkeireInfo(
-  hairi: Hairi,
+  hairi: WaitInfo,
   locale: Locale,
   restictedTiles?: string
 ): string {
@@ -189,7 +190,10 @@ function buildFullUkeireInfo(
   return sb.join("\n");
 }
 
-function buildBasicUkeireInfo(hairi: Hairi, restictedTiles?: string): string {
+function buildBasicUkeireInfo(
+  hairi: WaitInfo,
+  restictedTiles?: string
+): string {
   const sb = [];
   const restrictedTileList = restictedTiles ? splitTiles(restictedTiles) : [];
   sb.push(`${hairi.shanten}-shanten\n`);

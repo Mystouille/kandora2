@@ -131,6 +131,13 @@ export const strings = {
         },
       },
     },
+    my: {
+      name: "commands.my.name",
+      info: {
+        name: "commands.my.info.name",
+        desc: "commands.my.info.desc",
+      },
+    },
     mjg: {
       name: "commands.mjg.name",
       nanikiru: {

@@ -120,6 +120,13 @@ export const stringsFr: StringResources = {
         },
       },
     },
+    my: {
+      name: "mes",
+      info: {
+        name: "infos",
+        desc: "affiche/modifie vos informations",
+      },
+    },
     mjg: {
       name: "mjg",
       nanikiru: {
