@@ -85,7 +85,7 @@ export let data: any = new SlashCommandBuilder()
 
 export async function execute(interaction: ChatInputCommandInteraction) {
   if (interaction.options.getSubcommand() === nanikiruSubCommandName) {
-    interaction.deferReply({ ephemeral: false }).then(async () => {
+    interaction.deferReply({}).then(async () => {
       await executeNanikiru(interaction);
     });
   }

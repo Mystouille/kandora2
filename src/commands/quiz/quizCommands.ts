@@ -145,12 +145,12 @@ export let data: any = new SlashCommandBuilder()
 export async function execute(interaction: ChatInputCommandInteraction) {
   switch (interaction.options.getSubcommand()) {
     case nanikiruSubCommandName:
-      interaction.deferReply({ ephemeral: false }).then(async () => {
+      interaction.deferReply({}).then(async () => {
         await executeQuizNanikiru(interaction);
       });
       break;
     case chinitsuSubCommandName:
-      interaction.deferReply({ ephemeral: false }).then(async () => {
+      interaction.deferReply({}).then(async () => {
         await executeQuizChinitsu(interaction);
       });
       break;

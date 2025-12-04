@@ -1,4 +1,8 @@
-import { ChatInputCommandInteraction, SlashCommandBuilder } from "discord.js";
+import {
+  ChatInputCommandInteraction,
+  MessageFlags,
+  SlashCommandBuilder,
+} from "discord.js";
 import {
   invariantResources,
   strings,
@@ -97,7 +101,7 @@ export const data = new SlashCommandBuilder()
 
 export async function execute(interaction: ChatInputCommandInteraction) {
   if (interaction.options.getSubcommand() === createLeagueSubCommandName) {
-    interaction.deferReply({ ephemeral: true }).then(async () => {
+    interaction.deferReply({ flags: MessageFlags.Ephemeral }).then(async () => {
       await executeCreateLeague(interaction);
     });
   }

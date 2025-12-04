@@ -1,6 +1,7 @@
 import {
   ChatInputCommandInteraction,
   LabelBuilder,
+  MessageFlags,
   ModalBuilder,
   SlashCommandBuilder,
   TextInputBuilder,
@@ -12,6 +13,7 @@ import {
   strings,
 } from "../../resources/localization/strings";
 import { getLocProps } from "../../utils/localizationUtils";
+import { League } from "../../db/League";
 
 export const data = new SlashCommandBuilder()
   .setDescription(invariantResources.commands.createuser.desc)
@@ -20,7 +22,15 @@ export const data = new SlashCommandBuilder()
   .setDescriptionLocalizations(getLocProps(strings.commands.createuser.desc));
 
 export async function executeCreateTeam(itr: ChatInputCommandInteraction) {
-  //const doc = new User({ name: "bla" });
+  const league = await League.findOne({ isOngoing: true }).exec();
+
+  if (league === null) {
+    await itr.reply({
+      content: "There is no ongoing league to register a team for.",
+      flags: MessageFlags.Ephemeral,
+    });
+    return;
+  }
   const captainSelect = new UserSelectMenuBuilder()
     .setCustomId("captain")
     .setPlaceholder("Select the team's captain")

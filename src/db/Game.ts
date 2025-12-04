@@ -28,7 +28,7 @@ const gameSchema = new mongoose.Schema({
   },
   startTime: { type: Date, required: true },
   endTime: { type: Date, required: false },
-  results: { type: [resultSchema], required: true },
+  results: [{ type: resultSchema, required: true }],
   log: { type: String, required: false },
   league: { type: mongoose.Schema.Types.ObjectId, required: false },
 });

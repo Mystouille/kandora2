@@ -4,6 +4,7 @@ import * as admin from "../commands/admin/adminCommands";
 import * as ping from "../commands/ping/ping";
 import * as createuser from "../commands/createuser/createUser";
 import * as league from "../commands/league/leagueCommands";
+import * as my from "../commands/my/myCommands";
 import { REST, Routes } from "discord.js";
 import { config } from "../config";
 
@@ -23,6 +24,7 @@ export enum Platform {
 export const commands = {
   admin,
   mjg,
+  my,
   quiz,
   league,
 };
