@@ -7,6 +7,7 @@ import * as league from "../commands/league/leagueCommands";
 import * as my from "../commands/my/myCommands";
 import { REST, Routes } from "discord.js";
 import { config } from "../config";
+import { userContextMenus } from "./interactionUtils";
 
 export enum Ruleset {
   EMA = "EMA",
@@ -41,13 +42,17 @@ const guildCommandsData = Object.values(guildCommands).map((command) =>
   command.data.toJSON()
 );
 
+const userContextCommandsData = Object.values(userContextMenus).map((command) =>
+  command.data.toJSON()
+);
+
 const rest = new REST({ version: "10" }).setToken(config.DISCORD_TOKEN);
 
 export async function deployCommands() {
   try {
     await rest
       .put(Routes.applicationCommands(config.DISCORD_CLIENT_ID), {
-        body: commandsData,
+        body: [...commandsData, ...userContextCommandsData],
       })
       .then(() => {
         console.log("Successfully reloaded application (/) commands.");
