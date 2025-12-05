@@ -21,6 +21,6 @@ export let data: any = new SlashCommandBuilder()
 
 export async function execute(interaction: ChatInputCommandInteraction) {
   if (interaction.options.getSubcommand() === myInfoSubCommandName) {
-    return executeMyInfo(interaction);
+    executeMyInfo(interaction);
   }
 }

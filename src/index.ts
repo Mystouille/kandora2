@@ -3,6 +3,7 @@ import { config } from "./config";
 import mongoose from "mongoose";
 import { commands, guildCommands } from "./utils/commandUtils";
 import { modals } from "./utils/interactionUtils";
+import { userContextMenus } from "./utils/interactionUtils";
 import { AppEmojiCollection } from "./resources/emojis/AppEmojiCollection";
 import { NanikiruCollections } from "./resources/nanikiru/NanikiruCollections";
 import { MahjongSoulConnector } from "./api/majsoul/data/MajsoulConnector";
@@ -20,12 +21,41 @@ client.once(Events.ClientReady, (readyClient) => {
 });
 
 client.on(Events.InteractionCreate, async (interaction) => {
-  if (!interaction.isModalSubmit()) return;
-  console.log(interaction);
+  if (!interaction.isModalSubmit()) {
+    return;
+  }
   const { customId } = interaction;
   try {
     if (modals[customId as keyof typeof modals]) {
       await modals[customId as keyof typeof modals].execute(interaction);
+    }
+  } catch (error) {
+    console.error(error);
+    const errorMsg = `There was an error while executing this command! \n ${error}`;
+    if (interaction.replied || interaction.deferred) {
+      await interaction.followUp({
+        content: errorMsg,
+        flags: MessageFlags.Ephemeral,
+      });
+    } else {
+      await interaction.reply({
+        content: errorMsg,
+        flags: MessageFlags.Ephemeral,
+      });
+    }
+  }
+});
+
+client.on(Events.InteractionCreate, async (interaction) => {
+  if (!interaction.isUserContextMenuCommand()) {
+    return;
+  }
+  const { commandName } = interaction;
+  try {
+    if (userContextMenus[commandName as keyof typeof userContextMenus]) {
+      await userContextMenus[
+        commandName as keyof typeof userContextMenus
+      ].execute(interaction);
     }
   } catch (error) {
     console.error(error);

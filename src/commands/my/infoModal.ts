@@ -1,4 +1,4 @@
-import { ModalSubmitInteraction } from "discord.js";
+import { MessageFlags, ModalSubmitInteraction } from "discord.js";
 import { User } from "../../db/User";
 import { MahjongSoulConnector } from "../../api/majsoul/data/MajsoulConnector";
 
@@ -24,7 +24,7 @@ export async function execute(itr: ModalSubmitInteraction) {
     if (nickname === undefined) {
       await itr.reply({
         content: `Could not find Mahjong Soul user with friend ID ${mahjongsoulId}. Please check your ID and try again.`,
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
       return;
     }
@@ -39,7 +39,6 @@ export async function execute(itr: ModalSubmitInteraction) {
       user.majsoulIdentity.name = nickname;
       user.majsoulIdentity.userId = accountId.toString();
     }
-    user.save();
   }
   if (
     riichiCityId.length > 0 &&
@@ -58,8 +57,9 @@ export async function execute(itr: ModalSubmitInteraction) {
       user.tenhouIdentity.name = tenhouId;
     }
   }
+  await user.save();
   await itr.reply({
     content: "Your information has been updated.",
-    ephemeral: true,
+    flags: MessageFlags.Ephemeral,
   });
 }
