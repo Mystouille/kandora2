@@ -178,6 +178,10 @@ export const strings = {
             name: "commands.mjg.nanikiru.params.thread.name",
             desc: "commands.mjg.nanikiru.params.thread.desc",
           },
+          spoiler: {
+            name: "commands.mjg.nanikiru.params.spoiler.name",
+            desc: "commands.mjg.nanikiru.params.spoiler.desc",
+          },
           ukeire: {
             name: "commands.mjg.nanikiru.params.ukeire.name",
             desc: "commands.mjg.nanikiru.params.ukeire.desc",
