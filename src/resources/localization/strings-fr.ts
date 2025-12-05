@@ -167,6 +167,10 @@ export const stringsFr: StringResources = {
             name: "fil",
             desc: "[Optionel] Crée un fil de discussion dédié",
           },
+          spoiler: {
+            name: "spoiler",
+            desc: "[Optionel] Masque les ukeire",
+          },
           ukeire: {
             name: "attentes",
             desc: "Affiche le nombre d'attentes de chaque défausse (Complet affiche aussi les tuiles attendues)",

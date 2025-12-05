@@ -50,6 +50,7 @@ export const nanikiruOptions = {
   turn: strings.commands.mjg.nanikiru.params.turn,
   ukeire: strings.commands.mjg.nanikiru.params.ukeire,
   thread: strings.commands.mjg.nanikiru.params.thread,
+  spoiler: strings.commands.mjg.nanikiru.params.spoiler,
 };
 
 function optionName(path: NameDesc) {
@@ -70,6 +71,8 @@ async function replyInSitu(itr: ChatInputCommandInteraction) {
     optionName(nanikiruOptions.ukeire),
     false
   );
+  const spoiler =
+    itr.options.getBoolean(optionName(nanikiruOptions.spoiler), false) ?? false;
   const ukeireChoice =
     ukeireChoiceParam !== null
       ? (ukeireChoiceParam as UkeireChoice)
@@ -83,7 +86,7 @@ async function replyInSitu(itr: ChatInputCommandInteraction) {
     getShantenInfo(hand, ukeireChoice, itr.locale, discards || undefined)
   ).then((shantenInfo) =>
     itr.editReply({
-      content: contextStr + "\n" + shantenInfo,
+      content: `${contextStr}\n${spoiler ? "||" : ""}${shantenInfo}${spoiler ? "||" : ""}`,
     })
   );
   const toDisplay = fromStrToHandToDisplay(hand);

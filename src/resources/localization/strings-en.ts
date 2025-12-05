@@ -164,7 +164,11 @@ export const stringsEn: StringResources = {
           },
           thread: {
             name: "thread",
-            desc: "[Optional] Create a thread tho talk about it",
+            desc: "[Optional] Create a thread to talk about it",
+          },
+          spoiler: {
+            name: "spoiler",
+            desc: "[Optional] Hide the ukeire",
           },
           ukeire: {
             name: "waits",

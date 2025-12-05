@@ -81,6 +81,9 @@ export let data: any = new SlashCommandBuilder()
       .addBooleanOption((option) =>
         buildOptionNameAndDescription(option, nanikiruOptions.thread)
       )
+      .addBooleanOption((option) =>
+        buildOptionNameAndDescription(option, nanikiruOptions.spoiler)
+      )
   );
 
 export async function execute(interaction: ChatInputCommandInteraction) {
