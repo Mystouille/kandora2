@@ -5,6 +5,7 @@ import { commands, guildCommands } from "./utils/commandUtils";
 import { modals } from "./utils/interactionUtils";
 import { AppEmojiCollection } from "./resources/emojis/AppEmojiCollection";
 import { NanikiruCollections } from "./resources/nanikiru/NanikiruCollections";
+import { MahjongSoulConnector } from "./api/majsoul/data/MajsoulConnector";
 
 const client = new Client({
   intents: [
@@ -96,6 +97,7 @@ mongoose
   .then(() => {
     console.log(`Connected to db`);
   })
+  .then(() => MahjongSoulConnector.instance.init())
   .then(() => {
     login();
   });
