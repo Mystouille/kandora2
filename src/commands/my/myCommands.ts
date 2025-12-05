@@ -21,8 +21,6 @@ export let data: any = new SlashCommandBuilder()
 
 export async function execute(interaction: ChatInputCommandInteraction) {
   if (interaction.options.getSubcommand() === myInfoSubCommandName) {
-    interaction.deferReply({ flags: MessageFlags.Ephemeral }).then(async () => {
-      await executeMyInfo(interaction);
-    });
+    return executeMyInfo(interaction);
   }
 }
