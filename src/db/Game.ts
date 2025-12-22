@@ -1,5 +1,7 @@
 import mongoose from "mongoose";
+import { TeamModelName } from "./Team";
 
+export const GameModelName = "Game";
 const resultSchema = new mongoose.Schema(
   {
     userId: { type: mongoose.Schema.Types.ObjectId, required: true },
@@ -10,27 +12,72 @@ const resultSchema = new mongoose.Schema(
   },
   { _id: false }
 );
-const gameSchema = new mongoose.Schema({
-  name: { type: String, required: false },
-  platform: {
-    type: String,
-    enum: ["majsoul", "tenhou", "riichiCity", "IRL"],
-    required: true,
+const gameSchema = new mongoose.Schema(
+  {
+    name: { type: String, required: false },
+    platform: {
+      type: String,
+      enum: ["majsoul", "tenhou", "riichiCity", "IRL"],
+      required: true,
+    },
+    rules: {
+      type: String,
+      enum: ["EMA", "WRC", "ONLINE", "MLEAGUE"],
+      required: true,
+    },
+    context: {
+      type: String,
+      required: true,
+    },
+    startTime: { type: Date, required: true },
+    endTime: { type: Date, required: false },
+    results: [{ type: resultSchema, required: true }],
+    log: { type: String, required: false },
+    league: { type: mongoose.Schema.Types.ObjectId, required: false },
   },
-  rules: {
-    type: String,
-    enum: ["EMA", "WRC", "ONLINE", "MLEAGUE"],
-    required: true,
-  },
-  context: {
-    type: String,
-    required: true,
-  },
-  startTime: { type: Date, required: true },
-  endTime: { type: Date, required: false },
-  results: [{ type: resultSchema, required: true }],
-  log: { type: String, required: false },
-  league: { type: mongoose.Schema.Types.ObjectId, required: false },
+  {
+    virtuals: {
+      users: {
+        get: function (this: any) {
+          return this.results.map((result: any) => result.userId);
+        },
+      },
+      teams: {
+        get: async function (this: any) {
+          const TeamModel = mongoose.model(TeamModelName);
+          const teams = await TeamModel.find({
+            members: { $in: this.users },
+          }).exec();
+          return teams;
+        },
+      },
+    },
+    statics: {
+      nbSimilarMatchups(userIds: string[]) {
+        return mongoose
+          .model("Game")
+          .find({ users: { $all: userIds } })
+          .countDocuments();
+      },
+    },
+  }
+);
+
+gameSchema.virtual("users").get(function (this: any) {
+  return this.results.map((result: any) => result.userId);
 });
 
-export const Game = mongoose.model("Game", gameSchema);
+gameSchema.virtual("hasSameUsers").get(function (
+  this: any,
+  userIds: mongoose.Types.ObjectId[]
+) {
+  const gameUserIds = this.users.map((id: mongoose.Types.ObjectId) =>
+    id.toString()
+  ) as string[];
+  return (
+    userIds.every((userId) => gameUserIds.includes(userId.toString())) &&
+    userIds.length === gameUserIds.length
+  );
+});
+
+export const Game = mongoose.model(GameModelName, gameSchema);

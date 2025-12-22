@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 
+export const LeagueModelName = "League";
 export enum Ruleset {
   EMA = "EMA",
   WRC = "WRC",
@@ -37,6 +38,7 @@ const leagueSchema = new mongoose.Schema({
     enum: platformList,
     required: true,
   },
+  adminChannel: { type: String, required: true },
 });
 
-export const League = mongoose.model("League", leagueSchema);
+export const League = mongoose.model(LeagueModelName, leagueSchema);

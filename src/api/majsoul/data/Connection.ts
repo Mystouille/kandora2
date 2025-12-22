@@ -33,7 +33,7 @@ export class Connection {
       this.socket.terminate();
     }
 
-    console.log("Connecting to " + this.server);
+    //console.log("Connecting to " + this.server);
     let agent: HttpsProxyAgent<string> | undefined = undefined;
 
     if (process.env.http_proxy) {

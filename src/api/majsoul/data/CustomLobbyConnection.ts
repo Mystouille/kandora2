@@ -62,7 +62,7 @@ export class CustomLobbyConnection {
       this.socket.terminate();
     }
 
-    console.log("Connecting to " + this.server);
+    //console.log("Connecting to " + this.server);
     let agent: HttpsProxyAgent | undefined = undefined;
 
     if (process.env.http_proxy) {

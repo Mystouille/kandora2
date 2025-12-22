@@ -9,7 +9,9 @@ import {
 import { User } from "../../db/User";
 import { MahjongSoulConnector } from "../../api/majsoul/data/MajsoulConnector";
 
-export async function executeMyInfo(interaction: ChatInputCommandInteraction) {
+export async function executeUpdateMyInfo(
+  interaction: ChatInputCommandInteraction
+) {
   const user = await User.findOne({ discordId: interaction.user.id }).exec();
 
   const msoulConnector = MahjongSoulConnector.instance;

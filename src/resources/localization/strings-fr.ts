@@ -120,11 +120,15 @@ export const stringsFr: StringResources = {
         },
       },
     },
-    my: {
-      name: "mes",
-      info: {
-        name: "infos",
+    myinfo: {
+      name: "mesinfos",
+      update: {
+        name: "changer",
         desc: "affiche/modifie vos informations",
+      },
+      delete: {
+        name: "supprimer",
+        desc: "supprime vos informations",
       },
     },
     mjg: {
@@ -236,6 +240,10 @@ export const stringsFr: StringResources = {
               riichiCity: "Riichi City",
               irl: "En physique",
             },
+          },
+          adminChannel: {
+            name: "canaladmin",
+            desc: "Canal admin de la ligue (pause des matchs, notifs, etc)",
           },
         },
       },

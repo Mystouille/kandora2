@@ -14,6 +14,7 @@ export const createleagueOptions = {
   cutoffTime: strings.commands.league.createLeague.params.cutoffTime,
   ruleset: strings.commands.league.createLeague.params.ruleset,
   platform: strings.commands.league.createLeague.params.platform,
+  adminChannel: strings.commands.league.createLeague.params.adminChannel,
 };
 
 function optionName(path: NameDesc) {
@@ -50,6 +51,11 @@ export async function executeCreateLeague(itr: ChatInputCommandInteraction) {
     true
   ) as Platform;
 
+  const adminChannel = itr.options.getChannel(
+    optionName(createleagueOptions.adminChannel),
+    true
+  );
+
   const existingleague = await League.findOne({ name: leagueName }).exec();
   if (existingleague !== null) {
     await itr.editReply({
@@ -70,7 +76,6 @@ export async function executeCreateLeague(itr: ChatInputCommandInteraction) {
     await itr.editReply({
       content: sb.join("\n"),
     });
-    return;
   }
 
   League.create({
@@ -82,6 +87,7 @@ export async function executeCreateLeague(itr: ChatInputCommandInteraction) {
     platform: platformStr,
     hasTeams: true,
     isOngoing: true,
+    adminChannel: adminChannel.id,
   }).then(async (newleague) => {
     sb.push(`League \`${newleague.name}\` created successfully!`);
     await itr.editReply({
