@@ -119,11 +119,15 @@ export const stringsEn: StringResources = {
         },
       },
     },
-    my: {
+    myinfo: {
       name: "my",
-      info: {
+      update: {
         name: "info",
         desc: "display/modify your information",
+      },
+      delete: {
+        name: "delete",
+        desc: "delete your information",
       },
     },
     mjg: {
@@ -235,6 +239,10 @@ export const stringsEn: StringResources = {
               riichiCity: "Riichi City",
               irl: "In real life",
             },
+          },
+          adminChannel: {
+            name: "adminchannel",
+            desc: "Channel for league admin notifications",
           },
         },
       },

@@ -1,5 +1,5 @@
 import * as createTeamModal from "../commands/league/createTeamModal";
-import * as infoModal from "../commands/my/infoModal";
+import * as infoModal from "../commands/myinfo/updateInfoModal";
 import * as userContextMenu from "../commands/user/userContextCommands";
 
 export const modals = {

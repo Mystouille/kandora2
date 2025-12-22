@@ -74,7 +74,7 @@ export class MajsoulApi {
   constructor(private readonly apiResources: ApiResources) {
     this.protobufRoot = Root.fromJSON(apiResources.protobufDefinition);
     this.clientVersion = `web-${apiResources.version.slice(0, -2)}`;
-    console.log(`Client version: [${this.clientVersion}]`);
+    //console.log(`Client version: [${this.clientVersion}]`);
     this.codec = new Codec(this.protobufRoot);
 
     this.connection = new Connection(
@@ -195,9 +195,8 @@ export class MajsoulApi {
       throw Error("Couldn't log in to user id");
     }
     console.log(
-      `Logged in as ${respOauth2Login.account.nickname} account id ${respOauth2Login.account_id}`
+      `Logged in to Majsoul as ${respOauth2Login.account.nickname} account id ${respOauth2Login.account_id}`
     );
-    console.log("Connection ready");
 
     return respOauth2Login;
   }

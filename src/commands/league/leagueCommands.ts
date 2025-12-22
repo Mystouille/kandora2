@@ -94,6 +94,9 @@ export const data = new SlashCommandBuilder()
       .addStringOption((option) =>
         buildOptionNameAndDescription(option, createleagueOptions.cutoffTime)
       )
+      .addChannelOption((option) =>
+        buildOptionNameAndDescription(option, createleagueOptions.adminChannel)
+      )
   )
   .addSubcommand((sub) =>
     buildOptionNameAndDescription(sub, strings.commands.league.createTeam)

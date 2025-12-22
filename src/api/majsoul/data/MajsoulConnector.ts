@@ -62,7 +62,6 @@ export class MahjongSoulConnector {
 
     const passportToken =
       dynamicPassport?.accessToken ?? apiConfig.passportToken;
-    console.log(dynamicPassport?.accessToken, apiConfig.passportToken);
 
     if (!passportToken) {
       console.log("failed to aquire passport");
@@ -75,7 +74,7 @@ export class MahjongSoulConnector {
     };
 
     const apiResources = await MajsoulApi.retrieveApiResources();
-    console.log(`Using api version ${apiResources!.pbVersion}`);
+    //console.log(`Using api version ${apiResources!.pbVersion}`);
     const api = new MajsoulApi(apiResources!);
 
     api.notifications.subscribe((n: any) => console.log(n));

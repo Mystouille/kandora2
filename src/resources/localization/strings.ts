@@ -131,11 +131,15 @@ export const strings = {
         },
       },
     },
-    my: {
-      name: "commands.my.name",
-      info: {
-        name: "commands.my.info.name",
-        desc: "commands.my.info.desc",
+    myinfo: {
+      name: "commands.myinfo.name",
+      update: {
+        name: "commands.myinfo.update.name",
+        desc: "commands.myinfo.update.desc",
+      },
+      delete: {
+        name: "commands.myinfo.delete.name",
+        desc: "commands.myinfo.delete.desc",
       },
     },
     mjg: {
@@ -252,6 +256,10 @@ export const strings = {
                 "commands.league.createLeague.params.platform.options.riichiCity",
               irl: "commands.league.createLeague.params.platform.options.irl",
             },
+          },
+          adminChannel: {
+            name: "commands.league.createLeague.params.adminChannel.name",
+            desc: "commands.league.createLeague.params.adminChannel.desc",
           },
         },
       },

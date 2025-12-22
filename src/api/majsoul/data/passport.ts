@@ -25,13 +25,13 @@ export async function getPassport({
     "User-Agent": userAgent,
   };
 
-  console.log(sharedSpoofHeaders);
+  //console.log(sharedSpoofHeaders);
 
   const cookie = existingCookies
     .map((cookie) => `${cookie.key}=${cookie.value}`)
     .join(";");
 
-  console.log(cookie, cookie.length);
+  //console.log(cookie, cookie.length);
 
   const optionsHeaders: HeadersInit = {
     ...sharedSpoofHeaders,
@@ -50,7 +50,7 @@ export async function getPassport({
         headers: optionsHeaders,
       })
     ).headers.raw();
-    console.log(headers);
+    //console.log(headers);
 
     const cookieTime = Date.now();
 
