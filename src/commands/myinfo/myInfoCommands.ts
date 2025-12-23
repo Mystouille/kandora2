@@ -16,7 +16,7 @@ const myInfoUpdateSubCommandName =
 const myInfoDeleteSubCommandName =
   invariantResources.commands.myinfo.delete.name;
 
-export let data: any = new SlashCommandBuilder()
+export const data: any = new SlashCommandBuilder()
   .setName(invariantResources.commands.myinfo.name)
   .setDescription(invariantResources.commands.myinfo.name)
   .addSubcommand((sub) =>

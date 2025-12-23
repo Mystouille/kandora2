@@ -9,7 +9,7 @@ import { UkeireChoice } from "../../mahjong/shantenUtils";
 
 const nanikiruSubCommandName = invariantResources.commands.mjg.nanikiru.name;
 
-export let data: any = new SlashCommandBuilder()
+export const data: any = new SlashCommandBuilder()
   .setName(invariantResources.commands.mjg.name)
   .setDescription(invariantResources.commands.mjg.name)
   .addSubcommand((sub) =>

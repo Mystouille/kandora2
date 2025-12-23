@@ -3,7 +3,7 @@ import { User } from "../../db/User";
 import { Team } from "../../db/Team";
 
 export async function execute(itr: ModalSubmitInteraction) {
-  let user = await User.findOne({ discordId: itr.user.id }).exec();
+  const user = await User.findOne({ discordId: itr.user.id }).exec();
 
   if (!user) {
     await itr.reply({
