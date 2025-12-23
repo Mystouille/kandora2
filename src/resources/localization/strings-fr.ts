@@ -129,6 +129,17 @@ export const stringsFr: StringResources = {
       delete: {
         name: "supprimer",
         desc: "supprime vos informations",
+        reply: {
+          noDataToDelete: "L'utilisateur n'a pas de données à supprimer.",
+          modalTitle: "Confirmer la suppression des informations",
+          confirmationMessage:
+            "### ⚡💀Êtes-vous sûr de vouloir supprimer vos informations ? Cette action ne peut pas être annulée. Toutes vos données seront supprimées de la base de données de Kandora, y compris votre historique de jeux et tournois.\nLes parties enregistrées seront conservées mais contiendront \`anonyme\` au lieu de votre nom d'utilisateur.",
+          usernameLabel: "Entrez votre nom d'utilisateur Discord : {0}",
+          usernamePlaceholder: "Votre nom d'utilisateur Discord",
+          userNotFound: "Utilisateur non trouvé.",
+          successMessage:
+            "Vos informations ont été supprimées. Tout ce qui était lié à votre identité a disparu, même si certaines données de jeu anonymes peuvent subsister.",
+        },
       },
     },
     mjg: {

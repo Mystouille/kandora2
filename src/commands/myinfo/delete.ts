@@ -8,6 +8,8 @@ import {
   TextInputStyle,
 } from "discord.js";
 import { User } from "../../db/User";
+import { localize } from "../../utils/localizationUtils";
+import { strings } from "../../resources/localization/strings";
 
 export async function executeDeleteMyInfo(
   interaction: ChatInputCommandInteraction
@@ -19,27 +21,48 @@ export async function executeDeleteMyInfo(
 
   if (!user) {
     await interaction.editReply({
-      content: "User has no data to delete.",
+      content: localize(
+        interaction.locale,
+        strings.commands.myinfo.delete.reply.noDataToDelete
+      ),
     });
     return;
   }
   const modal = new ModalBuilder()
     .setCustomId("deleteInfoModal")
-    .setTitle("Confirm info deletion")
+    .setTitle(
+      localize(
+        interaction.locale,
+        strings.commands.myinfo.delete.reply.modalTitle
+      )
+    )
     .addTextDisplayComponents(
       new TextDisplayBuilder().setContent(
-        "### ⚡💀Are you sure you want to delete your information? This action cannot be undone. All your data will be removed from Kandora's database, including your game and tournament history.\nThe recorded games will still be preserved but will contain \`anonymous\` instead of your username."
+        localize(
+          interaction.locale,
+          strings.commands.myinfo.delete.reply.confirmationMessage
+        )
       )
     )
     .addLabelComponents(() =>
       new LabelBuilder()
-        .setLabel(`Enter your discord username:  ${interaction.user.username}`)
+        .setLabel(
+          localize(
+            interaction.locale,
+            strings.commands.myinfo.delete.reply.usernameLabel
+          ).replace("{0}", interaction.user.username)
+        )
         .setTextInputComponent(
           new TextInputBuilder()
             .setCustomId("validationInput")
             .setStyle(TextInputStyle.Short)
             .setRequired(true)
-            .setPlaceholder("Your discord username")
+            .setPlaceholder(
+              localize(
+                interaction.locale,
+                strings.commands.myinfo.delete.reply.usernamePlaceholder
+              )
+            )
         )
     );
   await interaction.showModal(modal);
