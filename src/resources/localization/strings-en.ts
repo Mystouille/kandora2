@@ -128,6 +128,17 @@ export const stringsEn: StringResources = {
       delete: {
         name: "delete",
         desc: "delete your information",
+        reply: {
+          noDataToDelete: "User has no data to delete.",
+          modalTitle: "Confirm info deletion",
+          confirmationMessage:
+            "### ⚡💀Are you sure you want to delete your information? This action cannot be undone. All your data will be removed from Kandora's database, including your game and tournament history.\nThe recorded games will still be preserved but will contain \`anonymous\` instead of your username.",
+          usernameLabel: "Enter your discord username: {0}",
+          usernamePlaceholder: "Your discord username",
+          userNotFound: "User not found.",
+          successMessage:
+            "Your information has been deleted. Everything that is linked to your identity is gone, eventhough some anonymous game data may remain.",
+        },
       },
     },
     mjg: {

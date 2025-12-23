@@ -140,6 +140,17 @@ export const strings = {
       delete: {
         name: "commands.myinfo.delete.name",
         desc: "commands.myinfo.delete.desc",
+        reply: {
+          noDataToDelete: "commands.myinfo.delete.reply.noDataToDelete",
+          modalTitle: "commands.myinfo.delete.reply.modalTitle",
+          confirmationMessage:
+            "commands.myinfo.delete.reply.confirmationMessage",
+          usernameLabel: "commands.myinfo.delete.reply.usernameLabel",
+          usernamePlaceholder:
+            "commands.myinfo.delete.reply.usernamePlaceholder",
+          userNotFound: "commands.myinfo.delete.reply.userNotFound",
+          successMessage: "commands.myinfo.delete.reply.successMessage",
+        },
       },
     },
     mjg: {
