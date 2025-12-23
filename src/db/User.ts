@@ -30,6 +30,7 @@ const userSchema = new mongoose.Schema(
     majsoulIdentity: { type: majsoulIdentitySchema, required: false },
     tenhouIdentity: { type: tenhouIdentitySchema, required: false },
     riichiCityIdentity: { type: riichiCityIdentitySchema, required: false },
+    isDeleted: { type: Boolean, required: true, default: false },
   },
   {
     methods: {},

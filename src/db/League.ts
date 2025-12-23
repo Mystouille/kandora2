@@ -1,3 +1,4 @@
+import { config } from "dotenv";
 import mongoose from "mongoose";
 
 export const LeagueModelName = "League";
@@ -12,6 +13,9 @@ export enum Platform {
   TENHOU = "TENHOU",
   RIICHICITY = "RIICHICITY",
   IRL = "IRL",
+}
+export enum LeagueConfig {
+  LFCR = "LFCR",
 }
 
 const rulesetList = [Ruleset.EMA, Ruleset.WRC, Ruleset.ONLINE, Ruleset.MLEAGUE];
@@ -38,7 +42,13 @@ const leagueSchema = new mongoose.Schema({
     enum: platformList,
     required: true,
   },
+  configuration: {
+    type: String,
+    enum: Object.values(LeagueConfig),
+    required: false,
+  },
   adminChannel: { type: String, required: true },
+  gameChannel: { type: String, required: true },
 });
 
 export const League = mongoose.model(LeagueModelName, leagueSchema);
