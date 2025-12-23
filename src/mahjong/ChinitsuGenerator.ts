@@ -48,7 +48,7 @@ export function getNewChinitsuProblem(
       break;
   }
 
-  var { hand, waits } = getRandomChinitsuTenpai(suit, nbMinWaits);
+  const { hand, waits } = getRandomChinitsuTenpai(suit, nbMinWaits);
   return { answer: waits, hand };
 }
 
@@ -70,7 +70,7 @@ function getRandomChinitsuTenpai(suit: SuitOption, nbMinWaits: number) {
   let handAlreadyExist = true;
   let nbIter = 0;
   let waits: number[] = [];
-  let tilesToAdd = [];
+  const tilesToAdd = [];
 
   while (shanten != 0 || handAlreadyExist || waits.length < nbMinWaits) {
     const hand: Suit997 = Array<number>(9).fill(0) as Suit997;

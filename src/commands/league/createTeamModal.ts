@@ -24,7 +24,7 @@ export async function execute(itr: ModalSubmitInteraction) {
     captainUser = await User.create({ discordId: captainChoice! });
   }
 
-  let membersUsers = [];
+  const membersUsers = [];
   for (const memberId of teamChoices) {
     let memberUser = await User.findOne({ discordId: memberId }).exec();
     if (memberUser === null) {

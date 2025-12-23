@@ -20,7 +20,7 @@ export const commonOptions = {
   timeout: strings.commands.quiz.common.params.timeout,
 };
 
-export let data: any = new SlashCommandBuilder()
+export const data: any = new SlashCommandBuilder()
   .setName(invariantResources.commands.quiz.name)
   .setDescription(invariantResources.commands.quiz.name)
   .addSubcommand((sub) =>

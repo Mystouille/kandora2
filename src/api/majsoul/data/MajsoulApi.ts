@@ -265,7 +265,7 @@ export class MajsoulApi {
   > {
     const games = [] as lq.RecordGame[];
     let nextIndex = undefined;
-    // eslint-disable-next-line no-constant-condition
+     
     while (true) {
       const resp: lq.ResFetchCustomizedContestGameRecords =
         await this.lobbyService.rpcCall<

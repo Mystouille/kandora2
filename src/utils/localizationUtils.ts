@@ -30,9 +30,9 @@ export function localize(locale: Locale, path: string): string {
 export function getLocProps(path: string) {
   const props: Partial<Record<Locale, string | null>> | null = {};
   Object.values(Locale).forEach((locale) => {
-    let localizedRes = resourceMap[locale];
+    const localizedRes = resourceMap[locale];
     if (localizedRes !== undefined) {
-      let localizedString = localize(locale, path);
+      const localizedString = localize(locale, path);
       props[locale] = localizedString;
     }
   });
