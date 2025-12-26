@@ -1,7 +1,7 @@
 import { MessageFlags, ModalSubmitInteraction } from "discord.js";
-import { Team } from "../../db/Team";
-import { League } from "../../db/League";
-import { User } from "../../db/User";
+import { TeamModel } from "../../db/Team";
+import { LeagueModel } from "../../db/League";
+import { UserModel } from "../../db/User";
 
 export async function execute(itr: ModalSubmitInteraction) {
   const teamName = itr.fields.getTextInputValue("teamName");
@@ -9,7 +9,7 @@ export async function execute(itr: ModalSubmitInteraction) {
   const captainChoice = itr.fields.getSelectedUsers("captain")?.first()?.id;
   const teamChoices =
     itr.fields.getSelectedUsers("teamMembers")?.map((user) => user.id) || [];
-  const league = await League.findOne({ isOngoing: true }).exec();
+  const league = await LeagueModel.findOne({ isOngoing: true }).exec();
 
   if (league === null) {
     await itr.reply({
@@ -19,21 +19,23 @@ export async function execute(itr: ModalSubmitInteraction) {
     return;
   }
 
-  let captainUser = await User.findOne({ discordId: captainChoice }).exec();
+  let captainUser = await UserModel.findOne({
+    discordId: captainChoice,
+  }).exec();
   if (captainUser === null) {
-    captainUser = await User.create({ discordId: captainChoice! });
+    captainUser = await UserModel.create({ discordId: captainChoice! });
   }
 
   const membersUsers = [];
   for (const memberId of teamChoices) {
-    let memberUser = await User.findOne({ discordId: memberId }).exec();
+    let memberUser = await UserModel.findOne({ discordId: memberId }).exec();
     if (memberUser === null) {
-      memberUser = await User.create({ discordId: memberId });
+      memberUser = await UserModel.create({ discordId: memberId });
     }
     membersUsers.push(memberUser);
   }
 
-  await Team.create({
+  await TeamModel.create({
     simpleName: teamName,
     displayName: fancyTeamName,
     captain: captainUser._id,

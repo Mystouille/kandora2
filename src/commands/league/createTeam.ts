@@ -13,7 +13,7 @@ import {
   strings,
 } from "../../resources/localization/strings";
 import { getLocProps } from "../../utils/localizationUtils";
-import { League } from "../../db/League";
+import { LeagueModel } from "../../db/League";
 
 export const data = new SlashCommandBuilder()
   .setDescription(invariantResources.commands.createuser.desc)
@@ -22,7 +22,7 @@ export const data = new SlashCommandBuilder()
   .setDescriptionLocalizations(getLocProps(strings.commands.createuser.desc));
 
 export async function executeCreateTeam(itr: ChatInputCommandInteraction) {
-  const league = await League.findOne({ isOngoing: true }).exec();
+  const league = await LeagueModel.findOne({ isOngoing: true }).exec();
 
   if (league === null) {
     await itr.reply({

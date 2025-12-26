@@ -7,6 +7,7 @@ import { userContextMenus } from "./utils/interactionUtils";
 import { AppEmojiCollection } from "./resources/emojis/AppEmojiCollection";
 import { NanikiruCollections } from "./resources/nanikiru/NanikiruCollections";
 import { MahjongSoulConnector } from "./api/majsoul/data/MajsoulConnector";
+import { LeagueService } from "./services/LeagueService";
 
 const client = new Client({
   intents: [
@@ -109,6 +110,7 @@ async function login() {
   return client
     .login(config.DISCORD_TOKEN)
     .then(() => client.application?.emojis.fetch())
+    .then(LeagueService.instance.InitLeague(client))
     .then(
       (collection) =>
         collection && AppEmojiCollection.instance.setCollection(collection)
