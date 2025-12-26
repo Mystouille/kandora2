@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
-import { Game, GameModelName } from "./Game";
-import { Team, TeamModelName } from "./Team";
+import { GameModel } from "./Game";
+import { TeamModel } from "./Team";
 const majsoulIdentitySchema = new mongoose.Schema(
   {
     friendId: { type: String, required: true },
@@ -37,7 +37,7 @@ const userSchema = new mongoose.Schema(
     statics: {
       async canUserPlayInLeague(userId: string, leagueId: string) {
         // Count games played by user in this league
-        const userGamesCount = await Game.countDocuments({
+        const userGamesCount = await GameModel.countDocuments({
           league: leagueId,
           users: {
             $elemMatch: { $eq: userId },
@@ -49,7 +49,7 @@ const userSchema = new mongoose.Schema(
           return true;
         }
 
-        const userTeam = await Team.getUsersTeam(userId, leagueId);
+        const userTeam = await TeamModel.getUsersTeam(userId, leagueId);
         const teamId = userTeam ? userTeam._id : null;
 
         if (!teamId) {
@@ -57,7 +57,7 @@ const userSchema = new mongoose.Schema(
           return false;
         }
         // Count games played by the team in this league
-        const teamGamesCount = await Game.countDocuments({
+        const teamGamesCount = await GameModel.countDocuments({
           league: leagueId,
           users: {
             $in: userTeam.members,
@@ -76,4 +76,6 @@ const userSchema = new mongoose.Schema(
   }
 );
 
-export const User = mongoose.model("User", userSchema);
+export const UserModel = mongoose.model("User", userSchema);
+
+export type User = mongoose.InferSchemaType<typeof userSchema>;

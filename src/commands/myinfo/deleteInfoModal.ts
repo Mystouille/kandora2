@@ -1,10 +1,10 @@
 import { MessageFlags, ModalSubmitInteraction } from "discord.js";
-import { User } from "../../db/User";
+import { UserModel } from "../../db/User";
 import { localize } from "../../utils/localizationUtils";
 import { strings } from "../../resources/localization/strings";
 
 export async function execute(itr: ModalSubmitInteraction) {
-  const user = await User.findOne({ discordId: itr.user.id }).exec();
+  const user = await UserModel.findOne({ discordId: itr.user.id }).exec();
 
   if (!user) {
     await itr.reply({

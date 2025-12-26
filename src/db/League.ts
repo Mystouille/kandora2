@@ -49,6 +49,10 @@ const leagueSchema = new mongoose.Schema({
   },
   adminChannel: { type: String, required: true },
   gameChannel: { type: String, required: true },
+  majsoulTournamentId: { type: String, required: false },
+  riichiCityTournamentId: { type: String, required: false },
+  tenhouLobbyId: { type: String, required: false },
 });
 
-export const League = mongoose.model(LeagueModelName, leagueSchema);
+export const LeagueModel = mongoose.model(LeagueModelName, leagueSchema);
+export type League = mongoose.InferSchemaType<typeof leagueSchema>;

@@ -6,13 +6,15 @@ import {
   TextInputBuilder,
   TextInputStyle,
 } from "discord.js";
-import { User } from "../../db/User";
+import { UserModel } from "../../db/User";
 import { MahjongSoulConnector } from "../../api/majsoul/data/MajsoulConnector";
 
 export async function executeUpdateMyInfo(
   interaction: ChatInputCommandInteraction
 ) {
-  const user = await User.findOne({ discordId: interaction.user.id }).exec();
+  const user = await UserModel.findOne({
+    discordId: interaction.user.id,
+  }).exec();
 
   const msoulConnector = MahjongSoulConnector.instance;
   let mahjongsoulNickname = undefined;

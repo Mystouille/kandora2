@@ -1,13 +1,4 @@
-import mongoose, { Schema } from "mongoose";
-
-export interface MajsoulConfig<Id = any> {
-  _id?: Id;
-  featuredContest?: Id;
-  googleRefreshToken?: string;
-  loginCookies?: Cookie[];
-  userAgent?: string;
-  passportToken?: string;
-}
+import mongoose from "mongoose";
 
 export interface Cookie {
   key: string;
@@ -28,7 +19,10 @@ const majsoulConfigSchema = new mongoose.Schema({
   loginCookies: { type: [cookieSchema], required: false },
 });
 
-export const MajsoulConfig = mongoose.model(
+export const MajsoulConfigModel = mongoose.model(
   "MajsoulConfig",
   majsoulConfigSchema
 );
+export type MajsoulConfig = mongoose.InferSchemaType<
+  typeof majsoulConfigSchema
+>;

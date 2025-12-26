@@ -7,7 +7,7 @@ import {
   TextInputBuilder,
   TextInputStyle,
 } from "discord.js";
-import { User } from "../../db/User";
+import { UserModel } from "../../db/User";
 import { localize } from "../../utils/localizationUtils";
 import { strings } from "../../resources/localization/strings";
 
@@ -17,7 +17,9 @@ export async function executeDeleteMyInfo(
   await interaction.deferReply({
     flags: MessageFlags.Ephemeral,
   });
-  const user = await User.findOne({ discordId: interaction.user.id }).exec();
+  const user = await UserModel.findOne({
+    discordId: interaction.user.id,
+  }).exec();
 
   if (!user) {
     await interaction.editReply({

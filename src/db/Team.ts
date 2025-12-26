@@ -30,4 +30,5 @@ const teamSchema = new mongoose.Schema(
   }
 );
 
-export const Team = mongoose.model(TeamModelName, teamSchema);
+export const TeamModel = mongoose.model(TeamModelName, teamSchema);
+export type Team = mongoose.InferSchemaType<typeof teamSchema>;

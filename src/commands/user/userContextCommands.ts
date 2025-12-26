@@ -1,5 +1,5 @@
 import { MessageFlags, UserContextMenuCommandInteraction } from "discord.js";
-import { User } from "../../db/User";
+import { UserModel } from "../../db/User";
 
 const {
   ContextMenuCommandBuilder,
@@ -12,7 +12,7 @@ export const data = new ContextMenuCommandBuilder()
 
 export async function execute(interaction: UserContextMenuCommandInteraction) {
   await interaction.deferReply({ flags: MessageFlags.Ephemeral });
-  const user = await User.findOne({
+  const user = await UserModel.findOne({
     discordId: interaction.targetUser.id,
   }).exec();
   if (!user) {

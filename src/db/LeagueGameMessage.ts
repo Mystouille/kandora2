@@ -15,7 +15,10 @@ const leagueGameMessageSchema = new mongoose.Schema({
   ],
 });
 
-export const LeagueGameMessage = mongoose.model(
+export const LeagueGameMessageModel = mongoose.model(
   "LeagueGameMessage",
   leagueGameMessageSchema
 );
+export type LeagueGameMessage = mongoose.InferSchemaType<
+  typeof leagueGameMessageSchema
+>;

@@ -5,7 +5,7 @@ import {
 } from "../../resources/localization/strings";
 import { ChatInputCommandInteraction } from "discord.js";
 import { localize } from "../../utils/localizationUtils";
-import { League, Platform, Ruleset } from "../../db/League";
+import { LeagueModel, Platform, Ruleset } from "../../db/League";
 
 export const createleagueOptions = {
   leagueName: strings.commands.league.createLeague.params.leagueName,
@@ -56,7 +56,7 @@ export async function executeCreateLeague(itr: ChatInputCommandInteraction) {
     true
   );
 
-  const existingleague = await League.findOne({ name: leagueName }).exec();
+  const existingleague = await LeagueModel.findOne({ name: leagueName }).exec();
   if (existingleague !== null) {
     await itr.editReply({
       content: "a league with this name already exists",
@@ -66,9 +66,9 @@ export async function executeCreateLeague(itr: ChatInputCommandInteraction) {
 
   const sb: string[] = [];
 
-  const ongoingleague = await League.findOne({ isOngoing: true }).exec();
+  const ongoingleague = await LeagueModel.findOne({ isOngoing: true }).exec();
   if (ongoingleague !== null) {
-    await League.updateOne(
+    await LeagueModel.updateOne(
       { _id: ongoingleague._id },
       { isOngoing: false }
     ).exec();
@@ -78,7 +78,7 @@ export async function executeCreateLeague(itr: ChatInputCommandInteraction) {
     });
   }
 
-  League.create({
+  LeagueModel.create({
     name: leagueName,
     startTime: startDate,
     endTime: endDate ?? undefined,

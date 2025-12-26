@@ -1,5 +1,4 @@
 import mongoose from "mongoose";
-import { timestamp } from "rxjs";
 
 const ObjectId = mongoose.Schema.Types.ObjectId;
 const rankingSchema = new mongoose.Schema({
@@ -10,4 +9,5 @@ const rankingSchema = new mongoose.Schema({
   timestamp: { type: Date, required: true, default: new Date() },
 });
 
-export const Ranking = mongoose.model("Ranking", rankingSchema);
+export const RankingModel = mongoose.model("Ranking", rankingSchema);
+export type Ranking = mongoose.InferSchemaType<typeof rankingSchema>;

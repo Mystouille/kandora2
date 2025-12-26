@@ -80,4 +80,5 @@ gameSchema.virtual("hasSameUsers").get(function (
   );
 });
 
-export const Game = mongoose.model(GameModelName, gameSchema);
+export const GameModel = mongoose.model(GameModelName, gameSchema);
+export type Game = mongoose.InferSchemaType<typeof gameSchema>;

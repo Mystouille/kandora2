@@ -1,12 +1,12 @@
 import { MessageFlags, ModalSubmitInteraction } from "discord.js";
-import { User } from "../../db/User";
+import { UserModel } from "../../db/User";
 import { MahjongSoulConnector } from "../../api/majsoul/data/MajsoulConnector";
 
 export async function execute(itr: ModalSubmitInteraction) {
-  let user = await User.findOne({ discordId: itr.user.id }).exec();
+  let user = await UserModel.findOne({ discordId: itr.user.id }).exec();
 
   if (!user) {
-    user = await User.create({
+    user = await UserModel.create({
       discordId: itr.user.id,
     });
   }
