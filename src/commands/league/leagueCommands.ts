@@ -100,6 +100,12 @@ export const data = new SlashCommandBuilder()
           createleagueOptions.gameChannel
         ).setRequired(true)
       )
+      .addChannelOption((option) =>
+        buildOptionNameAndDescription(
+          option,
+          createleagueOptions.rankingChannel
+        ).setRequired(true)
+      )
       .addStringOption((option) =>
         buildOptionNameAndDescription(option, createleagueOptions.endTime)
       )

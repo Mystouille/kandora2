@@ -8,7 +8,7 @@ import { config } from "../../../config";
 import { Cookie } from "../types/Cookie";
 import { MSoulUser } from "./types/MSoulUser";
 import { MajsoulAdminApi } from "./admin/MajsoulAdminApi";
-import * as lq from "./admin/types/proto";
+import { RecordGame } from "./types/RecordGame";
 
 export class MahjongSoulConnector {
   static #instance: MahjongSoulConnector;
@@ -152,7 +152,7 @@ export class MahjongSoulConnector {
     const response = await fetch(url.toString(), {
       method: "GET",
       headers: {
-        Authorization: `Majsoul ${config.MAJSOUL_AUTH_HEADER}`,
+        Authorization: `Majsoul abc`,
       },
     });
 
@@ -172,7 +172,7 @@ export class MahjongSoulConnector {
     const response = await fetch(url.toString(), {
       method: "GET",
       headers: {
-        Authorization: `Majsoul ${config.MAJSOUL_AUTH_HEADER}`,
+        Authorization: `Majsoul abc`,
       },
     });
 
@@ -181,8 +181,17 @@ export class MahjongSoulConnector {
         `Failed to fetch player ready list: ${response.status} ${response.statusText}`
       );
     }
-
     return (await response.json()).data as MSoulUser[];
+  }
+
+  public async getAllContestGameRecords(
+    contestId: number,
+    seasonId?: number
+  ): Promise<RecordGame[]> {
+    if (!this.api) {
+      throw new Error("API not initialized. Call init() first.");
+    }
+    return this.api.getAllContestGameRecords(contestId, seasonId);
   }
 }
 

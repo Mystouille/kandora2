@@ -25,6 +25,7 @@ const platformList = [
   Platform.IRL,
 ];
 const leagueSchema = new mongoose.Schema({
+  _id: { type: String, required: false },
   name: { type: String, required: true },
   startTime: { type: Date, required: true },
   finalsCutoffTime: { type: Date, required: false },
@@ -48,6 +49,7 @@ const leagueSchema = new mongoose.Schema({
   },
   adminChannel: { type: String, required: true },
   gameChannel: { type: String, required: true },
+  rankingChannel: { type: String, required: false },
   tournamentId: { type: String, required: false },
 });
 

@@ -276,6 +276,10 @@ export const strings = {
             name: "commands.league.createLeague.params.gameChannel.name",
             desc: "commands.league.createLeague.params.gameChannel.desc",
           },
+          rankingChannel: {
+            name: "commands.league.createLeague.params.rankingChannel.name",
+            desc: "commands.league.createLeague.params.rankingChannel.desc",
+          },
           tournamentId: {
             name: "commands.league.createLeague.params.tournamentId.name",
             desc: "commands.league.createLeague.params.tournamentId.desc",

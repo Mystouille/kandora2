@@ -17,6 +17,7 @@ export const createleagueOptions = {
   platform: strings.commands.league.createLeague.params.platform,
   adminChannel: strings.commands.league.createLeague.params.adminChannel,
   gameChannel: strings.commands.league.createLeague.params.gameChannel,
+  rankingChannel: strings.commands.league.createLeague.params.rankingChannel,
   tournamentId: strings.commands.league.createLeague.params.tournamentId,
 };
 
@@ -64,6 +65,11 @@ export async function executeCreateLeague(itr: ChatInputCommandInteraction) {
     true
   );
 
+  const rankingChannel = itr.options.getChannel(
+    optionName(createleagueOptions.rankingChannel),
+    true
+  );
+
   const tournamentId = itr.options.getString(
     optionName(createleagueOptions.tournamentId),
     false
@@ -101,6 +107,7 @@ export async function executeCreateLeague(itr: ChatInputCommandInteraction) {
     isOngoing: true,
     adminChannel: adminChannel.id,
     gameChannel: gameChannel.id,
+    rankingChannel: rankingChannel.id,
     tournamentId: tournamentId ?? undefined,
   };
 
