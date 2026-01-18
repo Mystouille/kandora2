@@ -5,7 +5,8 @@ import {
 } from "../../resources/localization/strings";
 import { ChatInputCommandInteraction } from "discord.js";
 import { localize } from "../../utils/localizationUtils";
-import { LeagueModel, Platform, Ruleset } from "../../db/League";
+import { League, LeagueModel, Platform, Ruleset } from "../../db/League";
+import { LeagueService } from "../../services/LeagueService";
 
 export const createleagueOptions = {
   leagueName: strings.commands.league.createLeague.params.leagueName,
@@ -15,6 +16,8 @@ export const createleagueOptions = {
   ruleset: strings.commands.league.createLeague.params.ruleset,
   platform: strings.commands.league.createLeague.params.platform,
   adminChannel: strings.commands.league.createLeague.params.adminChannel,
+  gameChannel: strings.commands.league.createLeague.params.gameChannel,
+  tournamentId: strings.commands.league.createLeague.params.tournamentId,
 };
 
 function optionName(path: NameDesc) {
@@ -56,6 +59,16 @@ export async function executeCreateLeague(itr: ChatInputCommandInteraction) {
     true
   );
 
+  const gameChannel = itr.options.getChannel(
+    optionName(createleagueOptions.gameChannel),
+    true
+  );
+
+  const tournamentId = itr.options.getString(
+    optionName(createleagueOptions.tournamentId),
+    false
+  );
+
   const existingleague = await LeagueModel.findOne({ name: leagueName }).exec();
   if (existingleague !== null) {
     await itr.editReply({
@@ -77,8 +90,7 @@ export async function executeCreateLeague(itr: ChatInputCommandInteraction) {
       content: sb.join("\n"),
     });
   }
-
-  LeagueModel.create({
+  const league: League = {
     name: leagueName,
     startTime: startDate,
     endTime: endDate ?? undefined,
@@ -88,10 +100,15 @@ export async function executeCreateLeague(itr: ChatInputCommandInteraction) {
     hasTeams: true,
     isOngoing: true,
     adminChannel: adminChannel.id,
-  }).then(async (newleague) => {
-    sb.push(`League \`${newleague.name}\` created successfully!`);
+    gameChannel: gameChannel.id,
+    tournamentId: tournamentId ?? undefined,
+  };
+
+  await LeagueModel.create(league).then(async (newLeague) => {
+    sb.push(`League \`${newLeague.name}\` created successfully!`);
     await itr.editReply({
       content: sb.join("\n"),
     });
+    LeagueService.instance.InitLeague(itr.client, newLeague);
   });
 }

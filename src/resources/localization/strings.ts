@@ -272,6 +272,14 @@ export const strings = {
             name: "commands.league.createLeague.params.adminChannel.name",
             desc: "commands.league.createLeague.params.adminChannel.desc",
           },
+          gameChannel: {
+            name: "commands.league.createLeague.params.gameChannel.name",
+            desc: "commands.league.createLeague.params.gameChannel.desc",
+          },
+          tournamentId: {
+            name: "commands.league.createLeague.params.tournamentId.name",
+            desc: "commands.league.createLeague.params.tournamentId.desc",
+          },
         },
       },
     },

@@ -255,6 +255,14 @@ export const stringsEn: StringResources = {
             name: "adminchannel",
             desc: "Channel for league admin notifications",
           },
+          gameChannel: {
+            name: "gamechannel",
+            desc: "Channel where game status/results will be posted",
+          },
+          tournamentId: {
+            name: "tournamentid",
+            desc: "Optional tournament ID for online platform integration",
+          },
         },
       },
     },

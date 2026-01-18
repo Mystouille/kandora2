@@ -256,6 +256,14 @@ export const stringsFr: StringResources = {
             name: "canaladmin",
             desc: "Canal admin de la ligue (pause des matchs, notifs, etc)",
           },
+          gameChannel: {
+            name: "canalmatch",
+            desc: "Canal où les statuts/résultats des matchs seront postés",
+          },
+          tournamentId: {
+            name: "idtournoi",
+            desc: "ID de tournoi optionnel pour l'intégration de plateforme en ligne",
+          },
         },
       },
     },
