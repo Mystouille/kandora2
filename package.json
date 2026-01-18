@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "@protobuf-ts/protoc": "^2.11.1",
     "@types/mongoose": "^5.11.96",
     "canvas": "^3.2.0",
     "csv-parser": "^3.2.0",
@@ -48,6 +49,8 @@
     "test": "jest",
     "deployCommands": "tsx src/scripts/deployCommands.ts",
     "deployEmojis": "tsx src/scripts/deployEmojis.ts",
+    "generateProtoTypes": "tsx src/scripts/generateProtoTypes.ts",
+    "generateAdminTypes": "pbts -i src/api/majsoul/data/admin/types/proto.json --no-comments -o src/api/majsoul/data/admin/types/proto.d.ts -",
     "tsx": "tsx src/index.ts",
     "start": "node dist/index.js",
     "build": "tsup src/index.ts --minify",

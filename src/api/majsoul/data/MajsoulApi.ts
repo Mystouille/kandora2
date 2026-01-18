@@ -1,25 +1,7 @@
 import fetch from "node-fetch";
 import { Root } from "protobufjs";
-import {
-  defer,
-  from,
-  interval,
-  merge,
-  Observable,
-  of,
-  Subject,
-  using,
-} from "rxjs";
-import {
-  catchError,
-  filter,
-  map,
-  mergeAll,
-  share,
-  shareReplay,
-  tap,
-  timeout,
-} from "rxjs/operators";
+import { from, interval, merge, Observable, of, using } from "rxjs";
+import { catchError, filter, map, mergeAll, timeout } from "rxjs/operators";
 import { v4 as uuidv4 } from "uuid";
 
 import { Codec } from "./Codec";
@@ -265,7 +247,7 @@ export class MajsoulApi {
   > {
     const games = [] as lq.RecordGame[];
     let nextIndex = undefined;
-     
+
     while (true) {
       const resp: lq.ResFetchCustomizedContestGameRecords =
         await this.lobbyService.rpcCall<

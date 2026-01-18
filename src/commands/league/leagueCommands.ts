@@ -88,14 +88,26 @@ export const data = new SlashCommandBuilder()
           ])
           .setRequired(true)
       )
+      .addChannelOption((option) =>
+        buildOptionNameAndDescription(
+          option,
+          createleagueOptions.adminChannel
+        ).setRequired(true)
+      )
+      .addChannelOption((option) =>
+        buildOptionNameAndDescription(
+          option,
+          createleagueOptions.gameChannel
+        ).setRequired(true)
+      )
       .addStringOption((option) =>
         buildOptionNameAndDescription(option, createleagueOptions.endTime)
       )
       .addStringOption((option) =>
         buildOptionNameAndDescription(option, createleagueOptions.cutoffTime)
       )
-      .addChannelOption((option) =>
-        buildOptionNameAndDescription(option, createleagueOptions.adminChannel)
+      .addStringOption((option) =>
+        buildOptionNameAndDescription(option, createleagueOptions.tournamentId)
       )
   )
   .addSubcommand((sub) =>

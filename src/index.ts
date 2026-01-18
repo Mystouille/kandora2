@@ -109,8 +109,8 @@ client.on(Events.InteractionCreate, async (interaction) => {
 async function login() {
   return client
     .login(config.DISCORD_TOKEN)
+    .then(() => LeagueService.instance.InitLeague(client))
     .then(() => client.application?.emojis.fetch())
-    .then(LeagueService.instance.InitLeague(client))
     .then(
       (collection) =>
         collection && AppEmojiCollection.instance.setCollection(collection)
