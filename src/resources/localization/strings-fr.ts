@@ -197,9 +197,9 @@ export const stringsFr: StringResources = {
           },
         },
         reply: {
-          seat: "Player `{0}`",
-          round: "During `{0}`",
-          turn: "Turn `{0}`",
+          seat: "Joueur `{0}`",
+          round: "Pendant `{0}`",
+          turn: "Tour `{0}`",
           doras: "Dora {0}",
           wwyd: "Que feriez vous?",
           threadTitle: "{0} réfléchi à {1}",
@@ -259,6 +259,10 @@ export const stringsFr: StringResources = {
           gameChannel: {
             name: "canalmatch",
             desc: "Canal où les statuts/résultats des matchs seront postés",
+          },
+          rankingChannel: {
+            name: "canalclassement",
+            desc: "Canal où les classements de la ligue seront postés",
           },
           tournamentId: {
             name: "idtournoi",

@@ -10,7 +10,6 @@ const {
   MAJSOUL_UID,
   MAJSOUL_TOKEN,
   NANIKIRU_SHEET_ID,
-  MAJSOUL_AUTH_HEADER,
 } = process.env;
 
 if (
@@ -20,8 +19,7 @@ if (
   !MONGODB_URI ||
   !MAJSOUL_UID ||
   !MAJSOUL_TOKEN ||
-  !NANIKIRU_SHEET_ID ||
-  !MAJSOUL_AUTH_HEADER
+  !NANIKIRU_SHEET_ID
 ) {
   throw new Error("Missing environment variables");
 }
@@ -34,5 +32,4 @@ export const config = {
   MAJSOUL_UID,
   MAJSOUL_TOKEN,
   NANIKIRU_SHEET_ID,
-  MAJSOUL_AUTH_HEADER,
 };

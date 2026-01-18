@@ -17,6 +17,7 @@ import * as lq from "./types/liqi";
 import { Passport } from "./types/Passport";
 import { Player } from "./types/Player";
 import { CustomLobbyConnection } from "./CustomLobbyConnection";
+import { RecordGame } from "./types/RecordGame";
 
 export class MajsoulApi {
   private static async getRes<T>(path: string): Promise<T> {
@@ -278,6 +279,37 @@ export class MajsoulApi {
     }
 
     return data.slice(0, target);
+  }
+
+  public async getAllContestGameRecords(
+    contestId: number,
+    seasonId?: number
+  ): Promise<lq.RecordGame[]> {
+    const games = [] as RecordGame[];
+    let nextIndex = -1;
+
+    // Fetch all game record metadata with pagination
+    // eslint-disable-next-line no-constant-condition
+    while (nextIndex !== undefined) {
+      const resp: lq.ResFetchCustomizedContestGameRecords =
+        await this.lobbyService.rpcCall<
+          lq.ReqFetchCustomizedContestGameRecords,
+          lq.ResFetchCustomizedContestGameRecords
+        >("fetchCustomizedContestGameRecords", {
+          unique_id: contestId,
+          last_index: nextIndex >= 0 ? nextIndex : undefined,
+          season_id: seasonId,
+        });
+
+      games.push(...(resp.record_list ?? []));
+
+      if (!resp.next_index || !resp.record_list?.length) {
+        break;
+      }
+      nextIndex = resp.next_index;
+    }
+
+    return games;
   }
 
   public subscribeToContestChatSystemMessages(id: number): Observable<any> {

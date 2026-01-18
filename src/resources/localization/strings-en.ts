@@ -120,9 +120,9 @@ export const stringsEn: StringResources = {
       },
     },
     myinfo: {
-      name: "my",
+      name: "myinfo",
       update: {
-        name: "info",
+        name: "update",
         desc: "display/modify your information",
       },
       delete: {
@@ -258,6 +258,10 @@ export const stringsEn: StringResources = {
           gameChannel: {
             name: "gamechannel",
             desc: "Channel where game status/results will be posted",
+          },
+          rankingChannel: {
+            name: "rankingchannel",
+            desc: "Channel where league rankings will be posted",
           },
           tournamentId: {
             name: "tournamentid",
