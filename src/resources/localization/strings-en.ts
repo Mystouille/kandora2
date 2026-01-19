@@ -271,4 +271,26 @@ export const stringsEn: StringResources = {
       },
     },
   },
+  system: {
+    league: {
+      unknownTeam: "Unknown Team",
+      unknownUser: "Unknown User",
+      rankingTitleFormat: "**🏆 {0} Team Rankings**",
+      rankingLineFormat: "**{0}.** {1} - {2} ({3} games)",
+      noGamesRecorded: "No games recorded yet.",
+      pendingScoresHeader:
+        "**⏳ Pending Scores (not counted due to 35% quota)**",
+      pendingScoreLineFormat: "- {0} ({1}): {2}",
+      lastUpdatedFormat: "_Last updated: {0}_",
+      newGameRecordedFormat: "**New game recorded for league {0}**",
+      invalidGameDetectedFormat: "**Invalid game detected for league {0}**",
+      playersNotInTeam:
+        "Not all players are registered in a team for this league:",
+      scoresNotAvailable: "Scores not available",
+      startTimeLabel: "**Start Time:**",
+      endTimeLabel: "**End Time:**",
+      gameLinkLabel: "**Game Link:**",
+      unknownTime: "Unknown",
+    },
+  },
 };

@@ -288,6 +288,26 @@ export const strings = {
       },
     },
   },
+  system: {
+    league: {
+      unknownTeam: "system.league.unknownTeam",
+      unknownUser: "system.league.unknownUser",
+      rankingTitleFormat: "system.league.rankingTitleFormat",
+      rankingLineFormat: "system.league.rankingLineFormat",
+      noGamesRecorded: "system.league.noGamesRecorded",
+      pendingScoresHeader: "system.league.pendingScoresHeader",
+      pendingScoreLineFormat: "system.league.pendingScoreLineFormat",
+      lastUpdatedFormat: "system.league.lastUpdatedFormat",
+      newGameRecordedFormat: "system.league.newGameRecordedFormat",
+      invalidGameDetectedFormat: "system.league.invalidGameDetectedFormat",
+      playersNotInTeam: "system.league.playersNotInTeam",
+      scoresNotAvailable: "system.league.scoresNotAvailable",
+      startTimeLabel: "system.league.startTimeLabel",
+      endTimeLabel: "system.league.endTimeLabel",
+      gameLinkLabel: "system.league.gameLinkLabel",
+      unknownTime: "system.league.unknownTime",
+    },
+  },
 };
 
 export type StringResources = typeof strings;

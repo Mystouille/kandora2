@@ -8,6 +8,9 @@ import { TeamModel } from "../db/Team";
 import { LeagueRankingMessageModel } from "../db/LeagueRankingMessage";
 import { PlayerResult } from "../api/majsoul/data/types/RecordGameGameEndResult";
 import { computePlayerDelta } from "./leagueUtils";
+import { localize } from "../utils/localizationUtils";
+import { strings, invariantLocale } from "../resources/localization/strings";
+import { stringFormat } from "../utils/stringUtils";
 
 export class LeagueService {
   static #instance: LeagueService;
@@ -131,6 +134,11 @@ export class LeagueService {
       { teamId: string; totalScore: number; gamesPlayed: number }
     >();
 
+    const userPendingScores = new Map<
+      string,
+      { teamId: string; scores: number[] }
+    >();
+
     for (const [teamId, players] of teamPlayerScores) {
       // Calculate total games for this team
       let totalTeamGames = 0;
@@ -152,7 +160,12 @@ export class LeagueService {
           // Sort scores ascending (worst first) and take the worst games
           const sortedScores = [...player.scores].sort((a, b) => a - b);
           const countedScores = sortedScores.slice(0, gamesToCount);
-
+          const notCountedScores = sortedScores.slice(gamesToCount);
+          userPendingScores.set(player.userId, {
+            teamId: teamId,
+            scores: notCountedScores,
+          });
+          teamTotalScore += countedScores.reduce((sum, s) => sum + s, 0);
           teamTotalScore += countedScores.reduce((sum, s) => sum + s, 0);
           teamGamesCountedTotal += countedScores.length;
         } else {
@@ -178,15 +191,78 @@ export class LeagueService {
     const rankingLines = sortedTeams.map((teamScore, index) => {
       const team = teamMap.get(teamScore.teamId);
       const displayName =
-        team?.displayName || team?.simpleName || "Unknown Team";
+        team?.displayName ||
+        team?.simpleName ||
+        localize(invariantLocale, strings.system.league.unknownTeam);
       const scoreDisplay =
         teamScore.totalScore >= 0
           ? `+${teamScore.totalScore}`
           : `${teamScore.totalScore}`;
-      return `**${index + 1}.** ${displayName} - ${scoreDisplay} (${teamScore.gamesPlayed} games)`;
+      return stringFormat(
+        invariantLocale,
+        strings.system.league.rankingLineFormat,
+        (index + 1).toString(),
+        displayName,
+        scoreDisplay,
+        teamScore.gamesPlayed.toString()
+      );
     });
 
-    const message = `**🏆 ${league.name} Team Rankings**\n\n${rankingLines.join("\n") || "No games recorded yet."}\n\n_Last updated: ${new Date().toLocaleString()}_`;
+    // Build pending scores section
+    let pendingScoresSection = "";
+    if (userPendingScores.size > 0) {
+      // Get user information for pending scores
+      const userIds = Array.from(userPendingScores.keys());
+      const users = await UserModel.find({ _id: { $in: userIds } }).exec();
+      const userMap = new Map(users.map((u) => [u._id.toString(), u]));
+
+      const pendingLines: string[] = [];
+      for (const [userId, pending] of userPendingScores) {
+        const user = userMap.get(userId);
+        const team = teamMap.get(pending.teamId);
+        const teamName =
+          team?.displayName ||
+          team?.simpleName ||
+          localize(invariantLocale, strings.system.league.unknownTeam);
+        const userMention = user?.discordId
+          ? `<@${user.discordId}>`
+          : localize(invariantLocale, strings.system.league.unknownUser);
+        // Sort scores from highest to lowest and format each individually
+        const sortedScores = [...pending.scores].sort((a, b) => b - a);
+        const scoresDisplay = sortedScores
+          .map((s) => (s >= 0 ? `\`+${s}\`` : `\`${s}\``))
+          .join(", ");
+        pendingLines.push(
+          stringFormat(
+            invariantLocale,
+            strings.system.league.pendingScoreLineFormat,
+            userMention,
+            teamName,
+            scoresDisplay
+          )
+        );
+      }
+
+      if (pendingLines.length > 0) {
+        pendingScoresSection = `\n\n${localize(invariantLocale, strings.system.league.pendingScoresHeader)}\n${pendingLines.join("\n")}`;
+      }
+    }
+
+    const rankingTitle = stringFormat(
+      invariantLocale,
+      strings.system.league.rankingTitleFormat,
+      league.name
+    );
+    const noGames = localize(
+      invariantLocale,
+      strings.system.league.noGamesRecorded
+    );
+    const lastUpdated = stringFormat(
+      invariantLocale,
+      strings.system.league.lastUpdatedFormat,
+      new Date().toLocaleString()
+    );
+    const message = `${rankingTitle}\n\n${rankingLines.join("\n") || noGames}${pendingScoresSection}\n\n${lastUpdated}`;
 
     // Check if we already have a ranking message for this league
     const existingMessage = await LeagueRankingMessageModel.findOne({
@@ -307,35 +383,70 @@ export class LeagueService {
             .join("\n");
 
           // Format game start and end times
+          const unknownTime = localize(
+            invariantLocale,
+            strings.system.league.unknownTime
+          );
           const startTime = game.start_time
             ? new Date(game.start_time * 1000).toLocaleString()
-            : "Unknown";
+            : unknownTime;
           const endTime = game.end_time
             ? new Date(game.end_time * 1000).toLocaleString()
-            : "Unknown";
+            : unknownTime;
 
           // Build and send the full game info message
+          const startTimeLabel = localize(
+            invariantLocale,
+            strings.system.league.startTimeLabel
+          );
+          const endTimeLabel = localize(
+            invariantLocale,
+            strings.system.league.endTimeLabel
+          );
+          const gameLinkLabel = localize(
+            invariantLocale,
+            strings.system.league.gameLinkLabel
+          );
+          const scoresNotAvailable = localize(
+            invariantLocale,
+            strings.system.league.scoresNotAvailable
+          );
+
           let sb = [];
           if (isValid) {
-            sb.push(`**New game recorded for league ${league.name}**)`);
-            sb.push(`${scores || "Scores not available"}`);
-            sb.push(`**Start Time:** ${startTime}\n**End Time:** ${endTime}`);
             sb.push(
-              `**Game Link:**  https://mahjongsoul.game.yo-star.com/?paipu=${game.uuid}`
+              stringFormat(
+                invariantLocale,
+                strings.system.league.newGameRecordedFormat,
+                league.name
+              )
+            );
+            sb.push(`${scores || scoresNotAvailable}`);
+            sb.push(
+              `${startTimeLabel} ${startTime}\n${endTimeLabel} ${endTime}`
+            );
+            sb.push(
+              `${gameLinkLabel}  https://mahjongsoul.game.yo-star.com/?paipu=${game.uuid}`
             );
           } else {
-            sb.push(`**Invalid game detected for league ${league.name}**)`);
             sb.push(
-              `Not all players are registered in a team for this league:`
+              stringFormat(
+                invariantLocale,
+                strings.system.league.invalidGameDetectedFormat,
+                league.name
+              )
+            );
+            sb.push(
+              localize(invariantLocale, strings.system.league.playersNotInTeam)
             );
             sb.push(
               playersNotInTeam
                 .map((p) => `- ${p.discordMention} (${p.nickname})`)
                 .join("\n")
             );
-            sb.push(`${scores || "Scores not available"}`);
+            sb.push(`${scores || scoresNotAvailable}`);
             sb.push(
-              `**Game Link:**  https://mahjongsoul.game.yo-star.com/?paipu=${game.uuid}`
+              `${gameLinkLabel}  https://mahjongsoul.game.yo-star.com/?paipu=${game.uuid}`
             );
           }
 

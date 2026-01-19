@@ -272,4 +272,28 @@ export const stringsFr: StringResources = {
       },
     },
   },
+  system: {
+    league: {
+      unknownTeam: "Équipe inconnue",
+      unknownUser: "Utilisateur inconnu",
+      rankingTitleFormat: "**🏆 Classement des équipes - {0}**",
+      rankingLineFormat: "**{0}.** {1} - {2} ({3} parties)",
+      noGamesRecorded: "Aucune partie enregistrée.",
+      pendingScoresHeader:
+        "**⏳ Scores en attente (non comptabilisés à cause du quota de 35%)**",
+      pendingScoreLineFormat: "- {0} ({1}): {2}",
+      lastUpdatedFormat: "_Dernière mise à jour: {0}_",
+      newGameRecordedFormat:
+        "**Nouvelle partie enregistrée pour la ligue {0}**",
+      invalidGameDetectedFormat:
+        "**Partie invalide détectée pour la ligue {0}**",
+      playersNotInTeam:
+        "Tous les joueurs ne sont pas inscrits dans une équipe pour cette ligue:",
+      scoresNotAvailable: "Scores non disponibles",
+      startTimeLabel: "**Début:**",
+      endTimeLabel: "**Fin:**",
+      gameLinkLabel: "**Lien de la partie:**",
+      unknownTime: "Inconnu",
+    },
+  },
 };
