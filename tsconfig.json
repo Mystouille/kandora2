@@ -2,7 +2,7 @@
   // Visit https://aka.ms/tsconfig to read more about this file
   "compilerOptions": {
     "target": "es2022",
-    "module": "nodenext",
+    "module": "esnext",
     "outDir": "./dist",
     "removeComments": true,
     "resolveJsonModule": true,
@@ -12,6 +12,6 @@
     "strict": true,
     "strictNullChecks": true,
     "skipLibCheck": true,
-    "moduleResolution": "nodenext"
+    "moduleResolution": "bundler"
   }
 }

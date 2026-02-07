@@ -4,7 +4,8 @@ import { Codec } from "../Codec";
 import { Connection } from "../Connection";
 import * as lq from "./types/proto";
 import { Passport } from "../types/Passport";
-import { Root } from "protobufjs";
+import * as protobuf from "protobufjs";
+const { Root } = protobuf;
 import { RpcImplementation } from "../RpcImplementation";
 import { RpcService } from "../Service";
 

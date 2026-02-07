@@ -1,4 +1,5 @@
-import { Method, Root, Type } from "protobufjs";
+import * as protobuf from "protobufjs";
+const { Method, Root, Type } = protobuf;
 import { MessageType } from "./types/enums/MessageType";
 
 export class Codec {

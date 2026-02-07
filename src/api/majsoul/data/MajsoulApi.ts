@@ -1,5 +1,6 @@
 import fetch from "node-fetch";
-import { Root } from "protobufjs";
+import * as protobuf from "protobufjs";
+const { Root } = protobuf;
 import { from, interval, merge, Observable, of, using } from "rxjs";
 import { catchError, filter, map, mergeAll, timeout } from "rxjs/operators";
 import { v4 as uuidv4 } from "uuid";
@@ -287,9 +288,8 @@ export class MajsoulApi {
   ): Promise<lq.RecordGame[]> {
     const games = [] as RecordGame[];
     let nextIndex = -1;
-
     // Fetch all game record metadata with pagination
-    // eslint-disable-next-line no-constant-condition
+
     while (nextIndex !== undefined) {
       const resp: lq.ResFetchCustomizedContestGameRecords =
         await this.lobbyService.rpcCall<

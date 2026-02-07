@@ -10,14 +10,14 @@
       "request": "launch",
 
       // Debug current file in VSCode
-      "program": "./src/index.ts",
+      "program": "${workspaceFolder}/src/index.ts",
       //"program": "./src/scripts/test.ts",
 
       /*
        * Path to tsx binary
        * Assuming locally installed
        */
-      "runtimeExecutable": "tsx",
+      "runtimeExecutable": "${workspaceFolder}/node_modules/.bin/tsx",
       "runtimeArgs": ["watch"],
 
       /*

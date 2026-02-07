@@ -21,5 +21,8 @@
     "javascriptreact",
     "typescript",
     "typescriptreact"
-  ]
+  ],
+  "chat.tools.terminal.autoApprove": {
+    "journalctl": true
+  }
 }

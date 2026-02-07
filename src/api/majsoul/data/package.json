@@ -1,6 +1,7 @@
 {
   "name": "majsoul",
   "version": "1.0.0",
+  "type": "module",
   "packageManager": "yarn@3.2.3",
   "files": [
     "dist/*"

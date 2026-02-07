@@ -1,4 +1,6 @@
-import { Method, RPCImplCallback, Root, Type } from "protobufjs";
+import * as protobuf from "protobufjs";
+const { Method, Root, Type } = protobuf;
+type RPCImplCallback = protobuf.RPCImplCallback;
 import { Subscription } from "rxjs";
 import { Codec } from "./Codec";
 import { MessageType } from "./types/enums/MessageType";

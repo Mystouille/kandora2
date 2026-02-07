@@ -1,7 +1,8 @@
 #!/usr/bin/env tsx
 
 import { readFileSync, writeFileSync } from "fs";
-import { Root } from "protobufjs";
+import * as protobuf from "protobufjs";
+const { Root } = protobuf;
 import { resolve } from "path";
 
 /**

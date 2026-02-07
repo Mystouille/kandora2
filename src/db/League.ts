@@ -25,8 +25,7 @@ const platformList = [
   Platform.IRL,
 ];
 const leagueSchema = new mongoose.Schema({
-  _id: { type: String, required: false },
-  name: { type: String, required: true },
+  name: { type: String, required: true, unique: true },
   startTime: { type: Date, required: true },
   finalsCutoffTime: { type: Date, required: false },
   endTime: { type: Date, required: false },
@@ -54,4 +53,6 @@ const leagueSchema = new mongoose.Schema({
 });
 
 export const LeagueModel = mongoose.model(LeagueModelName, leagueSchema);
-export type League = mongoose.InferSchemaType<typeof leagueSchema>;
+export type League = mongoose.InferSchemaType<typeof leagueSchema> & {
+  _id: mongoose.Types.ObjectId;
+};
