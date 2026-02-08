@@ -312,8 +312,8 @@ export const strings = {
 
 export type StringResources = typeof strings;
 
-export const invariantLocale = Locale.EnglishUS;
-export const invariantResources = stringsEn;
+export const invariantLocale = Locale.French;
+export const invariantResources = stringsFr;
 export const resourceMap: { [id in Locale]?: StringResources } = {
   [Locale.French]: stringsFr,
   [Locale.EnglishUS]: stringsEn,

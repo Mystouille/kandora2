@@ -53,10 +53,7 @@
     "generateAdminTypes": "pbts -i src/api/majsoul/data/admin/types/proto.json --no-comments -o src/api/majsoul/data/admin/types/proto.d.ts -",
     "tsx": "tsx src/index.ts",
     "start": "node dist/index.js",
-    "build": "tsup src/index.ts --minify",
-    "lint": "eslint src/",
-    "lint:fix": "eslint src/ --fix",
-    "lint:check": "eslint src/ --max-warnings 0"
+    "build": "tsup src/index.ts --minify"
   },
   "keywords": [],
   "author": "",

@@ -24,7 +24,7 @@ export const stringsFr: StringResources = {
       },
     },
     createuser: {
-      name: "creeutilisateur",
+      name: "createuser",
       desc: "cree un utilisateur",
     },
     quiz: {
@@ -121,13 +121,13 @@ export const stringsFr: StringResources = {
       },
     },
     myinfo: {
-      name: "mesinfos",
+      name: "myinfo",
       update: {
-        name: "changer",
+        name: "update",
         desc: "affiche/modifie vos informations",
       },
       delete: {
-        name: "supprimer",
+        name: "delete",
         desc: "supprime vos informations",
         reply: {
           noDataToDelete: "L'utilisateur n'a pas de données à supprimer.",
@@ -207,14 +207,14 @@ export const stringsFr: StringResources = {
       },
     },
     league: {
-      name: "ligue",
+      name: "league",
       createTeam: {
-        name: "creerequipe",
+        name: "createteam",
         desc: "crée une nouvelle équipe dans la ligue en cours",
       },
       createLeague: {
         desc: "crée une nouvelle ligue",
-        name: "creerligue",
+        name: "createleague",
         params: {
           leagueName: {
             name: "nom",
@@ -277,7 +277,7 @@ export const stringsFr: StringResources = {
       unknownTeam: "Équipe inconnue",
       unknownUser: "Utilisateur inconnu",
       rankingTitleFormat: "**🏆 Classement des équipes - {0}**",
-      rankingLineFormat: "**{0}.** {1} - {2} ({3} parties)",
+      rankingLineFormat: "**{0}.** {1} : {2} ({3} parties)",
       noGamesRecorded: "Aucune partie enregistrée.",
       pendingScoresHeader:
         "**⏳ Scores en attente (non comptabilisés à cause du quota de 35%)**",
