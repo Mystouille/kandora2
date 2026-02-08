@@ -5,8 +5,13 @@ import {
 } from "../../resources/localization/strings";
 import { ChatInputCommandInteraction } from "discord.js";
 import { localize } from "../../utils/localizationUtils";
-import { League, LeagueModel, Platform, Ruleset } from "../../db/League";
+import { LeagueModel, Platform, Ruleset } from "../../db/League";
 import { LeagueService } from "../../services/LeagueService";
+import { leagueData } from "../../resources/leagueData/lfcr";
+import { UserModel } from "../../db/User";
+import { TeamModel } from "../../db/Team";
+import { MahjongSoulConnector } from "../../api/majsoul/data/MajsoulConnector";
+import mongoose from "mongoose";
 
 export const createleagueOptions = {
   leagueName: strings.commands.league.createLeague.params.leagueName,
@@ -96,7 +101,7 @@ export async function executeCreateLeague(itr: ChatInputCommandInteraction) {
       content: sb.join("\n"),
     });
   }
-  const league: League = {
+  const league = new LeagueModel({
     name: leagueName,
     startTime: startDate,
     endTime: endDate ?? undefined,
@@ -109,13 +114,74 @@ export async function executeCreateLeague(itr: ChatInputCommandInteraction) {
     gameChannel: gameChannel.id,
     rankingChannel: rankingChannel.id,
     tournamentId: tournamentId ?? undefined,
-  };
+  });
 
-  await LeagueModel.create(league).then(async (newLeague) => {
+  league.save().then(async (newLeague) => {
+    const msoulConnector = MahjongSoulConnector.instance;
+    const teamCache = new Map<string, mongoose.Types.ObjectId>();
+
+    for (const player of leagueData) {
+      if (player.team === "") {
+        sb.push(
+          `Player ${player.nickname} does not have a team and was not added to the league.`
+        );
+        continue;
+      }
+      // Look up Majsoul user info
+      const majsoulInfo = await msoulConnector.getUserInfoFromFriendId(
+        player.id
+      );
+
+      // Create or update user
+      let user = await UserModel.findOne({
+        "majsoulIdentity.friendId": player.id,
+      }).exec();
+
+      if (!user) {
+        user = await UserModel.create({
+          name: player.nickname,
+          majsoulIdentity: {
+            friendId: player.id,
+            userId: majsoulInfo.accountId?.toString(),
+            name: majsoulInfo.nickname ?? player.nickname,
+          },
+        });
+        console.log("added new user:", user.name);
+      }
+
+      // Get or create team
+      let teamId = teamCache.get(player.team);
+      if (!teamId) {
+        let team = await TeamModel.findOne({
+          simpleName: player.team,
+          leagueId: newLeague._id,
+        }).exec();
+
+        if (!team) {
+          team = await TeamModel.create({
+            simpleName: player.team,
+            displayName: player.team,
+            leagueId: newLeague._id,
+            captain: user._id,
+            members: [user._id],
+          });
+        }
+        teamId = team._id;
+        teamCache.set(player.team, teamId);
+      } else {
+        // Add user to existing team
+        await TeamModel.updateOne(
+          { _id: teamId },
+          { $addToSet: { members: user._id } }
+        ).exec();
+      }
+    }
+
+    sb.push(`Added ${leagueData.length} players to ${teamCache.size} teams.`);
     sb.push(`League \`${newLeague.name}\` created successfully!`);
     await itr.editReply({
       content: sb.join("\n"),
     });
-    LeagueService.instance.InitLeague(itr.client, newLeague);
+    await LeagueService.instance.InitLeague(itr.client, newLeague);
   });
 }

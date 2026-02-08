@@ -1,10 +1,10 @@
-import { MessageFlags, UserContextMenuCommandInteraction } from "discord.js";
-import { UserModel } from "../../db/User";
-
-const {
+import {
+  MessageFlags,
+  UserContextMenuCommandInteraction,
   ContextMenuCommandBuilder,
   ApplicationCommandType,
-} = require("discord.js");
+} from "discord.js";
+import { UserModel } from "../../db/User";
 
 export const data = new ContextMenuCommandBuilder()
   .setName("[Kandora] Mahjong Info")

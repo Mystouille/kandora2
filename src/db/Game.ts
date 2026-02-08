@@ -14,7 +14,7 @@ const resultSchema = new mongoose.Schema(
 );
 const gameSchema = new mongoose.Schema(
   {
-    gameId: { type: String, required: false, unique: true },
+    gameId: { type: String, required: false },
     name: { type: String, required: false },
     platform: {
       type: String,
@@ -36,6 +36,8 @@ const gameSchema = new mongoose.Schema(
     results: [{ type: resultSchema, required: false }],
     log: { type: String, required: false },
     league: { type: mongoose.Schema.Types.ObjectId, required: false },
+    platformIndex: { type: Number, required: false },
+    isPublished: { type: Boolean, required: false, default: false },
   },
   {
     virtuals: {

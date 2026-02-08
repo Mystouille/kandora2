@@ -184,10 +184,13 @@ export class MahjongSoulConnector {
     return (await response.json()).data as MSoulUser[];
   }
 
-  public async getAllContestGameRecords(
-    contestId: number,
-    seasonId?: number
-  ): Promise<RecordGame[]> {
+  public async getAllContestGameRecords({
+    contestId,
+    seasonId,
+  }: {
+    contestId: number;
+    seasonId?: number;
+  }): Promise<RecordGame[]> {
     if (!this.api) {
       throw new Error("API not initialized. Call init() first.");
     }
