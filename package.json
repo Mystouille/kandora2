@@ -47,6 +47,9 @@
   "main": "index.js",
   "scripts": {
     "test": "jest",
+    "installDbModel": "git subtree add --prefix src/db/ https://github.com/Mystouille/kandora-db.git main --squash",
+    "fetchDbModel": "git subtree pull --prefix src/db/ https://github.com/Mystouille/kandora-db.git main --squash",
+    "pushDbModel": "git subtree push --prefix src/db/ https://github.com/Mystouille/kandora-db.git main --squash",
     "deployCommands": "tsx src/scripts/deployCommands.ts",
     "deployEmojis": "tsx src/scripts/deployEmojis.ts",
     "generateProtoTypes": "tsx src/scripts/generateProtoTypes.ts",
