@@ -280,7 +280,7 @@ export const stringsEn: StringResources = {
       noGamesRecorded: "No games recorded yet.",
       pendingScoresHeader:
         "**⏳ Pending Scores (not counted due to 35% quota)**",
-      pendingScoreLineFormat: "- {0} ({1}): {2}",
+      pendingScoreLineFormat: "- {0} ({1} {2}): {3}",
       lastUpdatedFormat: "_Last updated: {0}_",
       newGameRecordedFormat: "**New game recorded for league {0}**",
       invalidGameDetectedFormat: "**Invalid game detected for league {0}**",

@@ -281,7 +281,7 @@ export const stringsFr: StringResources = {
       noGamesRecorded: "Aucune partie enregistrée.",
       pendingScoresHeader:
         "**⏳ Scores en attente (non comptabilisés à cause du quota de 35%)**",
-      pendingScoreLineFormat: "- {0} ({1}): {2}",
+      pendingScoreLineFormat: "- {0} ({1} {2}): {3}",
       lastUpdatedFormat: "_Dernière mise à jour: {0}_",
       newGameRecordedFormat:
         "**Nouvelle partie enregistrée pour la ligue {0}**",

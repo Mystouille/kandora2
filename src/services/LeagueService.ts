@@ -231,14 +231,18 @@ export class LeagueService {
       for (const [userId, pending] of userPendingScores) {
         const user = userMap.get(userId);
         const team = teamMap.get(pending.teamId);
-        const teamName =
-          team?.displayName ||
-          team?.simpleName ||
-          localize(invariantLocale, strings.system.league.unknownTeam);
+        const teamMention = team?.roleId
+          ? `<@&${team.roleId}>`
+          : team?.displayName ||
+            team?.simpleName ||
+            localize(invariantLocale, strings.system.league.unknownTeam);
         const userMention = user?.discordId
           ? `<@${user.discordId}>`
           : (user?.name ??
             localize(invariantLocale, strings.system.league.unknownUser));
+        const majsoulUsername =
+          user?.majsoulIdentity?.name ??
+          localize(invariantLocale, strings.system.league.unknownUser);
         // Sort scores from highest to lowest and format each individually
         const sortedScores = [...pending.scores].sort((a, b) => b - a);
         const scoresDisplay = sortedScores
@@ -249,7 +253,8 @@ export class LeagueService {
             invariantLocale,
             strings.system.league.pendingScoreLineFormat,
             userMention,
-            teamName,
+            majsoulUsername,
+            teamMention,
             scoresDisplay
           )
         );
@@ -371,12 +376,18 @@ export class LeagueService {
         .map((r, idx) => {
           const user = userMap.get(r.userId.toString());
           const team = userToTeamMap.get(r.userId.toString());
-          const teamName = team?.displayName || team?.simpleName || "";
+          const teamMention = team?.roleId
+            ? `<@&${team.roleId}>`
+            : team?.displayName || team?.simpleName || "";
+          const majsoulUsername = user?.majsoulIdentity?.name ?? "";
           const discordMention = user?.discordId
             ? `<@${user.discordId}>`
             : (user?.name ?? "Unknown");
           const delta = deltas[idx];
-          const teamDisplay = teamName ? ` (${teamName})` : "";
+          const teamDisplay =
+            majsoulUsername || teamMention
+              ? ` (${[majsoulUsername, teamMention].filter(Boolean).join(" ")})`
+              : "";
           return `${discordMention}${teamDisplay}: \`${r.score}\` => \`${delta > 0 ? "+" : ""}${delta.toFixed(1)}\``;
         })
         .join("\n");

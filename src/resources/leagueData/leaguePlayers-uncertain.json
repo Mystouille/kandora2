@@ -1,0 +1,34 @@
+[
+  {
+    "rawLine": "LIAGRE Thomas, Hawat / Thomas, 125119205, 04630001",
+    "reason": "Multiple names provided (Hawat / Thomas) - used 'Thomas' as discord username but could be 'Hawat'"
+  },
+  {
+    "rawLine": "Mercure (soshy_squishy), 102717025, EMA: En cours",
+    "reason": "No valid EMA license (marked 'En cours' = in progress) - included anyway with discord 'soshy_squishy'"
+  },
+  {
+    "rawLine": "lock koon emmanuelle    80760293    04030083 kairy3501",
+    "reason": "Unusual format - assumed 'kairy3501' is the discord username"
+  },
+  {
+    "rawLine": "lock koon florent        81886694    04020004    flk97450",
+    "reason": "Unusual format - assumed 'flk97450' is the discord username"
+  },
+  {
+    "rawLine": "Toussaint Aurelie        82062054    04020005    LillieJinx",
+    "reason": "Unusual format - assumed 'LillieJinx' is the discord username"
+  },
+  {
+    "rawLine": "Barratault Mariannick    91831916    04080019 mariamahjong",
+    "reason": "Unusual format - assumed 'mariamahjong' is the discord username"
+  },
+  {
+    "rawLine": "Caroline : Discord : Car8line__ - ID MJS : 129762663 - Licence : 0458006",
+    "reason": "Licence number '0458006' appears to be missing a digit (should be 04580006?)"
+  },
+  {
+    "rawLine": "pitayablanc974_17993, pitaya, 96255849, 04030045",
+    "reason": "Two potential usernames - used 'pitayablanc974_17993' assuming format is discord, mjsName, id, ema"
+  }
+]

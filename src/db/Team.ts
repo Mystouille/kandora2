@@ -5,6 +5,7 @@ const teamSchema = new mongoose.Schema(
   {
     simpleName: { type: String, required: true },
     displayName: { type: String, required: true },
+    roleId: { type: String, required: false },
     leagueId: { type: mongoose.Schema.Types.ObjectId, required: true },
     captain: { type: mongoose.Schema.Types.ObjectId, required: true },
     members: [
