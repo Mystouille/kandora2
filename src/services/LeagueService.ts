@@ -274,10 +274,23 @@ export class LeagueService {
       invariantLocale,
       strings.system.league.noGamesRecorded
     );
+    const now = new Date();
+    const datePart = now.toLocaleDateString("fr-FR", {
+      weekday: "long",
+      day: "numeric",
+      month: "long",
+    });
+    const timePart = now.toLocaleTimeString("fr-FR", {
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      timeZoneName: "short",
+    });
     const lastUpdated = stringFormat(
       invariantLocale,
       strings.system.league.lastUpdatedFormat,
-      new Date().toLocaleString()
+      datePart,
+      timePart
     );
     const message = `${rankingTitle}\n\n${rankingLines.join("\n") || noGames}${pendingScoresSection}\n\n${lastUpdated}`;
 
