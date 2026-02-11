@@ -55,13 +55,13 @@ export class LeagueService {
         // Schedule a cron job to log "something" every 5 minute of every monday and wednesday starting from 19:00 and stopping at 22:00
         //cron.schedule("*/5 19-22 * * 1,3", async () => {
         this.leagueAgent = cron.schedule(
-          "*/5 18-22 3,5,9,11,13,17,19,23,25,27 2 *",
+          "*/5 17-23 3,5,9,11,13,17,19,23,25,27 2 *",
           async () => {
             await this.updateGamesInLeague(league, client);
           }
         );
         this.leagueAgent2 = cron.schedule(
-          "*/5 14-18 7,14,21,28 2 *",
+          "*/5 13-19 7,14,21,28 2 *",
           async () => {
             await this.updateGamesInLeague(league, client);
           }
