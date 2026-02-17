@@ -57,17 +57,23 @@ export class LeagueService {
         this.leagueAgent = cron.schedule(
           "*/5 17-23 3,5,9,11,13,17,19,23,25,27 2 *",
           async () => {
+            console.log(
+              `Running league agent for league ${league.name} at ${new Date().toISOString()}`
+            );
             await this.updateGamesInLeague(league, client);
           }
         );
         this.leagueAgent2 = cron.schedule(
           "*/5 13-19 7,14,21,28 2 *",
           async () => {
+            console.log(
+              `Running league agent 2 for league ${league.name} at ${new Date().toISOString()}`
+            );
             await this.updateGamesInLeague(league, client);
           }
         );
         console.log(
-          `League agent for league ${league.name} initialized successfully.`
+          `League agent for league ${league.name} initialized successfully at ${new Date().toISOString()}.`
         );
         await this.updateGamesInLeague(league, client);
       }
