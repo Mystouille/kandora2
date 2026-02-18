@@ -9,6 +9,7 @@ import { Cookie } from "../types/Cookie";
 import { MSoulUser } from "./types/MSoulUser";
 import { MajsoulAdminApi } from "./admin/MajsoulAdminApi";
 import { RecordGame } from "./types/RecordGame";
+import { GameRecord } from "./types/GameRecord";
 
 export class MahjongSoulConnector {
   static #instance: MahjongSoulConnector;
@@ -195,6 +196,13 @@ export class MahjongSoulConnector {
       throw new Error("API not initialized. Call init() first.");
     }
     return this.api.getAllContestGameRecords(contestId, seasonId);
+  }
+
+  public async getContestGameRecord(gameId: string): Promise<GameRecord> {
+    if (!this.api) {
+      throw new Error("API not initialized. Call init() first.");
+    }
+    return this.api.getGame(gameId);
   }
 }
 

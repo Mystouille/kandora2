@@ -10,6 +10,8 @@ import { computePlayerDeltas } from "./leagueUtils";
 import { localize } from "../utils/localizationUtils";
 import { strings, invariantLocale } from "../resources/localization/strings";
 import { stringFormat } from "../utils/stringUtils";
+import { GameRecord as DbGameRecord, GameRecordModel } from "../db/GameRecord";
+import { parseGameRecordResponse } from "../api/majsoul/parseGameRecordResponse";
 
 export class LeagueService {
   static #instance: LeagueService;
@@ -492,7 +494,7 @@ export class LeagueService {
       });
 
     for (const game of gameList) {
-      const savedGame = await GameModel.findOne({
+      let savedGame = await GameModel.findOne({
         gameId: game.uuid,
         league: league._id,
       }).exec();
@@ -559,7 +561,7 @@ export class LeagueService {
           };
         });
 
-        await GameModel.create({
+        savedGame = await GameModel.create({
           gameId: game.uuid,
           name: `${league.name} - ${game.uuid}`,
           platform: "majsoul",
@@ -579,6 +581,76 @@ export class LeagueService {
         console.log(
           `Game ${game.uuid} saved to database for league ${league.name}`
         );
+      }
+
+      if (
+        savedGame &&
+        savedGame.gameRecord == null &&
+        savedGame.blockGameRecord === false &&
+        !!game.uuid
+      ) {
+        try {
+          const gameRecord =
+            await MahjongSoulConnector.instance.getContestGameRecord(game.uuid);
+          const gameRecordData = gameRecord
+            ? parseGameRecordResponse(gameRecord)
+            : null;
+          if (gameRecord && gameRecordData) {
+            // Enrich byUserData with userDbId, score, place, teamDbId, teamName
+            const teamsInLeague = await TeamModel.find({
+              leagueId: league._id,
+            }).exec();
+
+            for (const userData of gameRecordData.byUserData) {
+              const user = await UserModel.findOne({
+                "majsoulIdentity.userId": userData.userId,
+              }).exec();
+
+              if (!user) continue;
+
+              const enriched = userData as any;
+              enriched.userDbId = user._id;
+
+              // Get score and place from the saved Game's results
+              const gameResult = (savedGame!.results as any[])?.find(
+                (r) => r.userId?.toString() === user._id.toString()
+              );
+              if (gameResult) {
+                enriched.score = gameResult.score;
+                enriched.place = gameResult.place;
+              }
+
+              // Find the player's team in this league
+              const team = teamsInLeague.find((t) =>
+                t.members.some((m) => m.toString() === user._id.toString())
+              );
+              if (team) {
+                enriched.teamDbId = team._id;
+                enriched.teamName = team.displayName;
+              }
+            }
+
+            // Save the game record to the database and link it to the game
+            const dbGameRecord = new GameRecordModel({
+              ...gameRecordData,
+            });
+            await dbGameRecord.save();
+            await GameModel.updateOne(
+              { _id: savedGame._id },
+              { gameRecord: dbGameRecord._id }
+            ).exec();
+            console.log(
+              `Game record for game ${game.uuid} saved and linked successfully.`
+            );
+          } else {
+            console.log(`No game record found for game ${game.uuid}.`);
+          }
+        } catch (error) {
+          console.error(
+            `Error fetching/saving game record for game ${game.uuid}:`,
+            error
+          );
+        }
       }
     }
 

@@ -289,7 +289,7 @@ export class MajsoulApi {
     let nextIndex = -1;
 
     // Fetch all game record metadata with pagination
-    // eslint-disable-next-line no-constant-condition
+
     while (nextIndex !== undefined) {
       const resp: lq.ResFetchCustomizedContestGameRecords =
         await this.lobbyService.rpcCall<
@@ -389,20 +389,27 @@ export class MajsoulApi {
         game_uuid: id,
         client_version_string: this.clientVersion,
       });
-      const details = this.codec.decode<lq.GameDetailRecords>(
-        resp.data as unknown as Buffer
-      );
+
+      let data = resp.data as unknown as Buffer;
+      if ((!data || !data.length) && resp.data_url) {
+        const dataResp = await fetch(resp.data_url);
+        data = Buffer.from(await dataResp.arrayBuffer());
+      }
+
+      const details = this.codec.decode<lq.GameDetailRecords>(data);
+
+      const rawRecords =
+        details.records && details.records.length > 0
+          ? details.records
+          : (details.actions ?? [])
+              .filter((action) => action.type === 1)
+              .map((action) => action.result);
 
       return {
         ...resp,
-        records: (details.records?.length
-          ? details.records?.length > 0
-            ? details.records
-            : details
-                .actions!.filter((action) => action.type === 1)
-                .map((action) => action.result)
-          : []
-        ).map((item) => this.codec.decode(item as unknown as Buffer)),
+        records: rawRecords.map((item) =>
+          this.codec.decode(item as unknown as Buffer)
+        ),
       };
     } catch (e) {
       console.log(`Couldn't find game ${id}`);
