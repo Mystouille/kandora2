@@ -1,3 +1,5 @@
+import mongoose from "mongoose";
+
 export type GameRecordData = {
   gameId: string;
   startTime: Date;
@@ -10,6 +12,12 @@ export type UsersRounds = {
   seat: number;
   nickname: string;
   roundEvents: RoundEndEvent[];
+  userDbId?: mongoose.Types.ObjectId;
+  teamDbId?: mongoose.Types.ObjectId;
+  teamName?: string;
+  score?: number;
+  place?: number;
+  deltaPoints?: number;
 };
 
 export type RoundEndEvent = {
@@ -29,6 +37,7 @@ export type RoundEndEvent = {
   ryuukyoku: boolean;
 
   isWinner: boolean;
+  gotRonned: boolean;
   isTsumo: boolean;
   winningTile: string | undefined;
   totalDoraValue: number;
@@ -56,6 +65,7 @@ export function getNewRoundEndEvent(userId: string): RoundEndEvent {
     finishedTenpai: false,
     ryuukyoku: false,
     isWinner: false,
+    gotRonned: false,
     isTsumo: false,
     winningTile: undefined,
     ryuukyokuValue: 0,

@@ -596,10 +596,14 @@ export class LeagueService {
             ? parseGameRecordResponse(gameRecord)
             : null;
           if (gameRecord && gameRecordData) {
-            // Enrich byUserData with userDbId, score, place, teamDbId, teamName
+            // Enrich byUserData with userDbId, score, place, deltaPoints, teamDbId, teamName
             const teamsInLeague = await TeamModel.find({
               leagueId: league._id,
             }).exec();
+
+            // Compute deltaPoints from the saved Game's results
+            const gameResults = savedGame!.results as any[];
+            const deltas = computePlayerDeltas(gameResults, league.rules);
 
             for (const userData of gameRecordData.byUserData) {
               const user = await UserModel.findOne({
@@ -608,16 +612,16 @@ export class LeagueService {
 
               if (!user) continue;
 
-              const enriched = userData as any;
-              enriched.userDbId = user._id;
+              userData.userDbId = user._id;
 
-              // Get score and place from the saved Game's results
-              const gameResult = (savedGame!.results as any[])?.find(
+              // Get score, place, and deltaPoints from the saved Game's results
+              const resultIndex = gameResults?.findIndex(
                 (r) => r.userId?.toString() === user._id.toString()
               );
-              if (gameResult) {
-                enriched.score = gameResult.score;
-                enriched.place = gameResult.place;
+              if (resultIndex !== undefined && resultIndex >= 0) {
+                userData.score = gameResults[resultIndex].score;
+                userData.place = gameResults[resultIndex].place;
+                userData.deltaPoints = deltas[resultIndex];
               }
 
               // Find the player's team in this league
@@ -625,8 +629,8 @@ export class LeagueService {
                 t.members.some((m) => m.toString() === user._id.toString())
               );
               if (team) {
-                enriched.teamDbId = team._id;
-                enriched.teamName = team.displayName;
+                userData.teamDbId = team._id;
+                userData.teamName = team.displayName;
               }
             }
 

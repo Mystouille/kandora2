@@ -41,6 +41,7 @@ export function parseGameRecordResponse(game: GameRecord): GameRecordData {
   let playerRoundData: RoundEndEvent[] = [];
   let playerTurn: number[] = [0, 0, 0, 0];
   let playerTenpaiStatus: boolean[] = [false, false, false, false];
+  let lastDiscarder: number | null = null;
 
   if (game.records?.[0]?.constructor?.name !== "RecordNewRound") {
     console.log("Game record does not start with RecordNewRound");
@@ -59,6 +60,7 @@ export function parseGameRecordResponse(game: GameRecord): GameRecordData {
           repeat: recordNewRound.ben!,
         };
 
+        lastDiscarder = null;
         playerTurn = [0, 0, 0, 0];
         playerRoundData = [];
         for (let p = 0; p < numberOfPlayers; p++) {
@@ -107,6 +109,7 @@ export function parseGameRecordResponse(game: GameRecord): GameRecordData {
             recordDiscardTile.tingpais && recordDiscardTile.tingpais?.length > 0
           );
         }
+        lastDiscarder = discardSeat!;
         break;
       }
       case "RecordDealTile": {
@@ -132,6 +135,7 @@ export function parseGameRecordResponse(game: GameRecord): GameRecordData {
       case "RecordChiPengGang": {
         const recordChiPengGang = record as lq.RecordChiPengGang;
         playerRoundData[recordChiPengGang.seat!].numberOfCalls++;
+        playerRoundData[recordChiPengGang.seat!].wasOpened = true;
         break;
       }
       case "RecordNoTile": {
@@ -178,6 +182,9 @@ export function parseGameRecordResponse(game: GameRecord): GameRecordData {
           playerRoundData[hule.seat!].hanValue = hule.count || 0;
           playerRoundData[hule.seat!].fuValue = hule.fu || 0;
           playerRoundData[hule.seat!].isTsumo = hule.zimo || false;
+          if (!hule.zimo) {
+            playerRoundData[lastDiscarder!].gotRonned = true;
+          }
           playerRoundData[hule.seat!].hasRiichi = hule.liqi || false;
           playerRoundData[hule.seat!].yakus =
             hule.fans?.map((f) => f.id).filter((id) => id !== undefined) || [];

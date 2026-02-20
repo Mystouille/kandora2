@@ -4,6 +4,8 @@ import { GameRecordModel } from "../db/GameRecord";
 import { GameModel } from "../db/Game";
 import { UserModel } from "../db/User";
 import { TeamModel } from "../db/Team";
+import { computePlayerDeltas } from "../services/leagueUtils";
+import { LeagueModel } from "../db/League";
 
 async function main() {
   await mongoose.connect(config.MONGODB_URI);
@@ -60,6 +62,16 @@ async function main() {
 
     let changed = false;
 
+    // Compute deltaPoints for all players in this game
+    const gameResults = game.results as any[];
+    let deltas: number[] | null = null;
+    if (game.league && gameResults?.length > 0) {
+      const league = await LeagueModel.findById(game.league).exec();
+      if (league) {
+        deltas = computePlayerDeltas(gameResults, league.rules);
+      }
+    }
+
     for (const ud of gr.byUserData) {
       const userData = ud as any;
       const msUserId = userData.userId as string; // Majsoul account ID string
@@ -79,9 +91,11 @@ async function main() {
       }
 
       // Find matching result in Game
-      const result = (game.results as any[])?.find(
+      const resultIndex = (game.results as any[])?.findIndex(
         (r) => r.userId?.toString() === user._id.toString()
       );
+      const result =
+        resultIndex >= 0 ? (game.results as any[])[resultIndex] : undefined;
 
       if (result) {
         if (userData.score !== result.score) {
@@ -90,6 +104,14 @@ async function main() {
         }
         if (userData.place !== result.place) {
           userData.place = result.place;
+          changed = true;
+        }
+        if (
+          deltas &&
+          resultIndex >= 0 &&
+          userData.deltaPoints !== deltas[resultIndex]
+        ) {
+          userData.deltaPoints = deltas[resultIndex];
           changed = true;
         }
       }
