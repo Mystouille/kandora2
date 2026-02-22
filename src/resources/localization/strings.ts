@@ -298,6 +298,7 @@ export const strings = {
       pendingScoresHeader: "system.league.pendingScoresHeader",
       pendingScoreLineFormat: "system.league.pendingScoreLineFormat",
       lastUpdatedFormat: "system.league.lastUpdatedFormat",
+      statisticsNote: "system.league.statisticsNote",
       newGameRecordedFormat: "system.league.newGameRecordedFormat",
       invalidGameDetectedFormat: "system.league.invalidGameDetectedFormat",
       playersNotInTeam: "system.league.playersNotInTeam",

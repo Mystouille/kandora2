@@ -300,7 +300,11 @@ export class LeagueService {
       datePart,
       timePart
     );
-    const message = `${rankingTitle}\n\n${rankingLines.join("\n") || noGames}${pendingScoresSection}\n\n${lastUpdated}`;
+    const statisticsNote = localize(
+      invariantLocale,
+      strings.system.league.statisticsNote
+    );
+    const message = `${rankingTitle}\n\n${rankingLines.join("\n") || noGames}${pendingScoresSection}\n\n${lastUpdated}\n${statisticsNote}`;
 
     // Check if we already have a ranking message for this league
     const existingMessage = await LeagueRankingMessageModel.findOne({
