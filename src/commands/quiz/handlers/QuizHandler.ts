@@ -1,5 +1,6 @@
 import {
   ChatInputCommandInteraction,
+  EmojiIdentifierResolvable,
   Locale,
   Message,
   PublicThreadChannel,
@@ -191,10 +192,38 @@ export abstract class QuizHandler {
   }
 
   public startQuiz() {
-    this.postNewQuestion();
+    this.postNewQuestion().catch((e) =>
+      console.error("Quiz failed to post question:", e)
+    );
   }
 
   private endQuiz() {}
+
+  private async reactWithRetry(
+    message: Message<true>,
+    emoji: EmojiIdentifierResolvable,
+    maxRetries = 3
+  ): Promise<void> {
+    for (let attempt = 0; attempt <= maxRetries; attempt++) {
+      try {
+        await message.react(emoji);
+        return;
+      } catch (e) {
+        if (attempt === maxRetries) {
+          console.error(
+            `Failed to add reaction ${String(emoji)} after ${maxRetries + 1} attempts:`,
+            e
+          );
+          return;
+        }
+        const delay = 1000 * 2 ** attempt;
+        console.warn(
+          `Reaction ${String(emoji)} failed (attempt ${attempt + 1}/${maxRetries + 1}), retrying in ${delay}ms...`
+        );
+        await new Promise((resolve) => setTimeout(resolve, delay));
+      }
+    }
+  }
 
   protected async postNewQuestion(): Promise<Message<true> | undefined> {
     await this.generateNextQuestion();
@@ -266,10 +295,10 @@ export abstract class QuizHandler {
       }
     });
     for (const option of question.optionEmojis) {
-      await message.react(option);
+      await this.reactWithRetry(message, option);
     }
     if (this.quizMode === QuizMode.Explore) {
-      await message.react(AppEmojiName.Eyes);
+      await this.reactWithRetry(message, AppEmojiName.Eyes);
     }
     if (this.quizMode !== QuizMode.Explore) {
       await message.edit({ content: fullQuestionText, files: [image] });
@@ -294,7 +323,7 @@ export abstract class QuizHandler {
         return;
       }
       if (this.pauseBetweenQuestion || this.quizMode === QuizMode.Explore) {
-        await message.react(AppEmojiName.Eyes);
+        await this.reactWithRetry(message, AppEmojiName.Eyes);
         await message.edit({
           content:
             message.content +
@@ -305,7 +334,9 @@ export abstract class QuizHandler {
           time: 180_000, // 3min
         });
         collector.on("end", () => {
-          this.postNewQuestion();
+          this.postNewQuestion().catch((e) =>
+            console.error("Quiz failed to post question:", e)
+          );
         });
         collector.on(ChangeType.Collect, (reaction, user) => {
           if (
@@ -316,7 +347,9 @@ export abstract class QuizHandler {
           }
         });
       } else {
-        this.postNewQuestion();
+        this.postNewQuestion().catch((e) =>
+          console.error("Quiz failed to post question:", e)
+        );
       }
     });
   }

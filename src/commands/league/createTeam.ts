@@ -57,22 +57,22 @@ export async function executeCreateTeam(itr: ChatInputCommandInteraction) {
   const modal = new ModalBuilder()
     .setCustomId("createTeamModal")
     .setTitle("Create a new team")
-    .addLabelComponents((components) =>
+    .addLabelComponents(() =>
       new LabelBuilder()
         .setLabel("Team name")
         .setTextInputComponent(teamNameInput)
     )
-    .addLabelComponents((components) =>
+    .addLabelComponents(() =>
       new LabelBuilder()
         .setLabel("Fancy team name")
         .setTextInputComponent(fancyTeamNameInput)
     )
-    .addLabelComponents((components) =>
+    .addLabelComponents(() =>
       new LabelBuilder()
         .setLabel("Team Captain")
         .setUserSelectMenuComponent(captainSelect)
     )
-    .addLabelComponents((components) =>
+    .addLabelComponents(() =>
       new LabelBuilder()
         .setLabel("Team members")
         .setUserSelectMenuComponent(teamSelect)
