@@ -1,24 +1,15 @@
 import mongoose from "mongoose";
 import { TeamModelName } from "./Team";
 import { GameRecordModelName } from "./GameRecord";
-import { LeagueModelName } from "./League";
 
 export const GameModelName = "Game";
 const resultSchema = new mongoose.Schema(
   {
-    userId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      required: true,
-    },
+    userId: { type: mongoose.Schema.Types.ObjectId, required: true },
     score: { type: Number, required: true },
     place: { type: Number, required: true },
     nbChombo: { type: Number, required: true },
-    subId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      required: false,
-    },
+    subId: { type: mongoose.Schema.Types.ObjectId, required: false },
   },
   { _id: false }
 );
@@ -45,11 +36,7 @@ const gameSchema = new mongoose.Schema(
     isValid: { type: Boolean, required: false, default: true },
     results: [{ type: resultSchema, required: false }],
     log: { type: String, required: false },
-    league: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: LeagueModelName,
-      required: false,
-    },
+    league: { type: mongoose.Schema.Types.ObjectId, required: false },
     platformIndex: { type: Number, required: false },
     isPublished: { type: Boolean, required: false, default: false },
     gameRecord: {

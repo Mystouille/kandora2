@@ -1,5 +1,5 @@
 import { Client } from "discord.js";
-import { League, LeagueModel } from "../db/League";
+import { League, LeagueConfig, LeagueModel } from "../db/League";
 import cron, { ScheduledTask } from "node-cron";
 import { MahjongSoulConnector } from "../api/majsoul/data/MajsoulConnector";
 import { GameModel } from "../db/Game";
@@ -12,6 +12,7 @@ import { strings, invariantLocale } from "../resources/localization/strings";
 import { stringFormat } from "../utils/stringUtils";
 import { GameRecord as DbGameRecord, GameRecordModel } from "../db/GameRecord";
 import { parseGameRecordResponse } from "../api/majsoul/parseGameRecordResponse";
+import { getBracketMessage } from "./bracketUtils";
 
 export class LeagueService {
   static #instance: LeagueService;
@@ -57,7 +58,7 @@ export class LeagueService {
         // Schedule a cron job to log "something" every 5 minute of every monday and wednesday starting from 19:00 and stopping at 22:00
         //cron.schedule("*/5 19-22 * * 1,3", async () => {
         this.leagueAgent = cron.schedule(
-          "*/5 17-23 3,5,9,11,13,17,19,23,25,27 2 *",
+          "*/5 14-21 14,15,21,22 3 *",
           async () => {
             console.log(
               `Running league agent for league ${league.name} at ${new Date().toISOString()}`
@@ -65,15 +66,12 @@ export class LeagueService {
             await this.updateGamesInLeague(league, client);
           }
         );
-        this.leagueAgent2 = cron.schedule(
-          "*/5 13-19 7,14,21,28 2 *",
-          async () => {
-            console.log(
-              `Running league agent 2 for league ${league.name} at ${new Date().toISOString()}`
-            );
-            await this.updateGamesInLeague(league, client);
-          }
-        );
+        this.leagueAgent2 = cron.schedule("*/5 14-21 4 4 *", async () => {
+          console.log(
+            `Running league agent 2 for league ${league.name} at ${new Date().toISOString()}`
+          );
+          await this.updateGamesInLeague(league, client);
+        });
         console.log(
           `League agent for league ${league.name} initialized successfully at ${new Date().toISOString()}.`
         );
@@ -97,6 +95,12 @@ export class LeagueService {
       return;
     }
 
+    // For LFCR_FINAL leagues, display bracket tree instead of sorted ranking
+    if (league.configuration === LeagueConfig.LFCR_FINAL) {
+      await this.updateBracketMessage(league, channel);
+      return;
+    }
+
     // Get all valid games for this league
     const games = await GameModel.find({
       league: league._id,
@@ -107,11 +111,14 @@ export class LeagueService {
     const teams = await TeamModel.find({ leagueId: league._id }).exec();
     const teamMap = new Map(teams.map((t) => [t._id.toString(), t]));
 
-    // Create a map of userId -> teamId for quick lookup
+    // Create a map of userId -> teamId for quick lookup (including substitutes)
     const userToTeamMap = new Map<string, string>();
     for (const team of teams) {
       for (const memberId of team.members) {
         userToTeamMap.set(memberId.toString(), team._id.toString());
+      }
+      for (const subId of team.substitutes ?? []) {
+        userToTeamMap.set(subId.toString(), team._id.toString());
       }
     }
 
@@ -346,6 +353,79 @@ export class LeagueService {
     }
   }
 
+  private async updateBracketMessage(
+    league: League,
+    channel: {
+      send: (msg: string) => Promise<any>;
+      messages: { fetch: (id: string) => Promise<any> };
+    }
+  ) {
+    const bracketMessage = await getBracketMessage(league);
+    if (!bracketMessage) {
+      console.log(
+        `No bracket found for LFCR_FINAL league ${league.name} (leagueId: ${league._id})`
+      );
+      return;
+    }
+
+    const now = new Date();
+    const datePart = now.toLocaleDateString("fr-FR", {
+      weekday: "long",
+      day: "numeric",
+      month: "long",
+    });
+    const timePart = now.toLocaleTimeString("fr-FR", {
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      timeZoneName: "short",
+    });
+    const lastUpdated = stringFormat(
+      invariantLocale,
+      strings.system.league.lastUpdatedFormat,
+      datePart,
+      timePart
+    );
+
+    const message = `${bracketMessage}\n${lastUpdated}\nPour plus de statistiques, visitez https://www.tnt-sessions.com/statistics?league=lfcr-2026-finals`;
+
+    // Check if we already have a ranking message for this league
+    const existingMessage = await LeagueRankingMessageModel.findOne({
+      league: league._id,
+    }).exec();
+
+    if (existingMessage) {
+      try {
+        const discordMessage = await channel.messages.fetch(
+          existingMessage.messageId
+        );
+        await discordMessage.edit(message);
+        await LeagueRankingMessageModel.updateOne(
+          { _id: existingMessage._id },
+          { lastUpdatedAt: new Date() }
+        );
+        console.log(`Bracket message updated for league ${league.name}`);
+      } catch {
+        console.log(
+          `Could not find existing bracket message, creating new one`
+        );
+        const newMessage = await channel.send(message);
+        await LeagueRankingMessageModel.updateOne(
+          { _id: existingMessage._id },
+          { messageId: newMessage.id, lastUpdatedAt: new Date() }
+        );
+      }
+    } else {
+      const newMessage = await channel.send(message);
+      await LeagueRankingMessageModel.create({
+        messageId: newMessage.id,
+        league: league._id,
+        lastUpdatedAt: new Date(),
+      });
+      console.log(`Bracket message created for league ${league.name}`);
+    }
+  }
+
   private async publishNewGames(league: League, client: Client) {
     const channel = await client.channels.fetch(league.gameChannel);
     if (!channel?.isSendable()) {
@@ -368,11 +448,14 @@ export class LeagueService {
       const users = await UserModel.find({ _id: { $in: userIds } }).exec();
       const userMap = new Map(users.map((u) => [u._id.toString(), u]));
 
-      // Create a map of userId -> team for quick lookup
+      // Create a map of userId -> team for quick lookup (including substitutes)
       const userToTeamMap = new Map<string, (typeof teams)[0]>();
       for (const team of teams) {
         for (const memberId of team.members) {
           userToTeamMap.set(memberId.toString(), team);
+        }
+        for (const subId of team.substitutes ?? []) {
+          userToTeamMap.set(subId.toString(), team);
         }
       }
 
@@ -498,6 +581,14 @@ export class LeagueService {
       });
 
     for (const game of gameList) {
+      // Skip games outside this league's time range
+      if (game.start_time) {
+        const gameTime = new Date(game.start_time * 1000);
+        if (gameTime < league.startTime) continue;
+        const leagueEnd = league.endTime;
+        if (leagueEnd && gameTime >= leagueEnd) continue;
+      }
+
       let savedGame = await GameModel.findOne({
         gameId: game.uuid,
         league: league._id,
@@ -531,16 +622,23 @@ export class LeagueService {
           const userIds = players.map((p) => p.userId!);
           const teamsInLeague = await TeamModel.find({
             leagueId: league._id,
-            members: { $in: userIds },
+            $or: [
+              { members: { $in: userIds } },
+              { substitutes: { $in: userIds } },
+            ],
           }).exec();
 
-          // Check if all players are in teams
+          // Check if all players are in teams (members or substitutes)
           const playersNotInTeam = players.filter(
             (player) =>
-              !teamsInLeague.some((team) =>
-                team.members.some(
-                  (member) => member.toString() === player.userId!.toString()
-                )
+              !teamsInLeague.some(
+                (team) =>
+                  team.members.some(
+                    (member) => member.toString() === player.userId!.toString()
+                  ) ||
+                  (team.substitutes ?? []).some(
+                    (sub) => sub.toString() === player.userId!.toString()
+                  )
               )
           );
           isValid = playersNotInTeam.length === 0;
@@ -628,9 +726,13 @@ export class LeagueService {
                 userData.deltaPoints = deltas[resultIndex];
               }
 
-              // Find the player's team in this league
-              const team = teamsInLeague.find((t) =>
-                t.members.some((m) => m.toString() === user._id.toString())
+              // Find the player's team in this league (members or substitutes)
+              const team = teamsInLeague.find(
+                (t) =>
+                  t.members.some((m) => m.toString() === user._id.toString()) ||
+                  (t.substitutes ?? []).some(
+                    (s) => s.toString() === user._id.toString()
+                  )
               );
               if (team) {
                 userData.teamDbId = team._id;

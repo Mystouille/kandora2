@@ -8,7 +8,7 @@ import { getOrGenerateUserAgent } from "../api/majsoul/data/MajsoulConnector";
 import { Cookie } from "../api/majsoul/types/Cookie";
 import { Passport } from "../api/majsoul/data/types/Passport";
 
-const GAME_UUID = "260208-6910fdcb-766c-477a-bb98-1c8e86aa0e32";
+const GAME_UUID = "260226-84bf065d-f413-4f4f-8eeb-ed9bcf612ada";
 const OUTPUT_FILE = "gameRecord.json";
 
 async function main() {
@@ -69,10 +69,22 @@ async function main() {
   }
 
   // Inject constructor name into each record for the JSON output
-  const recordsWithType = (gameRecord.records ?? []).map((record) => ({
-    _type: record.constructor.name,
-    ...record,
-  }));
+  const recordsWithType = (gameRecord.records ?? []).map((record) => {
+    const base = {
+      _type: record.constructor.name,
+      ...record,
+    };
+
+    // Filter RecordHule fans to only entries with val > 0
+    if (base._type === "RecordHule" && Array.isArray((base as any).hules)) {
+      (base as any).hules = (base as any).hules.map((hule: any) => ({
+        ...hule,
+        fans: (hule.fans ?? []).filter((f: any) => f.val > 0),
+      }));
+    }
+
+    return base;
+  });
 
   // Serialize with a replacer that handles protobuf objects by converting to plain objects
   const json = JSON.stringify(

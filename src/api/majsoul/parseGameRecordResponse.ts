@@ -85,7 +85,7 @@ export function parseGameRecordResponse(game: GameRecord): GameRecordData {
                   ? recordNewRound.tiles2
                   : recordNewRound.tiles3;
           playerRoundData[p].haipaiShanten = syanten(
-            handToSyantenFormat(suitTiles!)
+            handToSyantenFormat(suitTiles!.slice(0, 13))
           );
         }
 

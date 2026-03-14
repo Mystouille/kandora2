@@ -282,6 +282,8 @@ export const stringsEn: StringResources = {
         "**⏳ Pending Scores (not counted due to 35% quota)**",
       pendingScoreLineFormat: "- {0} ({1} {2}): {3}",
       lastUpdatedFormat: "_Last updated: {0}, {1}_",
+      statisticsNote:
+        "_For more statistics, visit https://www.tnt-sessions.com/statistics_",
       newGameRecordedFormat: "**New game recorded for league {0}**",
       invalidGameDetectedFormat: "**Invalid game detected for league {0}**",
       playersNotInTeam:

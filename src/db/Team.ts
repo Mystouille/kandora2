@@ -15,6 +15,13 @@ const teamSchema = new mongoose.Schema(
         default: [],
       },
     ],
+    substitutes: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        required: false,
+        default: [],
+      },
+    ],
   },
   {
     statics: {
@@ -23,7 +30,10 @@ const teamSchema = new mongoose.Schema(
           .model(TeamModelName)
           .findOne({
             leagueId,
-            members: { $elemMatch: { $eq: userId } },
+            $or: [
+              { members: { $elemMatch: { $eq: userId } } },
+              { substitutes: { $elemMatch: { $eq: userId } } },
+            ],
           })
           .exec();
       },
