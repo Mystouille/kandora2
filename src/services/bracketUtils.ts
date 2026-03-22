@@ -290,6 +290,12 @@ export function renderBracketAscii(
     teamToSeed.set(teamId, seed);
   }
 
+  // Compute max team name length across all stages for alignment
+  const maxNameLen = Math.max(
+    ...stages.flatMap((s) => s.results.map((r) => r.teamName.length)),
+    0
+  );
+
   const lines: string[] = [];
   lines.push(`🏆 ${leagueName} - Phases finales`);
   lines.push("");
@@ -297,13 +303,13 @@ export function renderBracketAscii(
   for (const stage of stages) {
     const def = stage.definition;
 
-    lines.push(`━━ ${def.name} ━━`);
+    const gamesPlayed = stage.gamesPlayed;
+    const progressLabel =
+      stage.results.length > 0 ? ` (${gamesPlayed}/${GAMES_PER_STAGE})` : "";
+    lines.push(`━━ ${def.name}${progressLabel} ━━`);
 
     // Show results
     if (stage.results.length > 0) {
-      const maxNameLen = Math.max(
-        ...stage.results.map((r) => r.teamName.length)
-      );
       for (let i = 0; i < stage.results.length; i++) {
         const r = stage.results[i];
         const score =
@@ -311,8 +317,7 @@ export function renderBracketAscii(
             ? `+${r.totalScore.toFixed(1)}`
             : r.totalScore.toFixed(1);
         const name = r.teamName.padEnd(maxNameLen);
-        const progress = `(${r.gamesPlayed}/${GAMES_PER_STAGE})`;
-        lines.push(`  ${i + 1}. ${name} ${score.padStart(7)} ${progress}`);
+        lines.push(`  ${i + 1}. ${name} ${score.padStart(7)}`);
       }
     } else if (stage.teams.length > 0) {
       for (const teamId of stage.teams) {
